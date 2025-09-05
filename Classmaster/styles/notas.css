@@ -1,0 +1,146 @@
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Outfit", serif;
+  user-select: none;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #eee;
+  color: rgb(20, 20, 20);
+  overflow: hidden;
+}
+
+main {
+    background: linear-gradient(to bottom right, #f8f8f8, #eaeaea);
+    width: 80%;
+    height: 80%;
+    margin-top: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 5px 5px 15px rgb(34, 34, 34);
+}
+
+section {
+    background-color: #141414;
+    color: #eee;
+    padding: .5rem;
+    display: flex;
+    align-items: center;
+}
+
+input[type="search"] {
+    padding: .5rem;
+    border-radius: 10px;
+    border: 2px solid #282828;
+    background-color: transparent;
+    margin-left: 1rem;
+    outline: none;
+    margin-left: auto;
+    color: #eee;
+    transition: border-color .3s;
+}
+
+input[type="search"]::placeholder {
+    color: #ccc;
+}
+
+input[type="search"]:focus {
+    border-color: aqua;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background-color: #eee;
+    color: #eee;
+    display: block;
+    cursor: pointer;
+    position: relative;
+}
+
+section > *:not(:last-child) {
+    margin-right: 1rem;
+}
+
+section > *:nth-child(even):not(select[name="materia"]){
+    border-radius: 50%;
+    aspect-ratio: 1;
+    width: 2rem;
+}
+
+section > select:last-of-type {
+    border-radius: 5px;
+    padding: .5rem;
+}
+
+select {
+    outline: transparent;
+    cursor: pointer;
+    text-align: center;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: border-color .3s;
+    background-color: transparent;
+    color: #eee;
+    border: 2px solid #282828;
+}
+
+option {
+    background-color: #141414;
+    color: #eee;
+}
+
+select:focus {
+    border-color: aqua;
+}
+
+table {
+    width: 100%;
+    height: 90%;
+    background-color: #bbb;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+tr {
+    min-height: 3rem;
+}
+
+tbody::-webkit-scrollbar {
+    display: none;
+}
+
+tbody {
+    display: block;
+    height: 27rem; 
+    overflow-y: auto;
+    width: 100%;
+}
+
+thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+tr {
+    border-bottom: 1px solid #141414;
+}
+
+th {
+    background-color: #282828;
+    color: #eee;
+}

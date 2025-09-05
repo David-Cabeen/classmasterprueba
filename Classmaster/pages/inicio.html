@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro e inicio</title>
+    <link rel="stylesheet" href="../styles/inicio.css">
+    <script src="../scripts/inicio.js" defer></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
+</head>
+<body>
+    <div id="overlay"></div>
+    <section class="container">
+        <section class="container-form">
+            <form action="" class="sign-in">
+                <h2>Iniciar Sesión</h2>
+                <span>Use su ID y contraseña</span>
+                <section class="container-input">
+                    <ion-icon name="id-card-outline"></ion-icon>
+                    <input type="number" placeholder="ID de Estudiante">
+                </section>
+                <section class="container-input">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <input type="password" class="password" placeholder="Password">
+                    <ion-icon class="eye-icon" name="eye-outline"></ion-icon>
+                </section>
+                <a href="#">¿Haz olvidado tu contraseña?</a>
+                <button class="button">Iniciar Sesión</button>
+            </form>
+        </section>
+
+        <section class="container-form">
+            <form class="sign-up">
+                <h2>Registrarse</h2>
+                <span>Use su correo electronico y datos del acudido para registrarse</span>
+                <section class="container-input">
+                    <ion-icon name="id-card-outline"></ion-icon>
+                    <input type="number" id="number" placeholder="ID de Estudiante">
+                </section>
+                <section class="container-input">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    <input id="email" type="text" placeholder="Email">
+                </section>
+                <section class="container-input">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <input type="password" class="password" placeholder="Password">
+                    <ion-icon class="eye-icon" name="eye-outline"></ion-icon>
+                </section>
+                <button class="button">Registrarse</button>
+            </form>
+        </section>
+
+        <section class="container-welcome">
+            <section class="welcome-sign-up welcome">
+                <h3>¡Bienvenido!</h3>
+                <p>Ingrese los datos provistos por su institución. En caso de ser acudiente registrese abajo.</p>
+                <button class="button" id="btn-sign-up">Registrarse</button>
+            </section>
+            <section class="welcome-sign-in welcome">
+                <h3>¡Saludos!</h3>
+                <p>Registrese con su correo, contraseña e ID de su hijo para acceder al sitio.</p>
+                <button  class="button" id="btn-sign-in">Iniciar sesión</button>
+            </section>
+        </section>
+    </section>
+    <section id="feedback-window">
+        <h3><span>Parece que hubo un error</span></h3>
+        <ion-icon id="feedback-close" name="close-circle"></ion-icon>
+        <p id="feedback"></p>
+    </section>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+
+</body>
+</html>

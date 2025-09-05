@@ -1,0 +1,216 @@
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
+
+:root {
+    --background-color: #eee;
+    --text-color: #141414;
+    --math-color: #f13838;
+    --chem-color: #38f1a3;
+    --history-color: #f1c938;
+    --spanish-color: #3875f1;
+    --others-color: #a138f1;
+    --info-color: #f1a138;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Outfit", serif;
+    user-select: none;
+}
+
+body {
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    display: grid;
+    place-items: center;
+}
+
+section {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 4px 4px 8px #888;
+}
+
+header {
+    background-color: #282828;
+    color: #eee;
+    padding: 12px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 4px 4px 8px #888;
+}
+
+main {
+    height: 138vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 2fr;
+    grid-template-areas:
+    "spanish history chem"
+    "math math others"
+    "info info others"
+}
+
+@media (max-width: 900px) {
+    main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-template-areas:
+            "spanish"
+            "history"
+            "chem"
+            "math"
+            "others";
+    }
+    section {
+        margin: 10px;
+        padding: 12px;
+        font-size: 1rem;
+        min-width: 0;
+        width: 100%;
+        height: auto !important;
+    }
+    section h2 {
+        font-size: 1.2rem;
+    }
+    section ion-icon {
+        font-size: 1.5rem;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+    section img {
+        width: 80px !important;
+        height: 80px !important;
+    }
+    .math {
+        height: auto !important;
+    }
+    .chem {
+        height: auto !important;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        font-size: 0.9rem;
+    }
+    header {
+        font-size: 1.1rem;
+        padding: 8px;
+    }
+    section {
+        margin: 5px;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+    section h2 {
+        font-size: 1rem;
+    }
+    section ion-icon {
+        font-size: 1.2rem;
+    }
+    section img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+}
+
+.math {
+    background-color: var(--math-color);
+    grid-area: math;
+    display: inline-flex;
+    justify-content: space-evenly;
+}
+
+.chem {
+    background-color: var(--chem-color);
+    grid-area: chem;
+}
+
+.history {
+    background-color: var(--history-color);
+    grid-area: history;
+}
+
+.spanish {
+    background-color: var(--spanish-color);
+    grid-area: spanish;
+}
+
+.others {
+    background-color: var(--others-color);
+    grid-area: others;
+}
+
+.info {
+    background-color: var(--info-color);
+    grid-area: info;
+}
+
+section {
+    transition: box-shadow 0.3s ease, translate 0.3s ease;
+    position: relative;
+}
+
+section:hover {
+    box-shadow: 6px 6px 12px #666;
+    translate: -5px -5px;
+}
+
+section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+section ion-icon {
+    font-size: 2rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+section img {
+    border-radius: 50%;
+    outline: solid #141414 3px;
+    margin-top: 1rem;
+    transition: scale .3s ease, box-shadow .2s ease;
+}
+
+img:hover {
+    scale: 1.05;
+    box-shadow: 5px 5px 25px #070707;
+}
+
+h3 {
+    margin-top: 10px;
+    transition: scale .3s ease;
+}
+
+img:hover + h3 {
+    scale: 1.05;
+}
+
+.history > span, .chem > span {
+    display: inline-flex;
+    justify-content: space-between;
+}
+
+.others > span {
+    display: inline-flex;
+    justify-content: space-between;
+}
+
+footer {
+    background-color: #141414;
+    text-align: center;
+    color: #eee;
+}
