@@ -56,7 +56,7 @@ const checkEmailValidity = (email) => {
     return "";
 };
 
-signup.addEventListener("submit", (e) => {
+signup.addEventListener("submit", async (e) => {
     e.preventDefault();
     if(!emailInput.value || !passwords[1].value || !numberInput.value){
         feedbackWindow.style.display = "flex";
@@ -68,8 +68,24 @@ signup.addEventListener("submit", (e) => {
         feedback.textContent = "Por favor, completa todos los campos.";
     }
     else {
-        if(checkEmailValidity(emailInput.value) == "" && checkPasswordValidity(passwords[1].value) == ""){
-            window.location.assign("home.html");
+        const emailError = checkEmailValidity(emailInput.value);
+        const passwordError = checkPasswordValidity(passwords[1].value);
+        
+        if(emailError == "" && passwordError == ""){
+            // Enviar datos al servidor
+            const result = await registerStudent(emailInput.value, passwords[1].value, numberInput.value);
+            if (result.success) {
+                alert(result.message);
+                window.location.assign("home.html");
+            } else {
+                feedbackWindow.style.display = "flex";
+                overlay.style.display = "block";
+                setTimeout(() => {
+                    overlay.style.opacity = 1; 
+                    feedbackWindow.style.right = "0.5rem"
+                }, 1);   
+                feedback.textContent = result.error;
+            }
         }
         else {
             feedbackWindow.style.display = "flex";
@@ -78,10 +94,8 @@ signup.addEventListener("submit", (e) => {
                 overlay.style.opacity = 1; 
                 feedbackWindow.style.right = "0.5rem"
             }, 1);   
-            const emailError = checkEmailValidity(emailInput.value);
-            const passwordError = checkPasswordValidity(passwords[1].value);
             feedback.textContent = `${emailError}${emailError && passwordError ? '\n' : ''}${passwordError}`;
-        };
+        }
     }
 });
 
@@ -105,7 +119,7 @@ signin.addEventListener('submit', async (e) => {
 
 async function checkAccount(id, password) {
     try {
-        const response = await fetch('../php/validate_account.php', {
+        const response = await fetch('../php/inicio.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `id=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}`
@@ -124,3 +138,16 @@ feedbackClose.addEventListener("click", () => {
         overlay.style.display = "none";
     }, 500);   
 });
+
+async function registerStudent(email, password, id_estudiante) {
+    try {
+        const response = await fetch('../php/registro_estudiante.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&id_estudiante=${encodeURIComponent(id_estudiante)}`
+        });
+        return await response.json();
+    } catch (err) {
+        return { success: false, error: "No se pudo conectar al servidor." };
+    }
+}
