@@ -13,17 +13,17 @@
     <div id="overlay"></div>
     <section class="container">
         <section class="container-form">
-            <form action="" class="sign-in">
+            <form action="../php/inicio.php" method="post" class="sign-in">
                 <h2>Iniciar Sesión</h2>
                 <span>Use su ID y contraseña</span>
                 <section class="container-input">
                     <ion-icon name="id-card-outline"></ion-icon>
-                    <input type="number" placeholder="ID de Estudiante">
+                    <input type="number" id="id" placeholder="ID de Estudiante">
                 </section>
                 <section class="container-input">
                     <ion-icon name="lock-closed-outline"></ion-icon>
-                    <input type="password" class="password" placeholder="Password">
-                    <ion-icon class="eye-icon" name="eye-outline"></ion-icon>
+                    <input id="password" type="password" class="password" placeholder="Password">
+                    <ion-icon class="eye-icon" name="eye-off-outline"></ion-icon>
                 </section>
                 <a href="#">¿Haz olvidado tu contraseña?</a>
                 <button class="button">Iniciar Sesión</button>
@@ -45,7 +45,7 @@
                 <section class="container-input">
                     <ion-icon name="lock-closed-outline"></ion-icon>
                     <input type="password" class="password" placeholder="Password">
-                    <ion-icon class="eye-icon" name="eye-outline"></ion-icon>
+                    <ion-icon class="eye-icon" name="eye-off-outline"></ion-icon>
                 </section>
                 <button class="button">Registrarse</button>
             </form>

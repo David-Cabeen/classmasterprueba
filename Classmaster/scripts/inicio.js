@@ -76,7 +76,7 @@ signup.addEventListener("submit", async (e) => {
             const result = await registerStudent(emailInput.value, passwords[1].value, numberInput.value);
             if (result.success) {
                 alert(result.message);
-                window.location.assign("home.html");
+                window.location.assign("home.php");
             } else {
                 feedbackWindow.style.display = "flex";
                 overlay.style.display = "block";
@@ -101,11 +101,11 @@ signup.addEventListener("submit", async (e) => {
 
 signin.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const idInput = signin.querySelector('input[type="number"]');
-    const passwordInput = signin.querySelector('input[type="password"]');
+    const idInput = document.getElementById("id");
+    const passwordInput = document.getElementById("password");
     const result = await checkAccount(idInput.value, passwordInput.value);
     if (result.success) {
-        window.location.assign('home.html');
+        window.location.assign('home.php');
     } else {
         feedbackWindow.style.display = "flex";
         overlay.style.display = "block";

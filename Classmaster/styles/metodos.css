@@ -1,12 +1,35 @@
-body{
-    font-family: "Outfit", sans-serif;
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Outfit", serif;
+    user-select: none;
 }
+
+body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f4f3;
+    color: rgb(20, 20, 20);
+    overflow: hidden;
+}
+
 .cuadros-de-metodos{
-display: flex;
-  flex-direction: column; /* Para que se acomoden verticalmente */
-  align-items: center;     /* Para centrar horizontalmente */
-  justify-content: center; /* Opcional: centra verticalmente también */
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    background-color: #282828;
+    height: 80vh;
+    width: 90%;
+    border-radius: 10px;
 }
+
 .metodo-pomodoro{
     border:6px solid #383838;
     border-radius: 5%;
@@ -18,11 +41,6 @@ display: flex;
     text-align: center;
     transition: transform 0.3s ease;
 }
-.metodo-pomodoro:hover{
-    transform: scale(1.05);
-}
-
-
 
 .metodo-cornell{
     border:6px solid #383838;
@@ -35,9 +53,6 @@ display: flex;
     text-align: center;
     transition: transform 0.3s ease;
 }
-.metodo-cornell:hover{
-    transform: scale(1.05);
-}
 
 .metodo-leitner{
     border:6px solid #383838;
@@ -49,7 +64,4 @@ display: flex;
     padding: 1%;
     text-align: center;
     transition: transform 0.3s ease;
-}
-.metodo-leitner:hover{
-    transform: scale(1.05);
 }
