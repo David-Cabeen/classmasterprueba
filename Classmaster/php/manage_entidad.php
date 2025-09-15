@@ -35,6 +35,19 @@
         if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
         response(false, $stmt->error);
     }
+    if ($action === 'create' && $type === 'teacher') {
+        $nombre = $_POST['nombre'] ?? '';
+        $apellido = $_POST['apellido'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $materias = $_POST['materias'] ?? '';
+        $password = $_POST['password'] ?? '';
+        if (!$nombre || !$apellido || !$email || !$password) response(false, 'Faltan campos obligatorios');
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("INSERT INTO profesores (nombre, apellido, email, password, materias, fecha_registro) VALUES (?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("sssss", $nombre, $apellido, $email, $materias, $hash);
+        if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
+        response(false, $stmt->error);
+    }
     if ($action === 'update' && $type && isset($_POST['id'])) {
         $id = $_POST['id'];
         $fields = $_POST;

@@ -23,6 +23,16 @@
         }
     }
 
+    $sql_teachers = "SELECT id, nombre, apellido, email, materias, fecha_registro FROM profesores ORDER BY id";
+    $result_teachers = $conn->query($sql_teachers);
+    $teachers = [];
+
+    if ($result_teachers && $result_teachers->num_rows > 0) {
+        while($row = $result_teachers->fetch_assoc()) {
+            $teachers[] = $row;
+        }
+    }
+
     // Cerrar conexión
     $conn->close();
 

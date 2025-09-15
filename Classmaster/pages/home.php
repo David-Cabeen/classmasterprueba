@@ -37,12 +37,20 @@
     <h2>¿Qué deseas hacer hoy?</h2>
 
     <section class="cards-container">
-      <a href="notas.php" class="card">📚 Notas</a>
-      <a href="calendario.php" class="card">🗓️ Calendario</a>
-      <a href="tareas.php" class="card">📝 Tareas</a>
-      <a href="pomodoro.php" class="card">🍅 Pomodoro</a>
-      <a href="metodos.php" class="card">📒 Métodos</a>
-      <a href="ayudas.php" class="card">❓ Ayudas</a>
+      <?php
+        if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'padre') {
+            echo '<a href="notas.php" class="card">📚 Notas</a>
+                  <a href="calendario.php" class="card">🗓️ Calendario</a>
+                  ';
+        } else if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'estudiante') {
+            echo '<a href="notas.php" class="card">📚 Notas</a>
+                  <a href="calendario.php" class="card">🗓️ Calendario</a>
+                  <a href="tareas.php" class="card">📝 Tareas</a>
+                  <a href="pomodoro.php" class="card">🍅 Pomodoro</a>
+                  <a href="metodos.php" class="card">📒 Métodos</a>
+                  <a href="ayudas.php" class="card">❓ Ayudas</a>';
+        }
+      ?>
     </section>
 
     <section>

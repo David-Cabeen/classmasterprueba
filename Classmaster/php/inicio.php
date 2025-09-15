@@ -33,6 +33,7 @@
     if (password_verify($password, $hashed_password)) {
         $_SESSION['user_id'] = $id; // Guarda el ID del usuario en la sesión
         $_SESSION['nombre'] = $nombre; // Guarda el nombre del usuario en la sesión
+        $_SESSION['rol'] = 'estudiante'; // Guarda el rol del usuario en la sesión
         echo json_encode(['success' => true]);
         $stmt->close();
         $conn->close();

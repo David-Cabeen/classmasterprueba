@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../styles/entidades.css">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="../scripts/entidades.js" defer></script>
 </head>
 <body>
     <header class="header">
@@ -40,7 +41,7 @@
             <!-- Sección de Usuarios (Estudiantes) -->
             <section class="entity-section">
                 <div class="section-header">
-                    <h3><ion-icon name="people-outline"></ion-icon> Usuarios (Estudiantes)</h3>
+                    <h3><ion-icon name="people-outline"></ion-icon>Estudiantes</h3>
                     <span class="count-badge" id="usersCount">0</span>
                 </div>
                 <div class="table-container">
@@ -67,7 +68,7 @@
             <!-- Sección de Padres (Acudientes) -->
             <section class="entity-section">
                 <div class="section-header">
-                    <h3><ion-icon name="person-add-outline"></ion-icon> Padres (Acudientes)</h3>
+                    <h3><ion-icon name="person-add-outline"></ion-icon>Acudientes</h3>
                     <span class="count-badge" id="padresCount">0</span>
                 </div>
                 <div class="table-container">
@@ -90,47 +91,39 @@
             </section>
         </div>
 
+        <!-- Sección de Maestros -->
+        <section class="entity-section">
+                <div class="section-header">
+                    <h3><ion-icon name="people-outline"></ion-icon>Maestros</h3>
+                    <span class="count-badge" id="teachersCount">0</span>
+                </div>
+                <div class="table-container">
+                    <table class="entity-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Email</th>
+                                <th>Materias</th>
+                                <th>Fecha Registro</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachersTable">
+                            <!-- Los datos se cargarán de la BBDD -->
+                        </tbody>
+
+                    </table>
+                </div>
+            </section>
+
         <div class="error-message" id="errorMessage" style="display: none;">
             <ion-icon name="alert-circle-outline"></ion-icon>
             <span id="errorText">Error al cargar los datos</span>
         </div>
 
-    <!-- Modal para crear nuevo usuario -->
-    <div id="modalNewUser" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close" id="closeModalUser">&times;</span>
-            <h3>Crear Nuevo Usuario (Estudiante)</h3>
-            <form id="formNewUser">
-                <input type="text" name="nombre" placeholder="Nombre" required><br>
-                <input type="text" name="apellido" placeholder="Apellido" required><br>
-                <input type="email" name="email" placeholder="Email" required><br>
-                <input type="text" name="grado" placeholder="Grado"><br>
-                <input type="text" name="seccion" placeholder="Sección"><br>
-                <input type="password" name="contrasena" placeholder="Contraseña" required><br>
-                <button type="submit">Crear</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal para crear nuevo padre -->
-    <div id="modalNewPadre" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close" id="closeModalPadre">&times;</span>
-            <h3>Crear Nuevo Padre (Acudiente)</h3>
-            <form id="formNewPadre">
-                <input type="text" name="nombre" placeholder="Nombre" required><br>
-                <input type="text" name="apellido" placeholder="Apellido" required><br>
-                <input type="email" name="email" placeholder="Email" required><br>
-                <input type="text" name="telefono" placeholder="Teléfono"><br>
-                <input type="password" name="contrasena" placeholder="Contraseña" required><br>
-                <button type="submit">Crear</button>
-            </form>
-        </div>
-    </div>
-
     </main>
 
-    <script src="../scripts/entidades.js"></script>
     <style>
     .modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
     .modal-content { background: #fff; padding: 2rem; border-radius: 8px; min-width: 300px; position: relative; }

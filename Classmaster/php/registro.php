@@ -53,6 +53,7 @@
                 $id = $conn->insert_id; // Obtener el ID insertado
                 $_SESSION['user_id'] = $id; // Guarda el ID del usuario en la sesión
                 $_SESSION['nombre'] = $nombre; // Guarda el nombre del usuario en la sesión
+                $_SESSION['rol'] = 'padre'; // Guarda el rol del usuario en la sesión
                 echo json_encode([
                     'success' => true, 
                     'message' => 'Registro exitoso. Bienvenido a ClassMaster.',

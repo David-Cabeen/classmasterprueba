@@ -5,8 +5,10 @@ const errorMessage = document.getElementById('errorMessage');
 const errorText = document.getElementById('errorText');
 const usersTable = document.getElementById('usersTable');
 const padresTable = document.getElementById('padresTable');
+const teachersTable = document.getElementById('teachersTable');
 const usersCount = document.getElementById('usersCount');
 const padresCount = document.getElementById('padresCount');
+const teachersCount = document.getElementById('teachersCount');
 
 // Función para formatear fecha
 function formatDate(dateString) {
@@ -96,7 +98,6 @@ function renderUsers(users) {
         const email = document.getElementById('newUserEmail').value.trim();
         const grado =  document.getElementById('newUserGrado').value.trim();
         const seccion = document.getElementById('newUserSeccion').value.trim().toUpperCase();
-        // Prompt for password
         const password = 'Student_2025';
         if (!nombre || !apellido || !email || !password) {
             alert('Todos los campos obligatorios deben estar completos.');
@@ -144,6 +145,82 @@ function renderPadres(padres) {
         `;
         padresTable.appendChild(row);
     });
+}
+
+function renderTeachers(teachers) {
+    teachersTable.innerHTML = '';
+    if (teachers.length === 0) {
+        teachersTable.innerHTML = `
+            <tr>
+                <td colspan="6" class="no-data">No hay maestros registrados</td>
+            </tr>
+        `;
+        return;
+    }
+    teachers.forEach(teacher => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${teacher.id}</td>
+            <td>${teacher.email}</td>
+            <td>${teacher.nombre}</td>
+            <td>${teacher.apellido}</td>
+            <td>${teacher.telefono || 'N/A'}</td>
+            <td>${formatDate(teacher.fecha_registro)}</td>
+        `;
+        teachersTable.appendChild(row);
+    });
+
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td style="font-weight:600">+</td>
+        <td><input type="text" id="newTeacherNombre" placeholder="Nombre"></td>
+        <td><input type="text" id="newTeacherApellido" placeholder="Apellido"></td>
+        <td><input type="email" id="newTeacherEmail" placeholder="Email"></td>
+        <td>
+            <select id="newTeacherMaterias" multiple>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Ciencias">Ciencias</option>
+                <option value="Lengua">Lengua</option>
+                <option value="Historia">Historia</option>
+                <option value="Inglés">Inglés</option>
+                <option value="Arte">Arte</option>
+                <option value="Educación Física">Educación Física</option>
+            </select>
+        </td>
+        <td><button id="createUserBtn">Crear maestro</button></td>
+    `;
+
+    teachersTable.appendChild(newRow);
+
+    document.getElementById('createUserBtn').onclick = async function() {
+        const nombre = document.getElementById('newTeacherNombre').value.charAt(0).toUpperCase() + document.getElementById('newTeacherNombre').value.slice(1).toLowerCase().trim();
+        const apellido = document.getElementById('newTeacherApellido').value.charAt(0).toUpperCase() + document.getElementById('newTeacherApellido').value.slice(1).toLowerCase().trim();
+        const email = document.getElementById('newTeacherEmail').value.trim();
+        const materiasSelect = document.getElementById('newTeacherMaterias');
+        const materias = Array.from(materiasSelect.selectedOptions).map(opt => opt.value).join(',');
+
+        // Prompt for password later on
+        const password = 'Teacher_2025';
+        if (!nombre || !apellido || !email || !materias || !password) {
+            alert('Todos los campos obligatorios deben estar completos.');
+            return;
+        }
+        const data = new FormData();
+        data.append('action', 'create');
+        data.append('type', 'teacher');
+        data.append('nombre', nombre);
+        data.append('apellido', apellido);
+        data.append('email', email);
+        data.append('materias', materias);
+        data.append('password', password);
+        const res = await fetch('../php/manage_entidad.php', { method: 'POST', body: data });
+        const json = await res.json();
+        if (json.success) {
+            loadEntities();
+        } else {
+            alert(json.error);
+        }
+    };
 }
 
 // Cargar datos al iniciar la página
