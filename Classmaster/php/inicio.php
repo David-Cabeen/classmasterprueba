@@ -1,19 +1,6 @@
 <?php
     session_start();
-    header('Content-Type: application/json'); // Indica que la respuesta será en formato JSON
-
-    // Valores de conexión a la base de datos
-    $host = 'localhost';
-    $db   = 'classmaster';
-    $user = 'root';
-    $pass = '';
-    
-    $conn = new mysqli($host, $user, $pass, $db);
-
-    if ($conn->connect_error) {
-        echo json_encode(['success' => false, 'error' => 'Error de conexión a la base de datos.']);
-        exit;
-    }
+    require_once 'connection.php';
 
     $id = $_POST['id'] ?? '';
     $password = $_POST['password'] ?? '';

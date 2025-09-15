@@ -119,7 +119,7 @@ tr {
     min-height: 3rem;
 }
 
-tbody::-webkit-scrollbar {
+tbody::-webkit-scrollbar, tbody::-moz-scrollbar {
     display: none;
 }
 

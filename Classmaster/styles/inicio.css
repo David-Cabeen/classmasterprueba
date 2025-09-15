@@ -261,14 +261,14 @@ select#opciones option:disabled {
 }
 
 #feedback {
-  color: rgb(232, 79, 79);
+  color: #e84f4f;
   margin: .5rem;
   translate: 0 30%;
 }
 
 #feedback-close:hover {
   cursor: pointer;
-  color: rgb(232, 79, 79);
+  color: #e84f4f;
   transform: scale(1.1);
 }
 
@@ -276,4 +276,10 @@ input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+.sign-up p {
+  font-size: 14px;
+  color: #e84f4f;
+  text-align: center;
 }

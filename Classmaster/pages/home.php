@@ -37,12 +37,12 @@
     <h2>¿Qué deseas hacer hoy?</h2>
 
     <section class="cards-container">
-      <a href="notas.html" class="card">📚 Notas</a>
-      <a href="calendario.html" class="card">🗓️ Calendario</a>
-      <a href="tareas.html" class="card">📝 Tareas</a>
-      <a href="pomodoro.html" class="card">🍅 Pomodoro</a>
-      <a href="metodos.html" class="card">📒 Métodos</a>
-      <a href="ayudas.html" class="card">❓ Ayudas</a>
+      <a href="notas.php" class="card">📚 Notas</a>
+      <a href="calendario.php" class="card">🗓️ Calendario</a>
+      <a href="tareas.php" class="card">📝 Tareas</a>
+      <a href="pomodoro.php" class="card">🍅 Pomodoro</a>
+      <a href="metodos.php" class="card">📒 Métodos</a>
+      <a href="ayudas.php" class="card">❓ Ayudas</a>
     </section>
 
     <section>
@@ -53,8 +53,6 @@
   <footer>
     <p>&copy; 2025 - ClassMaster, todos los derechos reservados</p>
   </footer>
-
-  <script src="home.js"></script>
 </body>
 </html>
 

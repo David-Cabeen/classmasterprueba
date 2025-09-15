@@ -58,7 +58,7 @@ const checkEmailValidity = (email) => {
 
 signup.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if(!emailInput.value || !passwords[1].value || !numberInput.value){
+    if(!emailInput.value || !passwords[1].value){
         feedbackWindow.style.display = "flex";
         overlay.style.display = "block";
         setTimeout(() => {
@@ -73,7 +73,7 @@ signup.addEventListener("submit", async (e) => {
         
         if(emailError == "" && passwordError == ""){
             // Enviar datos al servidor
-            const result = await registerStudent(emailInput.value, passwords[1].value, numberInput.value);
+            const result = await registerStudent(emailInput.value, passwords[1].value);
             if (result.success) {
                 alert(result.message);
                 window.location.assign("home.php");
@@ -139,12 +139,12 @@ feedbackClose.addEventListener("click", () => {
     }, 500);   
 });
 
-async function registerStudent(email, password, id_estudiante) {
+async function registerStudent(email, password) {
     try {
-        const response = await fetch('../php/registro_estudiante.php', {
+        const response = await fetch('../php/registro.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&id_estudiante=${encodeURIComponent(id_estudiante)}`
+            body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&nombre=${encodeURIComponent(document.getElementById("nombre").value)}`
         });
         return await response.json();
     } catch (err) {

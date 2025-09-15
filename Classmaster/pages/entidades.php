@@ -1,3 +1,10 @@
+<?php
+  session_start();
+  if (!isset($_SESSION['user_id'])) {
+      header('Location: inicio.html');
+      exit();
+  }
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -47,12 +54,12 @@
                                 <th>Grado</th>
                                 <th>Sección</th>
                                 <th>Fecha Registro</th>
-                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody id="usersTable">
-                            <!-- Los datos se cargarán dinámicamente -->
+                            <!-- Los datos se cargarán de la BBDD -->
                         </tbody>
+
                     </table>
                 </div>
             </section>
@@ -73,11 +80,10 @@
                                 <th>Apellido</th>
                                 <th>Teléfono</th>
                                 <th>Fecha Registro</th>
-                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody id="padresTable">
-                            <!-- Los datos se cargarán dinámicamente -->
+                            <!-- Los datos se cargarán de la BBDD -->
                         </tbody>
                     </table>
                 </div>
@@ -88,8 +94,47 @@
             <ion-icon name="alert-circle-outline"></ion-icon>
             <span id="errorText">Error al cargar los datos</span>
         </div>
+
+    <!-- Modal para crear nuevo usuario -->
+    <div id="modalNewUser" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" id="closeModalUser">&times;</span>
+            <h3>Crear Nuevo Usuario (Estudiante)</h3>
+            <form id="formNewUser">
+                <input type="text" name="nombre" placeholder="Nombre" required><br>
+                <input type="text" name="apellido" placeholder="Apellido" required><br>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <input type="text" name="grado" placeholder="Grado"><br>
+                <input type="text" name="seccion" placeholder="Sección"><br>
+                <input type="password" name="contrasena" placeholder="Contraseña" required><br>
+                <button type="submit">Crear</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para crear nuevo padre -->
+    <div id="modalNewPadre" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" id="closeModalPadre">&times;</span>
+            <h3>Crear Nuevo Padre (Acudiente)</h3>
+            <form id="formNewPadre">
+                <input type="text" name="nombre" placeholder="Nombre" required><br>
+                <input type="text" name="apellido" placeholder="Apellido" required><br>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <input type="text" name="telefono" placeholder="Teléfono"><br>
+                <input type="password" name="contrasena" placeholder="Contraseña" required><br>
+                <button type="submit">Crear</button>
+            </form>
+        </div>
+    </div>
+
     </main>
 
     <script src="../scripts/entidades.js"></script>
+    <style>
+    .modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: #fff; padding: 2rem; border-radius: 8px; min-width: 300px; position: relative; }
+    .close { position: absolute; right: 1rem; top: 1rem; cursor: pointer; font-size: 1.5rem; }
+    </style>
 </body>
 </html>

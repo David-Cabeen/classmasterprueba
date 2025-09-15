@@ -1,17 +1,6 @@
 <?php
-    // Iniciar conexión con la base de datos
-    $host = "localhost";
-    $usuario = "root";
-    $contrasena_bd = ""; // Por defecto en XAMPP
-    $base_datos = "classmaster";
-
-    // Crear conexión
-    $conn = new mysqli($host, $usuario, $contrasena_bd, $base_datos);
-
-    // Verificar si hay error en la conexión
-    if ($conn->connect_error) {
-        die("Error al conectar con la base de datos: " . $conn->connect_error);
-    }
+    session_start();
+    require_once 'connection.php';
 
     // Verificar si el formulario fue enviado por método POST
     if ($_SERVER["REQUEST_METHOD"] === "POST") {

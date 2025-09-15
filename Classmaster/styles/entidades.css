@@ -1,20 +1,22 @@
-/* Reset y estilos base */
+@import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
+
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Outfit", serif;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    color: #333;
+    color: #222;
+    width: 100%;
 }
 
 /* Header */
 .header {
-    background: rgba(255, 255, 255, 0.95);
+    background: #f2f2f2;
     backdrop-filter: blur(10px);
     padding: 1rem 0;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
@@ -111,16 +113,17 @@ body {
 
 /* Entity Sections */
 .entity-section {
-    background: rgba(255, 255, 255, 0.95);
+    background: #f2f2f2;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     overflow: hidden;
+    margin-bottom: 2rem;
 }
 
 .section-header {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    background: linear-gradient(135deg, #222, #444);
+    color: #f2f2f2;
     padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -141,7 +144,7 @@ body {
 .count-badge {
     background: rgba(255, 255, 255, 0.2);
     padding: 0.5rem 1rem;
-    border-radius: 20px;
+    border-radius: 50%;
     font-weight: bold;
     min-width: 40px;
     text-align: center;
@@ -152,6 +155,7 @@ body {
     overflow-x: auto;
     max-height: 600px;
     overflow-y: auto;
+    text-align: center;
 }
 
 /* Tables */
@@ -169,7 +173,6 @@ body {
 
 .entity-table th {
     padding: 1rem;
-    text-align: left;
     font-weight: 600;
     color: #495057;
     border-bottom: 2px solid #dee2e6;
@@ -180,6 +183,7 @@ body {
     padding: 1rem;
     border-bottom: 1px solid #dee2e6;
     vertical-align: middle;
+    position: relative;
 }
 
 .entity-table tbody tr {
@@ -192,18 +196,14 @@ body {
 
 /* Status Badges */
 .status-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    height: 33%;
+    position: absolute;
 }
 
 .status-badge.active {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: #6eff90;
 }
 
 .status-badge.inactive {
@@ -278,4 +278,22 @@ body {
     .entity-table {
         font-size: 0.8rem;
     }
+}
+
+#usersTable input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: transparent;
+}
+
+#createUserBtn, #createPadreBtn {
+    padding: 0.5rem 1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
