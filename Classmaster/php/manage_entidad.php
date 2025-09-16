@@ -43,7 +43,7 @@
         $password = $_POST['password'] ?? '';
         if (!$nombre || !$apellido || !$email || !$password) response(false, 'Faltan campos obligatorios');
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO profesores (nombre, apellido, email, password, materias, fecha_registro) VALUES (?, ?, ?, ?, ?, NOW())");
+        $stmt = $conn->prepare("INSERT INTO profesores (nombre, apellido, email, materias, password, fecha_registro) VALUES (?, ?, ?, ?, ?, NOW())");
         $stmt->bind_param("sssss", $nombre, $apellido, $email, $materias, $hash);
         if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
         response(false, $stmt->error);

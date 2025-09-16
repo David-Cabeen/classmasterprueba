@@ -40,6 +40,7 @@
     echo json_encode([
         'success' => true,
         'users' => $users,
-        'padres' => $padres
+        'padres' => $padres,
+        'teachers' => $teachers
     ]);
 ?>

@@ -41,6 +41,12 @@ async function loadEntities() {
             renderPadres(data.padres);
             padresCount.textContent = data.padres.length;
 
+            // Cargar maestros
+            renderTeachers(data.teachers || []);
+            if (typeof teachersCount !== 'undefined') {
+                teachersCount.textContent = (data.teachers || []).length;
+            }
+
             // Mostrar contenido
             loading.style.display = 'none';
             contentGrid.style.display = 'block';
@@ -113,12 +119,7 @@ function renderUsers(users) {
         data.append('seccion', seccion);
         data.append('password', password);
         const res = await fetch('../php/manage_entidad.php', { method: 'POST', body: data });
-        const json = await res.json();
-        if (json.success) {
-            loadEntities();
-        } else {
-            alert(json.error);
-        }
+        window.location.reload();
     };
 }
 
@@ -155,21 +156,21 @@ function renderTeachers(teachers) {
                 <td colspan="6" class="no-data">No hay maestros registrados</td>
             </tr>
         `;
-        return;
+    } else {
+        teachers.forEach(teacher => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${teacher.id}</td>
+                <td>${teacher.nombre}</td>
+                <td>${teacher.apellido}</td>
+                <td>${teacher.email}</td>
+                <td>${teacher.materias || 'N/A'}</td>
+                <td>${formatDate(teacher.fecha_registro)}</td>
+            `;
+            teachersTable.appendChild(row);
+        });
     }
-    teachers.forEach(teacher => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${teacher.id}</td>
-            <td>${teacher.email}</td>
-            <td>${teacher.nombre}</td>
-            <td>${teacher.apellido}</td>
-            <td>${teacher.telefono || 'N/A'}</td>
-            <td>${formatDate(teacher.fecha_registro)}</td>
-        `;
-        teachersTable.appendChild(row);
-    });
-
+    // Always add the new teacher row
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
         <td style="font-weight:600">+</td>
@@ -187,19 +188,15 @@ function renderTeachers(teachers) {
                 <option value="Educación Física">Educación Física</option>
             </select>
         </td>
-        <td><button id="createUserBtn">Crear maestro</button></td>
+        <td><button id="createTeacherBtn">Crear maestro</button></td>
     `;
-
     teachersTable.appendChild(newRow);
-
-    document.getElementById('createUserBtn').onclick = async function() {
+    document.getElementById('createTeacherBtn').onclick = async function() {
         const nombre = document.getElementById('newTeacherNombre').value.charAt(0).toUpperCase() + document.getElementById('newTeacherNombre').value.slice(1).toLowerCase().trim();
         const apellido = document.getElementById('newTeacherApellido').value.charAt(0).toUpperCase() + document.getElementById('newTeacherApellido').value.slice(1).toLowerCase().trim();
         const email = document.getElementById('newTeacherEmail').value.trim();
         const materiasSelect = document.getElementById('newTeacherMaterias');
         const materias = Array.from(materiasSelect.selectedOptions).map(opt => opt.value).join(',');
-
-        // Prompt for password later on
         const password = 'Teacher_2025';
         if (!nombre || !apellido || !email || !materias || !password) {
             alert('Todos los campos obligatorios deben estar completos.');
@@ -216,6 +213,11 @@ function renderTeachers(teachers) {
         const res = await fetch('../php/manage_entidad.php', { method: 'POST', body: data });
         const json = await res.json();
         if (json.success) {
+            // Clear inputs before reloading
+            document.getElementById('newTeacherNombre').value = '';
+            document.getElementById('newTeacherApellido').value = '';
+            document.getElementById('newTeacherEmail').value = '';
+            document.getElementById('newTeacherMaterias').selectedIndex = -1;
             loadEntities();
         } else {
             alert(json.error);

@@ -280,7 +280,7 @@ body {
     }
 }
 
-#usersTable input {
+.entity-table input {
     width: 100%;
     padding: 0.5rem;
     border: 1px solid #ced4da;
@@ -288,7 +288,7 @@ body {
     background-color: transparent;
 }
 
-#createUserBtn, #createPadreBtn {
+.entity-table button {
     padding: 0.5rem 1rem;
     background-color: #28a745;
     color: white;

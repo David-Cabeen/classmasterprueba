@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1
--- Tiempo de generación: 16-09-2025 a las 00:41:24
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Host: localhost
+-- Generation Time: Sep 16, 2025 at 12:47 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `classmaster`
+-- Database: `classmaster`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `administradores`
+-- Table structure for table `administradores`
 --
 
 CREATE TABLE `administradores` (
@@ -40,7 +40,7 @@ CREATE TABLE `administradores` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `cursos`
+-- Table structure for table `cursos`
 --
 
 CREATE TABLE `cursos` (
@@ -58,7 +58,7 @@ CREATE TABLE `cursos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `curso_estudiante`
+-- Table structure for table `curso_estudiante`
 --
 
 CREATE TABLE `curso_estudiante` (
@@ -72,7 +72,7 @@ CREATE TABLE `curso_estudiante` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `curso_profesor`
+-- Table structure for table `curso_profesor`
 --
 
 CREATE TABLE `curso_profesor` (
@@ -87,7 +87,7 @@ CREATE TABLE `curso_profesor` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `eventos_curso`
+-- Table structure for table `eventos_curso`
 --
 
 CREATE TABLE `eventos_curso` (
@@ -105,7 +105,7 @@ CREATE TABLE `eventos_curso` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `notas`
+-- Table structure for table `notas`
 --
 
 CREATE TABLE `notas` (
@@ -124,7 +124,7 @@ CREATE TABLE `notas` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `padres`
+-- Table structure for table `padres`
 --
 
 CREATE TABLE `padres` (
@@ -138,17 +138,20 @@ CREATE TABLE `padres` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `padres`
+-- Dumping data for table `padres`
 --
 
 INSERT INTO `padres` (`id`, `email`, `password`, `nombre`, `apellido`, `telefono`, `fecha_registro`) VALUES
 (1, 'jerovilla@gmail.com', '$2y$10$ENbGcY5Gu.jCJl8P029mOekFbSE9Yx2I1vm1SmEJabFRaDfXbY4pW', 'Jeronimo', 'Villa', NULL, '2025-09-15 21:54:35'),
-(2, 'davidcabeen@gmail.com', '$2y$10$zcKf4KGnFu/jqnd/I1tfs.vQSvm2hHBXNtJIEJncQfxkflEqe1e8C', 'David', 'Cabeen', NULL, '2025-09-15 21:57:39');
+(2, 'davidcabeen@gmail.com', '$2y$10$zcKf4KGnFu/jqnd/I1tfs.vQSvm2hHBXNtJIEJncQfxkflEqe1e8C', 'David', 'Cabeen', NULL, '2025-09-15 21:57:39'),
+(4, 'sarahmcabeen@gmail.com', '$2y$10$aDKaLANoRTelYQjZfrvFNuBrdQgpKSw5dvIwDkMMG0BWmqRYpNhHq', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:08:55'),
+(5, 'sarahmcaben@gmail.com', '$2y$10$hwCKQQBWE.tkNZFYIITmEOXVd./L5yYIBrbRY91E8xugUq6TjGDAG', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:18:47'),
+(6, 's@gmail.com', '$2y$10$Z0.eSkYqZEMcn0gWcCJoHey3AdJkaPZo/aqNcpti1bRi7Evw0p8ZS', 'a', '', NULL, '2025-09-16 01:19:42');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `padre_hijo`
+-- Table structure for table `padre_hijo`
 --
 
 CREATE TABLE `padre_hijo` (
@@ -160,7 +163,7 @@ CREATE TABLE `padre_hijo` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `profesores`
+-- Table structure for table `profesores`
 --
 
 CREATE TABLE `profesores` (
@@ -176,7 +179,7 @@ CREATE TABLE `profesores` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tareas`
+-- Table structure for table `tareas`
 --
 
 CREATE TABLE `tareas` (
@@ -192,7 +195,7 @@ CREATE TABLE `tareas` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tipos_curso`
+-- Table structure for table `tipos_curso`
 --
 
 CREATE TABLE `tipos_curso` (
@@ -204,7 +207,7 @@ CREATE TABLE `tipos_curso` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -215,30 +218,35 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `grado` varchar(20) DEFAULT NULL,
   `seccion` varchar(10) DEFAULT NULL,
-  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
+  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `id_padre` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `users`
+-- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `nombre`, `apellido`, `email`, `password`, `grado`, `seccion`, `fecha_registro`) VALUES
-(123, 'Arroba', 'Estudiante', 'arroba@gmail.com', '$2y$10$Dr7GOxk6h/P7/mVSpf7cH.NP5/PKO1hj00pnIvljpAJ51wb0RQKWu', NULL, NULL, '2025-09-15 20:58:56'),
-(124, 'Hello', 'Alberto', 'alberto@gmail.com', '$2y$10$6D0tI82W.NPE3hMEc.sPd.EH1DyoSy9/xPa.MB5GWrPcF3vMnYfzy', '9', 'A', '2025-09-15 22:09:37');
+INSERT INTO `users` (`id`, `nombre`, `apellido`, `email`, `password`, `grado`, `seccion`, `fecha_registro`, `id_padre`) VALUES
+(1, 'Juan', 'Pérez', 'juan.perez@estudiante.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '10', 'A', '2025-09-09 19:58:31', NULL),
+(2, 'María', 'González', 'maria.gonzalez@estudiante.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '11', 'B', '2025-09-09 19:58:31', NULL),
+(3, 'Carlos', 'Rodríguez', 'carlos.rodriguez@estudiante.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '9', 'A', '2025-09-09 19:58:31', NULL),
+(125, 'Albert', 'Casanare', 'alberto.casanare@estudiante.com', '$2y$10$IwbAKythobnwAg5NSQDDbegGldMmnmPdn9y08hst3DqXFejviMAz.', '4', 'B', '2025-09-16 00:55:49', NULL),
+(126, 'Aristobulo', 'Alexander', 'aristobulo.alexcander@estudiante.com', '$2y$10$s8vLQ98LTUWLr6oklhvyRuW0r/k5iUHadI6U0SUYhrIWpILnO1pEu', '7', 'A', '2025-09-16 00:59:15', NULL),
+(130, 'Minecraft', 'Arnoldo', 'betulia.farfan@estudiante.com', '$2y$10$i96wXEEuM03RNaGXg3tyAebcxzuUGmqgPtfUpsNODRCFJabialfi2', '10', 'C', '2025-09-16 01:00:21', NULL);
 
 --
--- Índices para tablas volcadas
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `administradores`
+-- Indexes for table `administradores`
 --
 ALTER TABLE `administradores`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indices de la tabla `cursos`
+-- Indexes for table `cursos`
 --
 ALTER TABLE `cursos`
   ADD PRIMARY KEY (`id`),
@@ -246,7 +254,7 @@ ALTER TABLE `cursos`
   ADD KEY `tipo_id` (`tipo_id`);
 
 --
--- Indices de la tabla `curso_estudiante`
+-- Indexes for table `curso_estudiante`
 --
 ALTER TABLE `curso_estudiante`
   ADD PRIMARY KEY (`id`),
@@ -254,7 +262,7 @@ ALTER TABLE `curso_estudiante`
   ADD KEY `estudiante_id` (`estudiante_id`);
 
 --
--- Indices de la tabla `curso_profesor`
+-- Indexes for table `curso_profesor`
 --
 ALTER TABLE `curso_profesor`
   ADD PRIMARY KEY (`id`),
@@ -263,7 +271,7 @@ ALTER TABLE `curso_profesor`
   ADD KEY `asignado_por_admin_id` (`asignado_por_admin_id`);
 
 --
--- Indices de la tabla `eventos_curso`
+-- Indexes for table `eventos_curso`
 --
 ALTER TABLE `eventos_curso`
   ADD PRIMARY KEY (`id`),
@@ -271,7 +279,7 @@ ALTER TABLE `eventos_curso`
   ADD KEY `creado_por_profesor_id` (`creado_por_profesor_id`);
 
 --
--- Indices de la tabla `notas`
+-- Indexes for table `notas`
 --
 ALTER TABLE `notas`
   ADD PRIMARY KEY (`id`),
@@ -280,14 +288,14 @@ ALTER TABLE `notas`
   ADD KEY `profesor_id` (`profesor_id`);
 
 --
--- Indices de la tabla `padres`
+-- Indexes for table `padres`
 --
 ALTER TABLE `padres`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indices de la tabla `padre_hijo`
+-- Indexes for table `padre_hijo`
 --
 ALTER TABLE `padre_hijo`
   ADD PRIMARY KEY (`id`),
@@ -295,14 +303,14 @@ ALTER TABLE `padre_hijo`
   ADD KEY `hijo_id` (`hijo_id`);
 
 --
--- Indices de la tabla `profesores`
+-- Indexes for table `profesores`
 --
 ALTER TABLE `profesores`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indices de la tabla `tareas`
+-- Indexes for table `tareas`
 --
 ALTER TABLE `tareas`
   ADD PRIMARY KEY (`id`),
@@ -310,114 +318,115 @@ ALTER TABLE `tareas`
   ADD KEY `profesor_id` (`profesor_id`);
 
 --
--- Indices de la tabla `tipos_curso`
+-- Indexes for table `tipos_curso`
 --
 ALTER TABLE `tipos_curso`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
--- Indices de la tabla `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_users_padres` (`id_padre`);
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `administradores`
+-- AUTO_INCREMENT for table `administradores`
 --
 ALTER TABLE `administradores`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `cursos`
+-- AUTO_INCREMENT for table `cursos`
 --
 ALTER TABLE `cursos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `curso_estudiante`
+-- AUTO_INCREMENT for table `curso_estudiante`
 --
 ALTER TABLE `curso_estudiante`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `curso_profesor`
+-- AUTO_INCREMENT for table `curso_profesor`
 --
 ALTER TABLE `curso_profesor`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `eventos_curso`
+-- AUTO_INCREMENT for table `eventos_curso`
 --
 ALTER TABLE `eventos_curso`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `notas`
+-- AUTO_INCREMENT for table `notas`
 --
 ALTER TABLE `notas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `padres`
+-- AUTO_INCREMENT for table `padres`
 --
 ALTER TABLE `padres`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT de la tabla `padre_hijo`
+-- AUTO_INCREMENT for table `padre_hijo`
 --
 ALTER TABLE `padre_hijo`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `profesores`
+-- AUTO_INCREMENT for table `profesores`
 --
 ALTER TABLE `profesores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `tareas`
+-- AUTO_INCREMENT for table `tareas`
 --
 ALTER TABLE `tareas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `tipos_curso`
+-- AUTO_INCREMENT for table `tipos_curso`
 --
 ALTER TABLE `tipos_curso`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;
 
 --
--- Restricciones para tablas volcadas
+-- Constraints for dumped tables
 --
 
 --
--- Filtros para la tabla `cursos`
+-- Constraints for table `cursos`
 --
 ALTER TABLE `cursos`
   ADD CONSTRAINT `cursos_ibfk_1` FOREIGN KEY (`tipo_id`) REFERENCES `tipos_curso` (`id`) ON DELETE SET NULL;
 
 --
--- Filtros para la tabla `curso_estudiante`
+-- Constraints for table `curso_estudiante`
 --
 ALTER TABLE `curso_estudiante`
   ADD CONSTRAINT `curso_estudiante_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `curso_estudiante_ibfk_2` FOREIGN KEY (`estudiante_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `curso_profesor`
+-- Constraints for table `curso_profesor`
 --
 ALTER TABLE `curso_profesor`
   ADD CONSTRAINT `curso_profesor_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
@@ -425,14 +434,14 @@ ALTER TABLE `curso_profesor`
   ADD CONSTRAINT `curso_profesor_ibfk_3` FOREIGN KEY (`asignado_por_admin_id`) REFERENCES `administradores` (`id`) ON DELETE SET NULL;
 
 --
--- Filtros para la tabla `eventos_curso`
+-- Constraints for table `eventos_curso`
 --
 ALTER TABLE `eventos_curso`
   ADD CONSTRAINT `eventos_curso_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `eventos_curso_ibfk_2` FOREIGN KEY (`creado_por_profesor_id`) REFERENCES `profesores` (`id`) ON DELETE SET NULL;
 
 --
--- Filtros para la tabla `notas`
+-- Constraints for table `notas`
 --
 ALTER TABLE `notas`
   ADD CONSTRAINT `notas_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
@@ -440,18 +449,17 @@ ALTER TABLE `notas`
   ADD CONSTRAINT `notas_ibfk_3` FOREIGN KEY (`profesor_id`) REFERENCES `profesores` (`id`) ON DELETE SET NULL;
 
 --
--- Filtros para la tabla `padre_hijo`
+-- Constraints for table `padre_hijo`
 --
 ALTER TABLE `padre_hijo`
   ADD CONSTRAINT `padre_hijo_ibfk_1` FOREIGN KEY (`padre_id`) REFERENCES `padres` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `padre_hijo_ibfk_2` FOREIGN KEY (`hijo_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `tareas`
+-- Constraints for table `users`
 --
-ALTER TABLE `tareas`
-  ADD CONSTRAINT `tareas_ibfk_1` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `tareas_ibfk_2` FOREIGN KEY (`profesor_id`) REFERENCES `profesores` (`id`) ON DELETE CASCADE;
+ALTER TABLE `users`
+  ADD CONSTRAINT `fk_users_padres` FOREIGN KEY (`id_padre`) REFERENCES `padres` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
