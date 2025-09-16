@@ -1,117 +1,112 @@
 @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Outfit", serif;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-family: "Outfit", serif;
+}
+
+:root {
+	--bg: #0e0e10;
+	--panel: #16161a;
+	--muted: #9ca3af;
+	--text: #f3f4f6;
+	--line: #26262b;
+	--accent: #ffffff;
 }
 
 body {
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background: radial-gradient(1200px 800px at 80% -10%, #202024 0%, #121214 45%, #0d0d0f 100%);
+	color: var(--text);
+	scroll-behavior: smooth;
 }
 
-header {
-  background-color: #9b9b9b;
-  color: #000000;
-  padding: 25px;
-  text-align: center;
-  position: relative;
+.hover-glow:hover {
+	box-shadow: 0 10px 30px rgba(255, 255, 255, 0.07), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+	transform: translateY(-2px);
 }
 
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
+.glass {
+	background: rgba(255, 255, 255, 0.04);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 30px;
-  width: 100%;
-  max-width: 1000px;
-  margin-top: 60px;
-  height: 50vh;
+.ring-soft {
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.card {
-  background-color: white;
-  padding: 30px 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  text-decoration: none;
-  color: #333;
-  font-size: 1.3rem;
-  font-weight: bold;
-  transition: transform 0.3s, background-color 0.3s, box-shadow 0.3s;
-  min-height: 140px;
-  display: flex;
-  flex-direction: column; /* Aseguramos que los elementos estén en columna */
-  justify-content: center;
-  align-items: center;
+/* Tarjetas interactivas */
+.card-tile {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
-.card i {
-  font-size: 2.5rem; /* Tamaño del ícono */
-  margin-bottom: 1rem; /* Espacio entre el ícono y el texto */
+.card-tile:hover {
+	border-color: rgba(255, 255, 255, 0.25);
 }
 
-.card:hover {
-  transform: scale(1.025);
-  box-shadow: 5px 5px 10px #888888;
+/* Indicador activo del menú avatar */
+.menu-open .avatar-ring {
+	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
-footer {
-  background-color: #9b9b9b;
-  color: #000000;
-  text-align: center;
-  padding: 15px;
+/* Animación de entrada */
+@keyframes fadeSlideUp {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
-.frase-motivacional {
-  margin-top: 120px;
-  text-align: center;
-  font-size: 1.2rem;
-  color: #444;
-  font-style: italic;
+.animate-in {
+	animation: fadeSlideUp .45s ease both;
 }
 
-/* Logo y menú */
-.logo-menu-container {
-  position: absolute;
-  top: -5px;
-  right: 10px;
+/* Tooltip sutil en logo */
+.tooltip::after {
+	content: attr(data-tip);
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: .4rem;
+	white-space: nowrap;
+	background: #111114;
+	color: #e5e7eb;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: .5rem;
+	font-size: .75rem;
+	padding: .35rem .55rem;
+	opacity: 0;
+	transform: translateY(-4px);
+	pointer-events: none;
+	transition: opacity .2s ease, transform .2s ease;
 }
 
-.logo-derecha {
-  width: 90px;
-  height: auto;
-  cursor: pointer;
+.tooltip:hover::after {
+	opacity: 1;
+	transform: translateY(0);
 }
 
-.menu-desplegable {
-  display: none;
-  position: absolute;
-  top: 70px;
-  right: 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  z-index: 1000;
+/* Separador */
+.divider {
+	height: 1px;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
 }
 
-.menu-desplegable button {
-  background: none;
-  border: none;
-  color: #333;
-  cursor: pointer;
-  font-size: 1rem;
+/* Estado de enfoque accesible */
+.focus-outline:focus-visible {
+	outline: 2px solid #ffffff;
+	outline-offset: 2px;
 }
