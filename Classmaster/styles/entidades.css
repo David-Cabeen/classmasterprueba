@@ -1,26 +1,39 @@
 @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Outfit", serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Outfit", serif;
+}
+
+:root {
+    --bg: #0e0e10;
+    --panel: #16161a;
+    --muted: #9ca3af;
+    --text: #f3f4f6;
+    --line: #26262b;
+    --accent: #ffffff;
 }
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #222;
-    width: 100%;
+        min-height: 100vh;
+        color: var(--text);
+        background: radial-gradient(1200px 800px at 80% -10%, var(--line) 0%, var(--panel) 45%, var(--bg) 100%);
+        width: 100%;
+        scroll-behavior: smooth;
 }
 
 /* Header */
+
 .header {
-    background: #f2f2f2;
+    background: rgba(255,255,255,0.04);
     backdrop-filter: blur(10px);
     padding: 1rem 0;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
+
 
 .header-content {
     max-width: 1200px;
@@ -31,8 +44,9 @@ body {
     padding: 0 2rem;
 }
 
+
 .header h1 {
-    color: #667eea;
+    color: var(--text);
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -43,42 +57,44 @@ body {
     font-size: 2rem;
 }
 
+
 .btn-home {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: #667eea;
-    color: white;
+    background: var(--panel);
+    color: var(--text);
     text-decoration: none;
     border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
     transition: all 0.3s ease;
 }
-
 .btn-home:hover {
-    background: #5a6fd8;
+    background: var(--line);
+    color: var(--accent);
     transform: translateY(-2px);
 }
 
 /* Main Container */
+
 .main-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
 }
 
+
 .page-header {
     text-align: center;
     margin-bottom: 3rem;
-    color: white;
+    color: var(--text);
 }
-
 .page-header h2 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
-
 .page-header p {
     font-size: 1.1rem;
     opacity: 0.9;
@@ -112,18 +128,21 @@ body {
 }
 
 /* Entity Sections */
+
 .entity-section {
-    background: #f2f2f2;
+    background: rgba(255,255,255,0.04);
     border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
     backdrop-filter: blur(10px);
     overflow: hidden;
     margin-bottom: 2rem;
+    border: 1px solid rgba(255,255,255,0.08);
 }
 
+
 .section-header {
-    background: linear-gradient(135deg, #222, #444);
-    color: #f2f2f2;
+    background: linear-gradient(135deg, var(--panel), var(--line));
+    color: var(--text);
     padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -151,47 +170,48 @@ body {
 }
 
 /* Table Container */
+
 .table-container {
     overflow-x: auto;
     max-height: 600px;
     overflow-y: auto;
     text-align: center;
+    background: rgba(255,255,255,0.02);
 }
 
 /* Tables */
+
 .entity-table {
     width: 100%;
     border-collapse: collapse;
+    background: transparent;
 }
-
 .entity-table thead {
-    background: #f8f9fa;
+    background: rgba(255,255,255,0.04);
     position: sticky;
     top: 0;
     z-index: 10;
 }
-
 .entity-table th {
     padding: 1rem;
     font-weight: 600;
-    color: #495057;
-    border-bottom: 2px solid #dee2e6;
+    color: var(--muted);
+    border-bottom: 2px solid rgba(255,255,255,0.08);
     white-space: nowrap;
+    background: rgba(255,255,255,0.02);
 }
-
 .entity-table td {
     padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     vertical-align: middle;
     position: relative;
+    color: var(--text);
 }
-
 .entity-table tbody tr {
     transition: background-color 0.2s ease;
 }
-
 .entity-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: rgba(255,255,255,0.03);
 }
 
 /* Status Badges */
@@ -205,7 +225,6 @@ body {
 .status-badge.active {
     background-color: #6eff90;
 }
-
 .status-badge.inactive {
     background: #f8d7da;
     color: #721c24;
@@ -213,26 +232,27 @@ body {
 }
 
 /* No Data */
+
 .no-data {
     text-align: center;
     padding: 3rem 1rem;
-    color: #6c757d;
+    color: var(--muted);
     font-style: italic;
 }
 
 /* Error Message */
+
 .error-message {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
     padding: 2rem;
-    background: rgba(248, 215, 218, 0.9);
-    color: #721c24;
+    background: rgba(248, 215, 218, 0.12);
+    color: #ffb4b4;
     border-radius: 8px;
     margin: 2rem 0;
 }
-
 .error-message ion-icon {
     font-size: 1.5rem;
 }
@@ -280,14 +300,22 @@ body {
     }
 }
 
+
 .entity-table input {
+    appearance: textfield;
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid #ced4da;
+    outline: transparent;
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 4px;
-    background-color: transparent;
+    background-color: rgba(255,255,255,0.04);
+    color: var(--text);
+    transition: border 0.3s, background-color 0.3s ease;
 }
-
+.entity-table input:focus {
+    border: 1px solid var(--accent);
+    background: rgba(255,255,255,0.08);
+}
 .entity-table button {
     padding: 0.5rem 1rem;
     background-color: #28a745;
@@ -296,4 +324,7 @@ body {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+}
+.entity-table button:hover {
+    background-color: #218838;
 }

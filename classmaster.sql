@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 16, 2025 at 12:47 PM
+-- Generation Time: Sep 17, 2025 at 05:47 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -146,7 +146,8 @@ INSERT INTO `padres` (`id`, `email`, `password`, `nombre`, `apellido`, `telefono
 (2, 'davidcabeen@gmail.com', '$2y$10$zcKf4KGnFu/jqnd/I1tfs.vQSvm2hHBXNtJIEJncQfxkflEqe1e8C', 'David', 'Cabeen', NULL, '2025-09-15 21:57:39'),
 (4, 'sarahmcabeen@gmail.com', '$2y$10$aDKaLANoRTelYQjZfrvFNuBrdQgpKSw5dvIwDkMMG0BWmqRYpNhHq', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:08:55'),
 (5, 'sarahmcaben@gmail.com', '$2y$10$hwCKQQBWE.tkNZFYIITmEOXVd./L5yYIBrbRY91E8xugUq6TjGDAG', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:18:47'),
-(6, 's@gmail.com', '$2y$10$Z0.eSkYqZEMcn0gWcCJoHey3AdJkaPZo/aqNcpti1bRi7Evw0p8ZS', 'a', '', NULL, '2025-09-16 01:19:42');
+(6, 's@gmail.com', '$2y$10$Z0.eSkYqZEMcn0gWcCJoHey3AdJkaPZo/aqNcpti1bRi7Evw0p8ZS', 'a', '', NULL, '2025-09-16 01:19:42'),
+(7, 'roberto.casas@gmail.com', '$2y$10$Z/WVL5qoNUf8n2OSLMu/9Ox8Xjqgj46CDHdUQ8/k2VHb21B5DOLZG', 'Roberto', 'Casas', NULL, '2025-09-17 13:53:46');
 
 -- --------------------------------------------------------
 
@@ -175,6 +176,13 @@ CREATE TABLE `profesores` (
   `materias` varchar(100) DEFAULT NULL,
   `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `profesores`
+--
+
+INSERT INTO `profesores` (`id`, `nombre`, `apellido`, `email`, `password`, `materias`, `fecha_registro`) VALUES
+(3, 'Fernando', 'Correa', 'fernando@icolven.com', '$2y$10$xZECPFtnh2Sijbqs0GJPlOBn6HtFTP8DgNBF5LgZ62AvEuP5vfDCK', 'Educación Física', '2025-09-17 13:57:36');
 
 -- --------------------------------------------------------
 
@@ -230,7 +238,7 @@ INSERT INTO `users` (`id`, `nombre`, `apellido`, `email`, `password`, `grado`, `
 (1, 'Juan', 'Pérez', 'juan.perez@estudiante.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '10', 'A', '2025-09-09 19:58:31', NULL),
 (2, 'María', 'González', 'maria.gonzalez@estudiante.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '11', 'B', '2025-09-09 19:58:31', NULL),
 (3, 'Carlos', 'Rodríguez', 'carlos.rodriguez@estudiante.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '9', 'A', '2025-09-09 19:58:31', NULL),
-(125, 'Albert', 'Casanare', 'alberto.casanare@estudiante.com', '$2y$10$IwbAKythobnwAg5NSQDDbegGldMmnmPdn9y08hst3DqXFejviMAz.', '4', 'B', '2025-09-16 00:55:49', NULL),
+(125, 'Albert', 'Casanare', 'alberto.casanare@estudiante.com', '$2y$10$cYccKFX/cEZNi6LL9EQn7eG0URI7hES/Q1OGziucq9tDkw47dvRZe', '4', 'B', '2025-09-16 00:55:49', NULL),
 (126, 'Aristobulo', 'Alexander', 'aristobulo.alexcander@estudiante.com', '$2y$10$s8vLQ98LTUWLr6oklhvyRuW0r/k5iUHadI6U0SUYhrIWpILnO1pEu', '7', 'A', '2025-09-16 00:59:15', NULL),
 (130, 'Minecraft', 'Arnoldo', 'betulia.farfan@estudiante.com', '$2y$10$i96wXEEuM03RNaGXg3tyAebcxzuUGmqgPtfUpsNODRCFJabialfi2', '10', 'C', '2025-09-16 01:00:21', NULL);
 
@@ -376,7 +384,7 @@ ALTER TABLE `notas`
 -- AUTO_INCREMENT for table `padres`
 --
 ALTER TABLE `padres`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `padre_hijo`
@@ -388,7 +396,7 @@ ALTER TABLE `padre_hijo`
 -- AUTO_INCREMENT for table `profesores`
 --
 ALTER TABLE `profesores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `tareas`

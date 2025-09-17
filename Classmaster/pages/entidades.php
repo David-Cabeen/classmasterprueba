@@ -20,7 +20,7 @@
     <header class="header">
         <div class="header-content">
             <h1><ion-icon name="school-outline"></ion-icon> ClassMaster</h1>
-            <a href="landing.html" class="btn-home">
+            <a href="home.php" class="btn-home">
                 <ion-icon name="home-outline"></ion-icon> Inicio
             </a>
         </div>
