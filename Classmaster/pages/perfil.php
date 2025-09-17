@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="../styles/perfil.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../scripts/perfil.js" defer></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-white/10 selection:text-white bg-gradient-to-br from-[#202024] via-[#121214] to-[#0d0d0f] text-gray-100">
     <!-- Header -->
@@ -41,10 +43,10 @@
         <section class="max-w-2xl mx-auto px-6 py-10 animate-in">
             <div class="glass rounded-2xl p-8 ring-soft shadow-lg">
                 <h2 class="text-2xl font-bold mb-6 text-white/90 flex items-center gap-2">
-                    <svg aria-hidden="true" viewBox="0 0 24 24" class="w-7 h-7 text-white/80"><circle cx="12" cy="8" r="4" fill="currentColor" opacity=".8"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7" fill="currentColor" opacity=".2"/></svg>
+                    <ion-icon name="person"></ion-icon>
                     Información Personal
                 </h2>
-                <div class="flex flex-col sm:flex-row gap-8 items-start mb-8">
+                <div class="flex flex-col sm:flex-row gap-8 items-start">
                     <div class="flex flex-col items-center gap-3 w-full sm:w-auto">
                         <form id="formCambiarFoto" enctype="multipart/form-data" class="flex flex-col items-center gap-2">
                             <label for="profilePicInput" class="cursor-pointer group">
@@ -53,7 +55,7 @@
                                 <div class="text-xs text-white/60 mt-1 group-hover:text-white/80 transition">Editar foto</div>
                             </label>
                             <input type="file" id="profilePicInput" name="profilePic" accept="image/*" class="hidden" />
-                            <button type="submit" class="px-4 py-1.5 rounded-lg bg-blue-500/80 hover:bg-blue-600 text-white font-semibold text-sm transition focus-outline mt-2">Guardar Foto</button>
+                            <button type="submit" class="px-4 py-1.5 rounded-lg bg-blue-500/80 hover:bg-blue-600 text-white font-semibold text-sm transition focus-outline mt-2">Guardar</button>
                             <span id="profilePicMsg" class="text-xs mt-1"></span>
                         </form>
                     </div>
@@ -64,36 +66,68 @@
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
                             <label class="w-32 text-white/60 font-medium">Email:</label>
-                            <span id="email-usuario" class="text-lg font-semibold text-white/90"><?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : 'Sin email'; ?></span>
+                            <span id="email-usuario" class="text-lg font-semibold text-white/90">
+                                <?php
+                                
+                                switch($_SESSION['rol']) {
+                                    case 'estudiante': $db = 'users'; break;
+                                    case 'padre': $db = 'padres'; break;
+                                    case 'profesor': $db = 'profesores'; break;
+                                    case 'administrador': $db = 'administradores'; break;
+                                };
+                                require_once '../php/connection.php';
+
+                                $user_id = $_SESSION['user_id'];
+                                $email = 'No disponible';
+
+                                $stmt = $conn->prepare("SELECT email FROM $db WHERE id = ?");
+                                $stmt->bind_param("i", $user_id);
+                                $stmt->execute();
+                                $stmt->bind_result($email_db);
+                                if ($stmt->fetch()) {
+                                    $email = htmlspecialchars($email_db);
+                                }
+                                $stmt->close();
+
+                                echo $email;
+                                 ?>
+                             </span>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
                             <label class="w-32 text-white/60 font-medium">Rol:</label>
-                            <span id="rol-usuario" class="text-lg font-semibold text-white/90"><?php echo isset($_SESSION['rol']) ? htmlspecialchars($_SESSION['rol']) : 'Sin rol'; ?></span>
+                            <span id="rol-usuario" class="text-lg font-semibold text-white/90"><?php echo isset($_SESSION['rol']) ? ucfirst(strtolower(htmlspecialchars($_SESSION['rol']))) : ''; ?></span>
                         </div>
                     </div>
                 </div>
-                <div class="divider my-8"></div>
+                <div class="divider my-4"></div>
                 <h3 class="text-xl font-semibold mb-4 text-white/80 flex items-center gap-2">
-                    <svg aria-hidden="true" viewBox="0 0 24 24" class="w-6 h-6 text-white/70"><path fill="currentColor" d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-2a6 6 0 1 1-12 0 6 6 0 0 1 12 0zm-6-9a1 1 0 0 1 1 1v1.07A7.001 7.001 0 0 1 19 15a1 1 0 1 1-2 0 5 5 0 1 0-10 0 1 1 0 1 1-2 0 7.001 7.001 0 0 1 6-6.93V7a1 1 0 0 1 2 0v1.07A7.001 7.001 0 0 1 19 15a1 1 0 1 1-2 0 5 5 0 1 0-10 0 1 1 0 1 1-2 0 7.001 7.001 0 0 1 6-6.93V7a1 1 0 0 1 1-1z"/></svg>
+                    <ion-icon name="key"></ion-icon>
                     Cambiar Contraseña
                 </h3>
-                <form id="formCambiarPassword" class="space-y-5">
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                <form action="../php/pass_change.php" method="POST" id="formCambiarPassword" class="space-y-5">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center relative">
                         <label for="currentPassword" class="w-32 text-white/60 font-medium">Contraseña actual:</label>
-                        <input type="password" id="currentPassword" name="currentPassword" class="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30" required autocomplete="current-password">
+                        <div class="flex-1 relative">
+                            <input type="password" id="currentPassword" name="currentPassword" class="w-full px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30 password-input" required>
+                            <ion-icon class="eye-icon absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-xl text-white/60" name="eye-off-outline"></ion-icon>
+                        </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center relative">
                         <label for="newPassword" class="w-32 text-white/60 font-medium">Nueva contraseña:</label>
-                        <input type="password" id="newPassword" name="newPassword" class="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30" required autocomplete="new-password">
+                        <div class="flex-1 relative">
+                            <input type="password" id="newPassword" name="newPassword" class="w-full px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30 password-input" required autocomplete="new-password">
+                            <ion-icon class="eye-icon absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-xl text-white/60" name="eye-off-outline"></ion-icon>
+                        </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center relative">
                         <label for="confirmPassword" class="w-32 text-white/60 font-medium">Confirmar nueva:</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" class="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30" required autocomplete="new-password">
+                        <div class="flex-1 relative">
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="w-full px-4 py-2 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/30 password-input" required autocomplete="new-password">
+                            <ion-icon class="eye-icon absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-xl text-white/60" name="eye-off-outline"></ion-icon>
+                        </div>
                     </div>
                     <div>
-                        <button type="submit" class="px-6 py-2 rounded-lg bg-blue-500/80 hover:bg-blue-600 text-white font-semibold transition focus-outline">Guardar Contraseña</button>
-                        <span id="passwordChangeMsg" class="ml-4 text-sm"></span>
-                        <button id="cerrarSesionBtn" class="px-6 py-2 rounded-lg bg-red-500/80 hover:bg-red-600 text-white font-semibold transition focus-outline mt-3">Cerrar Sesión</button><br>
+                        <button id='passBtn' type="submit" class="px-6 py-2 rounded-lg bg-blue-500/80 hover:bg-blue-600 text-white font-semibold transition focus-outline">Guardar Contraseña</button>
                     </div>
                 </form>
             </div>
@@ -107,42 +141,5 @@
             ©️ 2025 · ClassMaster — todos los derechos reservados
         </div>
     </footer>
-
-    <style>
-    .glass {
-        background: rgba(255, 255, 255, 0.04);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .ring-soft {
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-    }
-    .hover-glow:hover {
-        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.07), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-        transform: translateY(-2px);
-    }
-    .divider {
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-    }
-    .focus-outline:focus-visible {
-        outline: 2px solid #ffffff;
-        outline-offset: 2px;
-    }
-    .animate-in {
-        animation: fadeSlideUp .45s ease both;
-    }
-    @keyframes fadeSlideUp {
-        from {
-            opacity: 0;
-            transform: translateY(8px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    </style>
 </body>
 </html>

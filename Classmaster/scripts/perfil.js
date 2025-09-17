@@ -1,82 +1,81 @@
-function toggleTheme() {
-            const body = document.body;
-            const button = document.querySelector('.theme-toggle');
-            
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.removeAttribute('data-theme');
-                button.textContent = '🌙 Cambiar Tema';
-                localStorage.setItem('theme', 'light');
+document.addEventListener("DOMContentLoaded", () => {
+    const passwordInputs = document.querySelectorAll('.password-input');
+    const eyeIcons = document.querySelectorAll('.eye-icon');
+    eyeIcons.forEach((icon, idx) => {
+        icon.addEventListener('click', () => {
+            if (passwordInputs[idx].type === 'password') {
+                passwordInputs[idx].type = 'text';
+                icon.name = 'eye-outline';
             } else {
-                body.setAttribute('data-theme', 'dark');
-                button.textContent = '☀️ Cambiar Tema';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        // Load saved theme on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = localStorage.getItem('theme');
-            const button = document.querySelector('.theme-toggle');
-            
-            if (savedTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                button.textContent = '☀️ Cambiar Tema';
+                passwordInputs[idx].type = 'password';
+                icon.name = 'eye-off-outline';
             }
         });
+    });
+});
 
-        // Photo change functionality
-        function changePhoto() {
-            document.getElementById('photoInput').click();
+function toast(msg = "Hecho", type = "success") {
+    const el = document.createElement("div");
+    el.textContent = msg;
+    el.setAttribute("role", "status");
+    el.className = `fixed inset-x-0 mx-auto bottom-6 w-fit max-w-[90%] text-sm md:text-base px-4 py-2 rounded-lg glass ring-soft shadow-2xl ${type === "error" ? "bg-red-500" : "bg-green-500"}`;
+    document.body.appendChild(el);
+    setTimeout(() => {
+        el.style.transition = "transform .25s ease, opacity .25s ease";
+        el.style.transform = "translateY(8px)";
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 250);
+    }, 2500);
+}
+
+const form = document.getElementById('formCambiarPassword');
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if(form.newPassword.value === form.confirmPassword.value && checkPasswordValidity(form.newPassword.value) === ""){
+        const result = await pass_change(form.currentPassword.value, form.newPassword.value);
+        if (result.success) {
+            toast(result.message);
+
+        } else {
+            toast(result.error, "error");
         }
-
-        function handlePhotoChange(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('profilePhoto').src = e.target.result;
-                    showSuccessMessage();
-                };
-                reader.readAsDataURL(file);
-            }
+    }
+    else {
+        if(checkPasswordValidity(form.newPassword.value) !== ""){
+            toast(checkPasswordValidity(form.newPassword.value), "error");
         }
+        else {
+            toast("Las contraseñas no coinciden.", "error");
+        };
+    };
+});
 
-        // Form submission handlers
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Simulate saving data
-            showSuccessMessage();
+const checkPasswordValidity = (password) => {
+    if (password.length < 8) {
+        return "La nueva contraseña debe tener por lo menos 8 caracteres.";
+    }
+    if (!/[a-z]/.test(password)) {
+        return "La nueva contraseña debe incluir por lo menos una letra minúscula.";
+    }
+    if (!/[A-Z]/.test(password)) {
+        return "La nueva contraseña debe incluir por lo menos una letra mayúscula.";
+    }
+    if (!/\d/.test(password)) {
+        return "La nueva contraseña debe incluir por lo menos un dígito.";
+    }
+    return "";
+};
+
+async function pass_change(currentPassword, newPassword) {
+    try {
+        const response = await fetch('../php/pass_change.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `currentPassword=${encodeURIComponent(currentPassword)}&newPassword=${encodeURIComponent(newPassword)}`
         });
-
-        document.getElementById('passwordForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (newPassword !== confirmPassword) {
-                alert('Las contraseñas no coinciden. Por favor, verifica e intenta nuevamente.');
-                return;
-            }
-            
-            if (newPassword.length < 6) {
-                alert('La nueva contraseña debe tener al menos 6 caracteres.');
-                return;
-            }
-            
-            // Simulate password change
-            showSuccessMessage();
-            
-            // Clear password fields
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-        });
-
-        function showSuccessMessage() {
-            const message = document.getElementById('successMessage');
-            message.style.display = 'block';
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 3000);
-        }
+        return await response.json();
+    } catch (err) {
+        return { success: false, error: "No se pudo conectar al servidor." };
+    };
+};

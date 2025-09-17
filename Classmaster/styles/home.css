@@ -20,7 +20,7 @@ body {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
-	background: radial-gradient(1200px 800px at 80% -10%, #202024 0%, #121214 45%, #0d0d0f 100%);
+	background: radial-gradient(1200px 800px at 80% -10%, var(--line) 0%, var(--panel) 45%, var(--bg) 100%);
 	color: var(--text);
 	scroll-behavior: smooth;
 }

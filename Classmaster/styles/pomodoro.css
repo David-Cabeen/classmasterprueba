@@ -1,32 +1,39 @@
 @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
 
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-family: "Outfit", serif;
+}
+
 :root {
     --circleAngle: 100%;
-    --background-color: #141414;
-    --text-color: #eee;
     --primary-color: #ff6347;
+	--bg: #0e0e10;
+	--panel: #16161a;
+	--muted: #9ca3af;
+	--text: #f3f4f6;
+	--line: #26262b;
+	--accent: #ffffff;
 }
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Outfit", serif;
-    user-select: none;
-    color: var(--text-color);
-}
+
 body {
-    display: flex;
-    flex-direction: column;
+	display: flex;
+	flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: var(--background-color);
+	justify-content: center;
+	min-height: 100vh;
+	background: radial-gradient(1200px 800px at 80% -10%, var(--line) 0%, var(--panel) 45%, var(--bg) 100%);
+	color: var(--text);
+	scroll-behavior: smooth;
 }
+
 .circle {
     width: min(200px, 30vw);
     aspect-ratio: 1;
     border-radius: 50%;
-    background-color: var(--background-color);
+    background-color: var(--bg);
     margin-bottom: min(3%, 3dvh);
     position: relative;
 }
@@ -70,12 +77,12 @@ body {
 .controls .active {
     rotate: -180deg;
     left: 12.5%;
-    background-color: var(--text-color);
-    color: var(--background-color);
+    background-color: var(--text);
+    color: var(--bg);
 }
 .controls ion-icon:hover {
-    background-color: var(--text-color);
-    color: var(--background-color);
+    background-color: var(--text);
+    color: var(--bg);
 }
 .hidden-controls {
     position: absolute;
@@ -98,7 +105,7 @@ body {
     position: relative;
     width: min(2rem, 7vw);
     translate: -500%;
-    border: solid 3px var(--text-color);
+    border: solid 3px var(--text);
     border-radius: 50%;
     aspect-ratio: 1;
     background-color: transparent;
@@ -122,12 +129,12 @@ body {
 }
 input[type="number"] {
     text-align: center;
-    cursor: ns-resize;
+    cursor:all-scroll;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    color: var(--text);
 }
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none;
-}
+
 /* Hacer que el hidden-controls crezca para hacer que se mueva con el controls-toggle*/
 .deployed {
     width: min(180px, 26vw) !important;
