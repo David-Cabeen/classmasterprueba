@@ -22,7 +22,7 @@
         if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
         response(false, $stmt->error);
     }
-    if ($action === 'create' && $type === 'padre') {
+        if ($action === 'create' && $type === 'acudiente') {
         $nombre = $_POST['nombre'] ?? '';
         $apellido = $_POST['apellido'] ?? '';
         $email = $_POST['email'] ?? '';
@@ -30,7 +30,7 @@
         $password = $_POST['password'] ?? '';
         if (!$nombre || !$apellido || !$email || !$password) response(false, 'Faltan campos obligatorios');
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO padres (nombre, apellido, email, telefono, password, fecha_registro) VALUES (?, ?, ?, ?, ?, NOW())");
+            $stmt = $conn->prepare("INSERT INTO acudientes (nombre, apellido, email, telefono, password, fecha_registro) VALUES (?, ?, ?, ?, ?, NOW())");
         $stmt->bind_param("sssss", $nombre, $apellido, $email, $telefono, $hash);
         if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
         response(false, $stmt->error);
@@ -61,7 +61,7 @@
             $types .= 's';
         }
         if (!$set) response(false, 'Nada que actualizar');
-        $table = $type === 'user' ? 'users' : 'padres';
+            $table = $type === 'user' ? 'users' : 'acudientes';
         $sql = "UPDATE $table SET ".implode(',', $set)." WHERE id = ?";
         $params[] = $id;
         $types .= 'i';
@@ -72,7 +72,7 @@
     }
     if ($action === 'delete' && $type && isset($_POST['id'])) {
         $id = $_POST['id'];
-        $table = $type === 'user' ? 'users' : 'padres';
+            $table = $type === 'user' ? 'users' : 'acudientes';
         $stmt = $conn->prepare("DELETE FROM $table WHERE id = ?");
         $stmt->bind_param('i', $id);
         if ($stmt->execute()) response(true);

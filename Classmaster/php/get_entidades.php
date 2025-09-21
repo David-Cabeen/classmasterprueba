@@ -12,14 +12,14 @@
         }
     }
 
-    // Obtener padres (acudientes)
-    $sql_padres = "SELECT id, email, nombre, apellido, telefono, fecha_registro FROM padres ORDER BY id";
-    $result_padres = $conn->query($sql_padres);
-    $padres = [];
+    // Obtener acudientes
+    $sql_acudientes = "SELECT id, email, nombre, apellido, telefono, fecha_registro FROM acudientes ORDER BY id";
+    $result_acudientes = $conn->query($sql_acudientes);
+    $acudientes = [];
 
-    if ($result_padres && $result_padres->num_rows > 0) {
-        while($row = $result_padres->fetch_assoc()) {
-            $padres[] = $row;
+    if ($result_acudientes && $result_acudientes->num_rows > 0) {
+        while($row = $result_acudientes->fetch_assoc()) {
+            $acudientes[] = $row;
         }
     }
 
@@ -40,7 +40,7 @@
     echo json_encode([
         'success' => true,
         'users' => $users,
-        'padres' => $padres,
+        'acudientes' => $acudientes,
         'teachers' => $teachers
     ]);
 ?>

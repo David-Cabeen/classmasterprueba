@@ -6,7 +6,14 @@
         $currentPassword = $_POST['currentPassword'];
         $newPassword = $_POST['newPassword'];
 
-        $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
+        switch($_SESSION['rol']) {
+            case 'estudiante': $db = 'users'; break;
+            case 'acudiente': $db = 'acudientes'; break;
+            case 'profesor': $db = 'profesores'; break;
+            case 'administrador': $db = 'administradores'; break;
+        };
+
+        $stmt = $conn->prepare("SELECT password FROM $db WHERE id = ?");
         $stmt->bind_param("i", $_SESSION['user_id']);
         $stmt->execute();
         $stmt->bind_result($hashedPassword);
@@ -21,13 +28,6 @@
 
         // Hashea la nueva contraseña
         $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-
-        switch($_SESSION['rol']) {
-            case 'estudiante': $db = 'users'; break;
-            case 'padre': $db = 'padres'; break;
-            case 'profesor': $db = 'profesores'; break;
-            case 'administrador': $db = 'administradores'; break;
-        };
 
         // Actualiza la contraseña en la base de datos
         $stmt = $conn->prepare("UPDATE $db SET password = ? WHERE id = ?");

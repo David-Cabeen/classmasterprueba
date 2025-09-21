@@ -29,7 +29,7 @@
     <main class="main-container">
         <div class="page-header">
             <h2>Listado de Entidades del Sistema</h2>
-            <p>Vista general de usuarios y padres registrados en la plataforma</p>
+            <p>Vista general de usuarios y acudientes registrados en la plataforma</p>
         </div>
 
         <div class="loading" id="loading">
@@ -65,11 +65,11 @@
                 </div>
             </section>
 
-            <!-- Sección de Padres (Acudientes) -->
+            <!-- Sección de Acudientes -->
             <section class="entity-section">
                 <div class="section-header">
                     <h3><ion-icon name="person-add-outline"></ion-icon>Acudientes</h3>
-                    <span class="count-badge" id="padresCount">0</span>
+                    <span class="count-badge" id="acudientesCount">0</span>
                 </div>
                 <div class="table-container">
                     <table class="entity-table">
@@ -83,7 +83,7 @@
                                 <th>Fecha Registro</th>
                             </tr>
                         </thead>
-                        <tbody id="padresTable">
+                        <tbody id="acudientesTable">
                             <!-- Los datos se cargarán de la BBDD -->
                         </tbody>
                     </table>

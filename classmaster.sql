@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 17, 2025 at 05:47 PM
+-- Generation Time: Sep 20, 2025 at 10:11 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -20,6 +20,38 @@ SET time_zone = "+00:00";
 --
 -- Database: `classmaster`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `acudientes`
+--
+
+CREATE TABLE `acudientes` (
+  `id` int(11) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `acudientes`
+--
+
+INSERT INTO `acudientes` (`id`, `email`, `password`, `nombre`, `apellido`, `telefono`, `fecha_registro`) VALUES
+(1, 'jerovilla@gmail.com', '$2y$10$ENbGcY5Gu.jCJl8P029mOekFbSE9Yx2I1vm1SmEJabFRaDfXbY4pW', 'Jeronimo', 'Villa', NULL, '2025-09-15 21:54:35'),
+(2, 'davidcabeen@gmail.com', '$2y$10$zcKf4KGnFu/jqnd/I1tfs.vQSvm2hHBXNtJIEJncQfxkflEqe1e8C', 'David', 'Cabeen', NULL, '2025-09-15 21:57:39'),
+(4, 'sarahmcabeen@gmail.com', '$2y$10$aDKaLANoRTelYQjZfrvFNuBrdQgpKSw5dvIwDkMMG0BWmqRYpNhHq', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:08:55'),
+(5, 'sarahmcaben@gmail.com', '$2y$10$hwCKQQBWE.tkNZFYIITmEOXVd./L5yYIBrbRY91E8xugUq6TjGDAG', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:18:47'),
+(6, 's@gmail.com', '$2y$10$Z0.eSkYqZEMcn0gWcCJoHey3AdJkaPZo/aqNcpti1bRi7Evw0p8ZS', 'a', '', NULL, '2025-09-16 01:19:42'),
+(7, 'roberto.casas@gmail.com', '$2y$10$Z/WVL5qoNUf8n2OSLMu/9Ox8Xjqgj46CDHdUQ8/k2VHb21B5DOLZG', 'Roberto', 'Casas', NULL, '2025-09-17 13:53:46'),
+(8, 'paulinavalderrama@gmail.com', '$2y$10$pXbkhF4.uu0KKVJY9UB3AOsYwPOZGlkRpikTpme3oz65onRWPLpcu', 'Paulina', 'Valderrama', NULL, '2025-09-18 21:48:15'),
+(9, 'marcos.vidal@gmail.com', '$2y$10$o6bmJVJhR8juALCzOlnrgO2QKrj4wEXa5RhBJW7zpyxq5pCECzZbi', 'Marcos', 'Vidal', NULL, '2025-09-19 20:48:19'),
+(10, 'adam.cabeen@gmail.com', '$2y$10$zmJGeT8omHdKqcB3vTKDQuHxRREzyUiUC56yzWi1foAFOeqiCu3rq', 'Adam', 'Cabeen', NULL, '2025-09-19 21:38:13'),
+(11, 'andresito@gmail.com', '$2y$10$1Nr9ln9OJJX/U8zt0u0myuAnumPqw3n5nZb8ottWtvZBIZ2C9vYa6', 'Andres', 'Cepeda', NULL, '2025-09-20 01:51:16');
 
 -- --------------------------------------------------------
 
@@ -87,6 +119,21 @@ CREATE TABLE `curso_profesor` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `eventos`
+--
+
+CREATE TABLE `eventos` (
+  `id` int(11) NOT NULL,
+  `titulo` varchar(200) NOT NULL,
+  `descripcion` text NOT NULL,
+  `prioridad` enum('normal','importante','urgente') NOT NULL,
+  `fecha` date NOT NULL,
+  `id_usuario` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `eventos_curso`
 --
 
@@ -120,34 +167,6 @@ CREATE TABLE `notas` (
   `actualizado_por` int(11) DEFAULT NULL,
   `fecha_actualizacion` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `padres`
---
-
-CREATE TABLE `padres` (
-  `id` int(11) NOT NULL,
-  `email` varchar(150) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
-  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `padres`
---
-
-INSERT INTO `padres` (`id`, `email`, `password`, `nombre`, `apellido`, `telefono`, `fecha_registro`) VALUES
-(1, 'jerovilla@gmail.com', '$2y$10$ENbGcY5Gu.jCJl8P029mOekFbSE9Yx2I1vm1SmEJabFRaDfXbY4pW', 'Jeronimo', 'Villa', NULL, '2025-09-15 21:54:35'),
-(2, 'davidcabeen@gmail.com', '$2y$10$zcKf4KGnFu/jqnd/I1tfs.vQSvm2hHBXNtJIEJncQfxkflEqe1e8C', 'David', 'Cabeen', NULL, '2025-09-15 21:57:39'),
-(4, 'sarahmcabeen@gmail.com', '$2y$10$aDKaLANoRTelYQjZfrvFNuBrdQgpKSw5dvIwDkMMG0BWmqRYpNhHq', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:08:55'),
-(5, 'sarahmcaben@gmail.com', '$2y$10$hwCKQQBWE.tkNZFYIITmEOXVd./L5yYIBrbRY91E8xugUq6TjGDAG', 'Sarah', 'Cabeen', NULL, '2025-09-16 01:18:47'),
-(6, 's@gmail.com', '$2y$10$Z0.eSkYqZEMcn0gWcCJoHey3AdJkaPZo/aqNcpti1bRi7Evw0p8ZS', 'a', '', NULL, '2025-09-16 01:19:42'),
-(7, 'roberto.casas@gmail.com', '$2y$10$Z/WVL5qoNUf8n2OSLMu/9Ox8Xjqgj46CDHdUQ8/k2VHb21B5DOLZG', 'Roberto', 'Casas', NULL, '2025-09-17 13:53:46');
 
 -- --------------------------------------------------------
 
@@ -240,11 +259,19 @@ INSERT INTO `users` (`id`, `nombre`, `apellido`, `email`, `password`, `grado`, `
 (3, 'Carlos', 'Rodríguez', 'carlos.rodriguez@estudiante.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '9', 'A', '2025-09-09 19:58:31', NULL),
 (125, 'Albert', 'Casanare', 'alberto.casanare@estudiante.com', '$2y$10$cYccKFX/cEZNi6LL9EQn7eG0URI7hES/Q1OGziucq9tDkw47dvRZe', '4', 'B', '2025-09-16 00:55:49', NULL),
 (126, 'Aristobulo', 'Alexander', 'aristobulo.alexcander@estudiante.com', '$2y$10$s8vLQ98LTUWLr6oklhvyRuW0r/k5iUHadI6U0SUYhrIWpILnO1pEu', '7', 'A', '2025-09-16 00:59:15', NULL),
-(130, 'Minecraft', 'Arnoldo', 'betulia.farfan@estudiante.com', '$2y$10$i96wXEEuM03RNaGXg3tyAebcxzuUGmqgPtfUpsNODRCFJabialfi2', '10', 'C', '2025-09-16 01:00:21', NULL);
+(130, 'Minecraft', 'Arnoldo', 'betulia.farfan@estudiante.com', '$2y$10$i96wXEEuM03RNaGXg3tyAebcxzuUGmqgPtfUpsNODRCFJabialfi2', '10', 'C', '2025-09-16 01:00:21', NULL),
+(131, 'Mario', 'Cabeen', 'mario.cabeen@estudiante.com', '$2y$10$zFjspR.IxCZXBCWqa.ZpduaNMxfmwZ2tI2fUUclIZO2pWK0Z4b0m.', '1', 'C', '2025-09-18 22:01:07', NULL);
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `acudientes`
+--
+ALTER TABLE `acudientes`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indexes for table `administradores`
@@ -279,6 +306,13 @@ ALTER TABLE `curso_profesor`
   ADD KEY `asignado_por_admin_id` (`asignado_por_admin_id`);
 
 --
+-- Indexes for table `eventos`
+--
+ALTER TABLE `eventos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_eventos_users` (`id_usuario`);
+
+--
 -- Indexes for table `eventos_curso`
 --
 ALTER TABLE `eventos_curso`
@@ -294,13 +328,6 @@ ALTER TABLE `notas`
   ADD KEY `curso_id` (`curso_id`),
   ADD KEY `estudiante_id` (`estudiante_id`),
   ADD KEY `profesor_id` (`profesor_id`);
-
---
--- Indexes for table `padres`
---
-ALTER TABLE `padres`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indexes for table `padre_hijo`
@@ -345,6 +372,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `acudientes`
+--
+ALTER TABLE `acudientes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `administradores`
 --
 ALTER TABLE `administradores`
@@ -369,6 +402,12 @@ ALTER TABLE `curso_profesor`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `eventos`
+--
+ALTER TABLE `eventos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `eventos_curso`
 --
 ALTER TABLE `eventos_curso`
@@ -379,12 +418,6 @@ ALTER TABLE `eventos_curso`
 --
 ALTER TABLE `notas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `padres`
---
-ALTER TABLE `padres`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `padre_hijo`
@@ -414,7 +447,7 @@ ALTER TABLE `tipos_curso`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
 
 --
 -- Constraints for dumped tables
@@ -442,6 +475,12 @@ ALTER TABLE `curso_profesor`
   ADD CONSTRAINT `curso_profesor_ibfk_3` FOREIGN KEY (`asignado_por_admin_id`) REFERENCES `administradores` (`id`) ON DELETE SET NULL;
 
 --
+-- Constraints for table `eventos`
+--
+ALTER TABLE `eventos`
+  ADD CONSTRAINT `fk_eventos_users` FOREIGN KEY (`id_usuario`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `eventos_curso`
 --
 ALTER TABLE `eventos_curso`
@@ -460,14 +499,14 @@ ALTER TABLE `notas`
 -- Constraints for table `padre_hijo`
 --
 ALTER TABLE `padre_hijo`
-  ADD CONSTRAINT `padre_hijo_ibfk_1` FOREIGN KEY (`padre_id`) REFERENCES `padres` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `padre_hijo_ibfk_1` FOREIGN KEY (`padre_id`) REFERENCES `acudientes` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `padre_hijo_ibfk_2` FOREIGN KEY (`hijo_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `users`
 --
 ALTER TABLE `users`
-  ADD CONSTRAINT `fk_users_padres` FOREIGN KEY (`id_padre`) REFERENCES `padres` (`id`);
+  ADD CONSTRAINT `fk_users_padres` FOREIGN KEY (`id_padre`) REFERENCES `acudientes` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

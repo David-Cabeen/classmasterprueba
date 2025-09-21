@@ -14,7 +14,7 @@
     <title>Perfil de Usuario</title>
     <link rel="stylesheet" href="../styles/perfil.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../scripts/perfil.js" defer></script>
+    <script type="module" src="../scripts/perfil.js" defer></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
@@ -71,7 +71,7 @@
                                 
                                 switch($_SESSION['rol']) {
                                     case 'estudiante': $db = 'users'; break;
-                                    case 'padre': $db = 'padres'; break;
+                                    case 'acudiente': $db = 'acudientes'; break;
                                     case 'profesor': $db = 'profesores'; break;
                                     case 'administrador': $db = 'administradores'; break;
                                 };

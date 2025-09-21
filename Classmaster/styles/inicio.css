@@ -1,22 +1,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Outfit", serif;
-  user-select: none;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-family: "Outfit", serif;
+}
+
+:root {
+	--bg: #0e0e10;
+	--panel: #16161a;
+	--muted: #9ca3af;
+	--text: #f3f4f6;
+	--line: #26262b;
+	--accent: #ffffff;
 }
 
 body {
-  width: 100%;
-  height: 100vh;
-  display: flex;
+	display: flex;
+	flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f0f4f3;
-  color: rgb(20, 20, 20);
-  overflow: hidden;
+	min-height: 100vh;
+  background: radial-gradient(1200px 800px at 80% -10%, #23233a 0%, #181824 45%, #0e0e10 100%);
+	color: var(--text);
+	scroll-behavior: smooth;
 }
 
 .container {
@@ -24,10 +32,11 @@ body {
   height: 500px;
   display: flex;
   position: relative;
-  background-color: white;
+  background: linear-gradient(var(--panel) 30%, var(--bg) 100%);
   border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
+  border: 2px solid var(--line);
+  box-shadow: inset 0 0 10px #000;
 }
 
 .container-form {
@@ -68,16 +77,32 @@ body {
   align-items: center;
   gap: 8px;
   padding: 0 15px;
-  background-color: #eeeeee;
-  transition: border .3s;
+  background-color: transparent;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  transition: border .2s, box-shadow .2s;
 }
 
-.container-input input, #opciones {
+.sign-in button, .sign-up button {
+    border: 2px solid var(--panel);
+}
+
+.container-input:has(:focus) {
+  border: 1px solid var(--text);
+}
+
+.container-input:hover, .container-input:has(:focus) {
+  box-shadow: #23233a 0 0 10px;
+}
+
+.container-input input {
   border: none;
   outline: none;
   width: 100%;
   height: 100%;
   background-color: inherit;
+  color: var(--text);
+  appearance: textfield;
 }
 
 .container-form a {
@@ -94,7 +119,9 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  color: var(--text);
   margin-top: 10px;
+  background-color: transparent;
 	transition: scale 0.3s, color 0.3s, background-color 0.3s;
 }
 
@@ -122,10 +149,10 @@ body {
   display: flex;
   align-items: center;
   transform: translateX(100%);
-  background-color: #7a7a7a;
+  background-color: var(--line);
   overflow: hidden;
-  transition: transform 0.5s ease-in-out, border-radius 0.5s ease-in-out;
-  border-radius: 50% 0 0 50%;
+  box-shadow: -5px 0 10px var(--bg);
+  transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
 }
 
 .container-welcome .welcome {
@@ -139,9 +166,8 @@ body {
 }
 
 .container.toggle .container-welcome {
-  background-color: #7a7a7a;
-  border-radius: 0 50% 50% 0;
   transform: translateX(0);
+  box-shadow: 5px 0 15px var(--bg);
 }
 
 .welcome-sign-in {
@@ -158,14 +184,15 @@ body {
 }
 
 .container-welcome .button {
-  border: 2px solid rgb(20, 20, 20);
+  border: 2px solid var(--panel);
+  color: var(--text);
   background-color: transparent;
   transition: background-color 0.3s, color 0.3s, scale 0.3s;
 }
 
 .container-welcome .button:hover {
-  background-color: rgb(20, 20, 20);
-  color: #f0f4f3;
+  background-color: var(--panel);
+  color: var(--text);
   scale: 1.05;
 }
 
@@ -177,25 +204,22 @@ body {
   transform: translateX(-100%);
 }
 
-select#opciones option:disabled {
-  color: rgb(120, 120, 120);
-}
-
 .sign-in .button:hover, .sign-up .button:hover {
 	scale: 1.05;
-	color: rgb(239, 239, 239);
-	background-color: rgb(20, 20, 20);
+	color: var(--bg);
+	background-color: var(--accent);
 }
 
 .sign-in a {
 	text-decoration: none;
 	position: relative;
+  color: var(--text);
 }
 
 .sign-in a::before {
 	content: "";
 	position: absolute;
-	background-color: rgb(20, 20, 20);
+	background-color: var(--accent);
 	width: 0%;
 	height: 7%;
 	bottom: 0;
@@ -207,71 +231,6 @@ select#opciones option:disabled {
 	width: 91%;
 }
 
-#feedback-window {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 200;
-  background-color: #f0f4f3;
-  position: absolute;
-  box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
-  border-radius: 5px;
-  top: .5rem;
-  right: -20rem;
-  width: 21%;
-  height: 16%;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: right 0.3s ease-in-out;
-}
-
-#feedback-close{
-  color: #7a7a7a;
-  scale: 1.8; 
-  padding: .5rem;
-  position: absolute;
-  top: .25rem;
-  right: .5rem;
-  transition: transform 0.2s, color 0.2s;
-}
-
-#feedback-window h3 {
-  position: absolute;
-  top: 0;
-  background-color: #c9cccb;
-  width: 100%;
-  height: 2.5rem;;
-}
-
-#feedback-window span {
-  position: absolute;
-  top: .5rem;
-  left: .3rem;
-}
-
-#overlay {
-  display: none;
-  opacity: 0;
-  height: 100vh;
-  width: 100%;
-  position: fixed;
-  z-index: 10; 
-  background-color: rgba(0, 0, 0, 0.25);
-  transition: opacity 0.3s ease-in-out;
-}
-
-#feedback {
-  color: #e84f4f;
-  margin: .5rem;
-  translate: 0 30%;
-}
-
-#feedback-close:hover {
-  cursor: pointer;
-  color: #e84f4f;
-  transform: scale(1.1);
-}
-
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -280,6 +239,29 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .sign-up p {
   font-size: 14px;
-  color: #e84f4f;
+  color: #ef4444;
   text-align: center;
 }
+
+.toast {
+  all: initial;
+  font-family: inherit;
+  position: fixed;
+  margin: 0 auto;
+  bottom: 1.5rem;
+  z-index: 9999;
+  min-width: 120px;
+  max-width: 90vw;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  color: #fff;
+  background: rgba(30, 41, 59, 0.95);
+  font-size: 1rem;
+  text-align: center;
+  pointer-events: auto;
+  opacity: 1;
+  transition: transform .25s, opacity .25s;
+}
+.toast.bg-red-500 { background: #ef4444 !important; color: #fff !important; }
+.toast.bg-green-500 { background: #22c55e !important; color: #fff !important; }

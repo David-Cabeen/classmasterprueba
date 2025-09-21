@@ -1,3 +1,5 @@
+import { toast } from "./components.js";
+
 const container = document.querySelector(".container");
 const btnsignin = document.getElementById("btn-sign-in");
 const btnsignup = document.getElementById("btn-sign-up");
@@ -5,8 +7,6 @@ const passwords = document.querySelectorAll(".password");
 const icons = document.querySelectorAll(".eye-icon");
 const signin = document.querySelector(".sign-in");
 const signup = document.querySelector(".sign-up");
-const feedback = document.getElementById("feedback");
-const feedbackWindow = document.getElementById("feedback-window");
 const overlay = document.getElementById("overlay");
 const emailInput = document.getElementById("email");
 const numberInput = document.getElementById("number");
@@ -59,13 +59,7 @@ const checkEmailValidity = (email) => {
 signup.addEventListener("submit", async (e) => {
     e.preventDefault();
     if(!emailInput.value || !passwords[1].value){
-        feedbackWindow.style.display = "flex";
-        overlay.style.display = "block";
-        setTimeout(() => {
-            overlay.style.opacity = 1; 
-            feedbackWindow.style.right = "0.5rem"
-        }, 1);   
-        feedback.textContent = "Por favor, completa todos los campos.";
+        toast("Todos los campos obligatorios deben estar completos.", "error");
     }
     else {
         const emailError = checkEmailValidity(emailInput.value);
@@ -75,69 +69,55 @@ signup.addEventListener("submit", async (e) => {
             // Enviar datos al servidor
             const result = await registerStudent(emailInput.value, passwords[1].value);
             if (result.success) {
-                alert(result.message);
-                window.location.assign("home.php");
-            } else {
-                feedbackWindow.style.display = "flex";
-                overlay.style.display = "block";
+                toast(result.message, "success");
                 setTimeout(() => {
-                    overlay.style.opacity = 1; 
-                    feedbackWindow.style.right = "0.5rem"
-                }, 1);   
-                feedback.textContent = result.error;
-            }
+                    window.location.assign("home.php");
+                }, 1000);
+            } else {
+                toast(result.error, "error");
+            };
         }
         else {
-            feedbackWindow.style.display = "flex";
-            overlay.style.display = "block";
-            setTimeout(() => {
-                overlay.style.opacity = 1; 
-                feedbackWindow.style.right = "0.5rem"
-            }, 1);   
-            feedback.textContent = `${emailError}${emailError && passwordError ? '\n' : ''}${passwordError}`;
-        }
-    }
+            toast(`${emailError}${emailError && passwordError ? '\n' : ''}${passwordError}`, "error");
+        };
+    };
 });
 
 signin.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const idInput = document.getElementById("id");
-    const passwordInput = document.getElementById("password");
-    const result = await checkAccount(idInput.value, passwordInput.value);
+    const idInput = document.getElementById("id"),
+    passwordInput = document.getElementById("password");
+    let type = "";
+
+    if(/^[0-9]+$/.test(idInput.value.trim()) ){
+        type = "estudiante";
+    } else if(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(idInput.value.trim()) ){
+        type = "acudiente";
+    };
+
+    const result = await checkAccount(idInput.value, passwordInput.value, type);
     if (result.success) {
-        window.location.assign('home.php');
-    } else {
-        feedbackWindow.style.display = "flex";
-        overlay.style.display = "block";
+        toast(result.message, "success");
         setTimeout(() => {
-            overlay.style.opacity = 1; 
-            feedbackWindow.style.right = "0.5rem"
-        }, 1);   
-        feedback.textContent = result.error || "Error desconocido.";
-    }
+            window.location.assign('home.php');
+        }, 1000);
+    } else {
+        toast(result.error, "error");
+    };
 });
 
-async function checkAccount(id, password) {
+async function checkAccount(id, password, type) {
     try {
         const response = await fetch('../php/inicio.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `id=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}`
+            body: `id=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}&type=${encodeURIComponent(type)}`
         });
         return await response.json();
     } catch (err) {
-        return { success: false, error: "No se pudo conectar al servidor." };
+        return { success: false, error: err};
     }
 }
-
-feedbackClose.addEventListener("click", () => {
-    overlay.style.opacity = 0; 
-    feedbackWindow.style.right = "-20rem"
-    setTimeout(() => {
-        feedbackWindow.style.display = "none";
-        overlay.style.display = "none";
-    }, 500);   
-});
 
 async function registerStudent(email, password) {
     try {

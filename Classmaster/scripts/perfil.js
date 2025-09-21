@@ -1,3 +1,5 @@
+import { toast } from "./components.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     const passwordInputs = document.querySelectorAll('.password-input');
     const eyeIcons = document.querySelectorAll('.eye-icon');
@@ -9,24 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 passwordInputs[idx].type = 'password';
                 icon.name = 'eye-off-outline';
-            }
+            };
         });
     });
 });
-
-function toast(msg = "Hecho", type = "success") {
-    const el = document.createElement("div");
-    el.textContent = msg;
-    el.setAttribute("role", "status");
-    el.className = `fixed inset-x-0 mx-auto bottom-6 w-fit max-w-[90%] text-sm md:text-base px-4 py-2 rounded-lg glass ring-soft shadow-2xl ${type === "error" ? "bg-red-500" : "bg-green-500"}`;
-    document.body.appendChild(el);
-    setTimeout(() => {
-        el.style.transition = "transform .25s ease, opacity .25s ease";
-        el.style.transform = "translateY(8px)";
-        el.style.opacity = "0";
-        setTimeout(() => el.remove(), 250);
-    }, 2500);
-}
 
 const form = document.getElementById('formCambiarPassword');
 
@@ -35,7 +23,7 @@ form.addEventListener("submit", async (e) => {
     if(form.newPassword.value === form.confirmPassword.value && checkPasswordValidity(form.newPassword.value) === ""){
         const result = await pass_change(form.currentPassword.value, form.newPassword.value);
         if (result.success) {
-            toast(result.message);
+            toast(result.message, "success");
 
         } else {
             toast(result.error, "error");

@@ -15,7 +15,7 @@
 	<title>Hogar</title>
 	<link rel="stylesheet" href="../styles/home.css" />
 	<script src="https://cdn.tailwindcss.com"></script>
-	<script src="../scripts/home.js" defer></script>
+	<script type="module" src="../scripts/home.js" defer></script>
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
@@ -29,7 +29,7 @@
 				<div class="flex items-center gap-3">
 					<div class="size-3 rounded-full bg-white/80 shadow-[0_0_24px_4px_rgba(255,255,255,0.25)]"></div>
 					<h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">
-						Bienvenido a ClassMaster, 
+						Bienvenid@ a ClassMaster, 
 						<span class="text-white/90">
 							<?php
 								echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : 'Usuario';
@@ -100,7 +100,7 @@
 		<section class="max-w-6xl mx-auto px-6 py-8">
 			<!-- Grid de tarjetas -->
 				<?php
-				if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'padre') {
+				   if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'acudiente') {
 					echo '
 					<div class="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
 						<a href="#"

@@ -28,7 +28,7 @@
         }
 
         // Verificar si el email ya existe
-        $stmt_check_email = $conn->prepare("SELECT email FROM padres WHERE email = ?");
+    $stmt_check_email = $conn->prepare("SELECT email FROM acudientes WHERE email = ?");
         $stmt_check_email->bind_param("s", $email);
         $stmt_check_email->execute();
         $result_email = $stmt_check_email->get_result();
@@ -45,7 +45,7 @@
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
         // Preparar consulta de inserción
-        $stmt_insert = $conn->prepare("INSERT INTO padres (email, password, nombre, apellido, fecha_registro) VALUES (?, ?, ?, ?, NOW())");
+    $stmt_insert = $conn->prepare("INSERT INTO acudientes (email, password, nombre, apellido, fecha_registro) VALUES (?, ?, ?, ?, NOW())");
 
         if ($stmt_insert) {
             $stmt_insert->bind_param("ssss", $email, $password_hash, $nombre, $apellido);
@@ -53,7 +53,7 @@
                 $id = $conn->insert_id; // Obtener el ID insertado
                 $_SESSION['user_id'] = $id; // Guarda el ID del usuario en la sesión
                 $_SESSION['nombre'] = $nombre; // Guarda el nombre del usuario en la sesión
-                $_SESSION['rol'] = 'padre'; // Guarda el rol del usuario en la sesión
+                $_SESSION['rol'] = 'acudiente'; // Guarda el rol del usuario en la sesión
                 $_SESSION['apellido'] = $apellido; // Guarda el apellido del usuario en la sesión
                 echo json_encode([
                     'success' => true, 

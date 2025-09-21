@@ -5,20 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro e inicio</title>
     <link rel="stylesheet" href="../styles/inicio.css">
-    <script src="../scripts/inicio.js" defer></script>
+    <script type="module" src="../scripts/inicio.js" defer></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
 <body>
-    <div id="overlay"></div>
     <section class="container">
         <section class="container-form">
-            <form action="../php/inicio.php" method="post" class="sign-in">
+            <form class="sign-in">
                 <h2>Iniciar Sesión</h2>
-                <span>Use su ID y contraseña</span>
+                <span>Use su ID de estudiante o correo de acudiente</span>
                 <section class="container-input">
                     <ion-icon name="id-card-outline"></ion-icon>
-                    <input type="number" id="id" placeholder="ID de Estudiante">
+                    <input type="text" id="id" placeholder="ID o Email">
                 </section>
                 <section class="container-input">
                     <ion-icon name="lock-closed-outline"></ion-icon>
@@ -33,7 +32,7 @@
         <section class="container-form">
             <form class="sign-up">
                 <h2>Registrarse</h2>
-                <span>Use su correo electronico y datos del acudido para registrarse</span>
+                <span>Ingrese su información para registrarse</span>
                 <section class="container-input">
                     <ion-icon name="person-outline"></ion-icon>
                     <input id="nombre" type="text" placeholder="Nombre y Apellido">
@@ -48,7 +47,7 @@
                     <input type="password" class="password" placeholder="Password">
                     <ion-icon class="eye-icon" name="eye-off-outline"></ion-icon>
                 </section>
-                <p>Solo registrese si es acudiente.</p>
+                <p>Solo registrese si es acudiente</p>
                 <button class="button">Registrarse</button>
             </form>
         </section>
@@ -66,14 +65,5 @@
             </section>
         </section>
     </section>
-    <section id="feedback-window">
-        <h3><span>Parece que hubo un error</span></h3>
-        <ion-icon id="feedback-close" name="close-circle"></ion-icon>
-        <p id="feedback"></p>
-    </section>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-
 </body>
 </html>

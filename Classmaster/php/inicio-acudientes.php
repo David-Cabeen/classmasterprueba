@@ -13,7 +13,7 @@
         $contrasena_encriptada = password_hash($contrasena, PASSWORD_DEFAULT);
 
         // Preparar la consulta SQL para insertar datos
-        $sql = "INSERT INTO padres (email, contrasena) VALUES (?, ?)";
+    $sql = "INSERT INTO acudientes (email, contrasena) VALUES (?, ?)";
         $stmt = $conn->prepare($sql);
 
         // Verificar si la consulta fue preparada correctamente

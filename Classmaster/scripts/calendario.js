@@ -81,6 +81,7 @@ window.addEventListener('DOMContentLoaded', function () {
     });
 
     renderCalendar(currentDate);
+    checkForEvents();
 
     daysContainer.addEventListener('click', function (e) {
         for (let i = 0; i < daysContainer.childElementCount; i++) {  
@@ -100,40 +101,39 @@ window.addEventListener('DOMContentLoaded', function () {
         };
     });
 
-    // Agregar indicador de evento en calendario
-    function checkForEvents() {
-        const events = JSON.parse(localStorage.getItem('events')) || {};
-        const currentMonth = currentDate.getMonth();
-        const currentYear = currentDate.getFullYear();
 
+    // Fetch events from DB and mark days
+    async function checkForEvents() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + 1;
+        let eventos = [];
+        try {
+            const res = await fetch(`../php/eventos.php?year=${year}&month=${month}`);
+            const data = await res.json();
+            if (data.success) eventos = data.eventos;
+        } catch (e) { eventos = []; }
         for (let i = 0; i < daysContainer.childElementCount; i++) {
             const dayDiv = daysContainer.children[i];
             const dayNumber = parseInt(dayDiv.textContent.trim());
-
             // Remove previous event markers
             const oldDotContainer = dayDiv.querySelector('.event-dot-container');
-            if (oldDotContainer) {
-                dayDiv.removeChild(oldDotContainer);
-            }
-
+            if (oldDotContainer) dayDiv.removeChild(oldDotContainer);
             if (dayDiv.classList.contains('fade')) {
                 dayDiv.classList.remove('has-event');
                 continue;
             }
-
-            const dateKey = `${dayNumber} / ${months[currentMonth]} / ${currentYear}`;
-            if (events[dateKey]) {
+            // Find events for this day
+            const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(dayNumber).padStart(2,'0')}`;
+            const dayEvents = eventos.filter(ev => ev.fecha === dateStr);
+            if (dayEvents.length > 0) {
                 dayDiv.classList.add('has-event');
-                // Parse the event HTML to get priorities
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = events[dateKey];
+                // Priority dots
                 let hasUrgent = false, hasImportant = false, hasNormal = false;
-                Array.from(tempDiv.children).forEach(evDiv => {
-                    if (evDiv.classList.contains('urgent')) hasUrgent = true;
-                    if (evDiv.classList.contains('important')) hasImportant = true;
-                    if (evDiv.classList.contains('normal')) hasNormal = true;
+                dayEvents.forEach(ev => {
+                    if (ev.prioridad === 'urgente') hasUrgent = true;
+                    if (ev.prioridad === 'importante') hasImportant = true;
+                    if (ev.prioridad === 'normal') hasNormal = true;
                 });
-                // Create dot container
                 const dotContainer = document.createElement('div');
                 dotContainer.className = 'event-dot-container';
                 dotContainer.style.position = 'absolute';
@@ -142,31 +142,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 dotContainer.style.transform = 'translateX(-50%)';
                 dotContainer.style.display = 'flex';
                 dotContainer.style.gap = '2px';
-                // Add dots for each priority
-                if (hasUrgent) {
-                    const dot = document.createElement('div');
-                    dot.style.width = '10px';
-                    dot.style.height = '10px';
-                    dot.style.borderRadius = '50%';
-                    dot.style.backgroundColor = 'hsl(11, 80%, 65%)';
-                    dotContainer.appendChild(dot);
-                }
-                if (hasImportant) {
-                    const dot = document.createElement('div');
-                    dot.style.width = '10px';
-                    dot.style.height = '10px';
-                    dot.style.borderRadius = '50%';
-                    dot.style.backgroundColor = 'hsl(175, 40%, 45%)';
-                    dotContainer.appendChild(dot);
-                }
-                if (hasNormal) {
-                    const dot = document.createElement('div');
-                    dot.style.width = '10px';
-                    dot.style.height = '10px';
-                    dot.style.borderRadius = '50%';
-                    dot.style.backgroundColor = 'hsl(255, 75%, 70%)';
-                    dotContainer.appendChild(dot);
-                }
+                if (hasUrgent) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'hsl(11, 80%, 65%)'; dotContainer.appendChild(dot); }
+                if (hasImportant) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'hsl(175, 40%, 45%)'; dotContainer.appendChild(dot); }
+                if (hasNormal) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'hsl(255, 75%, 70%)'; dotContainer.appendChild(dot); }
                 dayDiv.appendChild(dotContainer);
             } else {
                 dayDiv.classList.remove('has-event');
@@ -224,75 +202,80 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Crear evento
-    eventForm.addEventListener('submit', function (e) {
+
+    // Crear evento en DB
+    eventForm.addEventListener('submit', async function (e) {
         e.preventDefault();
         const eventInput = document.getElementById('event-input');
         let priorityInput = document.getElementsByName('priority');
         const eventDescription = document.getElementById('event-description');
+        let prioridad = 'normal';
         for (let i = 0; i < priorityInput.length; i++) {
             if (priorityInput[i].checked) {
                 priorityInput[i].nextElementSibling.querySelector('ion-icon').setAttribute('name', 'ellipse-outline');
                 priorityInput[i].checked = false;
-                priorityInput = priorityInput[i].value;
+                prioridad = priorityInput[i].value;
             }
         }
-        let div = document.createElement('div');
-        let title = document.createElement('h3');
-        title.innerHTML = eventInput.value;
-        div.classList.add(priorityInput)
-
-        // Crear botón de eliminar
-        let deleteButton = document.createElement('ion-icon');
-        deleteButton.setAttribute('name', 'trash-outline');
-        deleteButton.addEventListener('click', (e) => {
-            const liElement = e.target.parentElement;
-            liElement.style.transition = 'translate 0.3s ease';
-            liElement.style.translate = '-100%';
-            setTimeout(() => {
-                liElement.remove();
-                saveEvent();
-            }, 300);
-        });
-        div.appendChild(deleteButton);
-        div.appendChild(title);
-
-        if(eventDescription.value !== '') {
-            let description = document.createElement('p');
-            description.innerHTML = eventDescription.value;
-            eventDescription.value = '';
-            div.appendChild(description);
-        }
-
-        eventList.appendChild(div);
-        saveEvent();
+        const [day, monthName, year] = selectedDay.textContent.split(' / ');
+        const month = months.indexOf(monthName) + 1;
+        const fecha = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        const titulo = eventInput.value.trim();
+        const descripcion = eventDescription.value.trim();
+        if (!titulo) return;
+        // AJAX create
+        const formData = new FormData();
+        formData.append('action', 'create');
+        formData.append('titulo', titulo);
+        formData.append('descripcion', descripcion);
+        formData.append('prioridad', prioridad);
+        formData.append('fecha', fecha);
+        await fetch('../php/eventos.php', { method: 'POST', body: formData });
         eventInput.value = '';
+        eventDescription.value = '';
+        loadEvent();
+        checkForEvents();
     });
 
-    // Guardar eventos en localStorage
-    function saveEvent() {
-        const events = JSON.parse(localStorage.getItem('events')) || {};
-        events[selectedDay.textContent] = eventList.innerHTML;
-        localStorage.setItem('events', JSON.stringify(events));
-        checkForEvents();
-    }
 
-    // Cargar eventos desde localStorage
-    function loadEvent() {
-        const events = JSON.parse(localStorage.getItem('events')) || {};
-        eventList.innerHTML = events[selectedDay.textContent] || '';
-
-        const deleteButtons = eventList.querySelectorAll('ion-icon[name="trash-outline"]');
-        deleteButtons.forEach((button) => {
-            button.addEventListener('click', (e) => {
-                const liElement = e.target.parentElement;
-                liElement.style.transition = 'translate 0.3s ease';
-                liElement.style.translate = '-100%';
-                setTimeout(() => {
-                    liElement.remove();
-                    saveEvent();
-                }, 300);
-            });
+    // Cargar eventos desde DB
+    async function loadEvent() {
+        eventList.innerHTML = '';
+        const [day, monthName, year] = selectedDay.textContent.split(' / ');
+        const month = months.indexOf(monthName) + 1;
+        const fecha = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        let eventos = [];
+        try {
+            const res = await fetch(`../php/eventos.php?year=${year}&month=${month}`);
+            const data = await res.json();
+            if (data.success) eventos = data.eventos.filter(ev => ev.fecha === fecha);
+        } catch (e) { eventos = []; }
+        eventos.forEach(ev => {
+            let div = document.createElement('div');
+            div.classList.add(ev.prioridad);
+            let title = document.createElement('h3');
+            title.innerHTML = ev.titulo;
+            // Delete button
+            let deleteButton = document.createElement('ion-icon');
+            deleteButton.setAttribute('name', 'trash-outline');
+            deleteButton.style.cursor = 'pointer';
+            deleteButton.onclick = async function() {
+                // AJAX delete
+                const formData = new FormData();
+                formData.append('action', 'delete');
+                formData.append('id', ev.id);
+                await fetch('../php/eventos.php', { method: 'POST', body: formData });
+                loadEvent();
+                checkForEvents();
+            };
+            div.appendChild(deleteButton);
+            div.appendChild(title);
+            if (ev.descripcion) {
+                let description = document.createElement('p');
+                description.innerHTML = ev.descripcion;
+                div.appendChild(description);
+            }
+            eventList.appendChild(div);
         });
     }
 
@@ -348,72 +331,20 @@ window.addEventListener('DOMContentLoaded', function () {
         });
       });
 
-    // Calcular distancia desde hoy
-    function checkDistanceFromToday(today, selectedDay) {
-        selectedDay = selectedDay.split(' / ');
-        let distance = 0;
-        switch (selectedDay[1]) {
-            case 'Enero':
-                selectedDay[1] = 1;
-                break;
-            case 'Febrero':
-                selectedDay[1] = 2;
-                break;
-            case 'Marzo':
-                selectedDay[1] = 3;
-                break;
-            case 'Abril':
-                selectedDay[1] = 4;
-                break;
-            case 'Mayo':
-                selectedDay[1] = 5;
-                break;
-            case 'Junio':
-                selectedDay[1] = 6;
-                break;
-            case 'Julio':
-                selectedDay[1] = 7;
-                break;
-            case 'Agosto':
-                selectedDay[1] = 8;
-                break;
-            case 'Septiembre':
-                selectedDay[1] = 9;
-                break;
-            case 'Octubre':
-                selectedDay[1] = 10;
-                break;
-            case 'Noviembre':
-                selectedDay[1] = 11;
-                break;
-            case 'Diciembre':
-                selectedDay[1] = 12;
-                break;
-        }
-        //console.log(selectedDay[1], currentDate.getMonth() + 1);
-        //console.log(currentDate)
-        if (selectedDay[1] == currentDate.getMonth() + 1) {
-            distance = parseInt(selectedDay[0]) - parseInt(today);
-            return distanceCalc(distance);
-        } else {
-            let monthDiff = parseInt(selectedDay[1]) - (currentDate.getMonth() + 1);
-            let yearDiff = parseInt(selectedDay[2]) - currentDate.getFullYear();
-            distance = (monthDiff * 30) + (yearDiff * 365) + (parseInt(selectedDay[0]) - parseInt(today));
-            return distanceCalc(distance);
-        }
-        
-        function distanceCalc(distance) {
-            if (distance == 0) {
-                return 'Hoy';
-            } else if (distance == 1) {
-                return 'Mañana';
-            } else if (distance > 1) {
-                return 'Dentro de ' + distance + ' días';
-            } else if (distance == -1) {
-                return 'Ayer';
-            } else {
-                return 'Hace ' + (distance * -1) + ' días';
-            }
-        };
-    };
+    // Calcular distancia desde hoy usando Date objects
+    function checkDistanceFromToday(todayDay, selectedDayStr) {
+        const [day, monthName, year] = selectedDayStr.split(' / ');
+        const month = months.indexOf(monthName);
+        const selectedDate = new Date(parseInt(year), month, parseInt(day));
+        const now = new Date();
+        // Zero out time for both
+        selectedDate.setHours(0,0,0,0);
+        now.setHours(0,0,0,0);
+        const diff = Math.round((selectedDate - now) / (1000*60*60*24));
+        if (diff === 0) return 'Hoy';
+        if (diff === 1) return 'Mañana';
+        if (diff > 1) return 'Dentro de ' + diff + ' días';
+        if (diff === -1) return 'Ayer';
+        return 'Hace ' + (diff * -1) + ' días';
+    }
 });

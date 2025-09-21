@@ -4,10 +4,10 @@ const contentGrid = document.getElementById('contentGrid');
 const errorMessage = document.getElementById('errorMessage');
 const errorText = document.getElementById('errorText');
 const usersTable = document.getElementById('usersTable');
-const padresTable = document.getElementById('padresTable');
+const acudientesTable = document.getElementById('acudientesTable');
 const teachersTable = document.getElementById('teachersTable');
 const usersCount = document.getElementById('usersCount');
-const padresCount = document.getElementById('padresCount');
+const acudientesCount = document.getElementById('acudientesCount');
 const teachersCount = document.getElementById('teachersCount');
 
 // Función para formatear fecha
@@ -37,9 +37,9 @@ async function loadEntities() {
             renderUsers(data.users);
             usersCount.textContent = data.users.length;
 
-            // Cargar padres
-            renderPadres(data.padres);
-            padresCount.textContent = data.padres.length;
+            // Cargar acudientes
+            renderAcudientes(data.acudientes);
+            acudientesCount.textContent = data.acudientes.length;
 
             // Cargar maestros
             renderTeachers(data.teachers || []);
@@ -123,28 +123,28 @@ function renderUsers(users) {
     };
 }
 
-// Función para renderizar padres
-function renderPadres(padres) {
-    padresTable.innerHTML = '';
-    if (padres.length === 0) {
-        padresTable.innerHTML = `
+// Función para renderizar acudientes
+function renderAcudientes(acudientes) {
+    acudientesTable.innerHTML = '';
+    if (acudientes.length === 0) {
+        acudientesTable.innerHTML = `
             <tr>
-                <td colspan="7" class="no-data">No hay padres registrados</td>
+                <td colspan="7" class="no-data">No hay acudientes registrados</td>
             </tr>
         `;
         return;
     }
-    padres.forEach(padre => {
+    acudientes.forEach(acudiente => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${padre.id}</td>
-            <td>${padre.email}</td>
-            <td>${padre.nombre}</td>
-            <td>${padre.apellido}</td>
-            <td>${padre.telefono || 'N/A'}</td>
-            <td>${formatDate(padre.fecha_registro)}</td>
+            <td>${acudiente.id}</td>
+            <td>${acudiente.email}</td>
+            <td>${acudiente.nombre}</td>
+            <td>${acudiente.apellido}</td>
+            <td>${acudiente.telefono || 'N/A'}</td>
+            <td>${formatDate(acudiente.fecha_registro)}</td>
         `;
-        padresTable.appendChild(row);
+        acudientesTable.appendChild(row);
     });
 }
 
