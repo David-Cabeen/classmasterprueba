@@ -48,7 +48,7 @@
         $_SESSION['nombre'] = $nombre; // Guarda el nombre del usuario en la sesión
         $_SESSION['rol'] = $type; // Guarda el rol del usuario en la sesión
         $_SESSION['apellido'] = $apellido; // Guarda el apellido del usuario en la sesión
-        echo json_encode(['success' => true, 'message' => 'Inicio de sesión exitoso. Bienvenido ' . $nombre .]);
+        echo json_encode(['success' => true, 'message' => 'Inicio de sesión exitoso. Bienvenido ' . $nombre]);
         $stmt->close();
         $conn->close();
         exit;
