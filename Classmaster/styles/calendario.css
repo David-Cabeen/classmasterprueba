@@ -2,11 +2,22 @@
 
 /*Variables para usar en los estilos*/
 :root {
-    --urgent-color: hsl(11, 80%, 65%);
-    --important-color: hsl(175, 40%, 45%);
-    --normal-color: hsl(255, 75%, 70%);
+    --urgent-color: #f33f3f;
+    --important-color: #f3c94c;
+    --normal-color: #86ec79;
     --rotateX: 0deg;
     --rotateY: 0deg;
+    --bg: #0e0e10;
+	--panel: #16161a;
+	--muted: #9ca3af;
+	--text: #f3f4f6;
+	--line: #26262b;
+	--accent: #ffffff;
+	--gradient-dark-blue: #23233a;
+	--gradient-mid-blue: #181824;
+	--shadow-black: #000;
+	--input-link: #141414;
+    --width: 100%;
 }
 
 @media (max-width: 1100px) {
@@ -62,6 +73,11 @@
     }
 }
 
+.divider {
+	height: 1px;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
 /*Estilo por defecto para toda la pagina */
 * {
   margin: 0;
@@ -72,36 +88,57 @@
 }
 
 body {
-    width: 100%;
-    height: 100dvh;
-    display: flex;
-    justify-content: center;
+	display: flex;
+	flex-direction: column;
     align-items: center;
-    background-color: #f0f4f3;
-    color: rgb(20, 20, 20);
+    justify-content: center;
+	min-height: 100vh;
+	background: radial-gradient(1200px 800px at 80% -10%, var(--gradient-dark-blue) 0%, var(--gradient-mid-blue) 45%, var(--bg) 100%);
+	scroll-behavior: smooth;
+    color: var(--text);
+}
+
+.glass {
+	background: rgba(255, 255, 255, 0.04);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .container {
     width: 80%;
     height: 95%;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-rows: 100px 1fr;
+    grid-template-columns: 65% 35%;
+    grid-template-areas:
+        "calendar nav"
+        "calendar events";
     position: relative;
-    border-radius: 15px;
     overflow: hidden;
-    background-color: #eee;
-    box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
     position: absolute;
-    background: linear-gradient(to bottom right, #e8e8e8, #ddd);
+    padding: 1rem;
+    gap: 1rem;
 }
 
 .navigation {
-    width: 100%;
-    height: 15%;
-    background-color: #889a99;
+    border-radius: 15px;
+    height: 60px;
+    background: var(--line);
+    text-align: center;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 97%;
+    height: 100%;
+    grid-area: nav;
+    z-index: 2;
+}
+
+.navigation ion-icon {
+    font-size: 3rem;
+    cursor: pointer;
+    transition: color .3s, scale 0.3s, filter 0.3s;
 }
 
 .navigation h1 {
@@ -110,49 +147,47 @@ body {
 }
 
 #calendar {
-    transition: width 0.3s;
-    aspect-ratio: 1/1.34;
-    width: 65%;
-    color: rgb(34, 34, 34);
+    padding: 1rem;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    margin: .8%;
+    margin: 0;
+    align-items: center;
+    grid-area: calendar;
 }
 
 .weekdays, #days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    width: 100%;
+    width: var(--width);
     text-align: center;
-    gap: 1.2%;
+    gap: 1%;
+    transition: width 0.1s;
 }
 
 #days div {
     position: relative;
     cursor: pointer;
     aspect-ratio: 1;
-    transition: translate 0.3s, box-shadow 0.3s, scale 0.3s;
-    background-color: #eee;
+    transition: translate 0.3s, scale 0.3s;
+    background-color: var(--line);
+    color: var(--text);
     border-radius: 2px;
 }
 
-#days > div:hover {
-    translate: -2% -2%;
-    box-shadow: 5px 5px 5px rgb(0, 0, 0, 0.3), inset 2px 2px 5px rgb(255, 255, 255, 0.8);
-    
+#days > div:not(.fade):hover {
+    outline: solid var(--accent) 1px;
 }
 
 #days div.fade {
-    color: #bbb;
+    color: #5e5e5e;
     cursor: default;
-    translate: 0 0;
-    box-shadow: none;
 }
 
 .selected {
-    translate: -2% -2%;
     scale: 1.02;
-    box-shadow: 5px 5px 5px rgb(0, 0, 0, 0.3), inset 2px 2px 5px rgb(255, 255, 255, 0.8);
+    outline: solid var(--accent) 1px;
+    box-shadow: #777 0px 0px 15px;
     animation: tween ease-in-out 2s infinite alternate;
 }
 
@@ -165,7 +200,7 @@ body {
     aspect-ratio: 1;
     margin: .5rem;
     border-radius: 50%;
-    background-color: hsl(220, 70%, 70%);
+    background-color: hsl(244, 70%, 70%);
 }
 
 ion-icon {
@@ -173,7 +208,7 @@ ion-icon {
     cursor: pointer;
     margin: 0 1rem;
     background-color: transparent;
-    transition: scale 0.3s, filter 0.3s;
+    transition: color .3s, scale .3s, filter .3s;
 }
 
 ion-icon:hover:is([name="arrow-forward"], [name="arrow-back"], [name="close"]) {
@@ -186,24 +221,17 @@ ion-icon:hover:is([name="arrow-forward"], [name="arrow-back"], [name="close"]) {
     font-size: 2.2rem;
 }
 
-#events hr {
-    width: 100%;
-    height: 3px;
-    background-color: #ddd;
-    border: none;
-}
-
 #events {
-    display: block;
-    transition: translate 0.3s;
-    position: absolute;
-    width: 33%;
-    height: 85%;
-    bottom: 0;
-    right: 0;
-    translate: 100% 0;
-    background-color: white;
+    transition: translate 0.5s;
+    position: relative;
+    width: 97%;
+    height: 100%;
+    grid-area: events;
+    background-color: var(--panel);
     overflow-x: hidden;
+    border-radius: 15px;
+    translate: 150%;
+    z-index: 1;
 }
 
 #day-number {
@@ -230,7 +258,8 @@ ion-icon:hover:is([name="arrow-forward"], [name="arrow-back"], [name="close"]) {
     bottom: 0;
     right: 0;
     margin: 1rem;
-    background-color: #76a1ea;
+    background-color: var(--accent);
+    color: var(--bg);
     cursor: pointer;
     padding: 1rem;
     border: none;
@@ -253,36 +282,6 @@ ion-icon:hover:is([name="arrow-forward"], [name="arrow-back"], [name="close"]) {
     transition: opacity 0.3s ease-in-out;
 }
 
-#event-window {
-    overflow: hidden;
-    opacity: 0;
-    z-index: 200;
-    display: none;
-    transition: opacity 0.3s ease-in-out, top 0.3s ease-in-out;
-    position: fixed;
-    width: 60%;
-    height: 75%;
-    top: 55%;
-    left: 50%;
-    translate: -50% -50%;
-    background-color: #f4f4f4;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgb(0, 0, 0, 0.3);
-}
-
-#event-window h1 {
-    margin: 1rem;
-    text-align: center;
-}
-
-#close-event {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 3.5rem;
-    margin: .5rem;
-}
-
 #events h2 {
     margin: .5rem;
 }
@@ -303,7 +302,6 @@ ion-icon:hover:is([name="arrow-forward"], [name="arrow-back"], [name="close"]) {
     width: 95%;
     margin-bottom: .5rem;
 }
-
 
 #event-list div p {
     margin: 0 .5rem;
@@ -348,44 +346,6 @@ ion-icon[name="trash-outline"]:hover {
     scale: 1.1;
 }
 
-#event-form {
-    display: block;
-    position: relative;
-    height: 85%;
-    translate: 0 -.4%;
-}
-
-#event-form button {
-    position: absolute;
-    font-size: 1.5rem;
-    border-radius: 10px;
-    margin: 1rem;
-    padding: 1rem 2rem;
-    background: linear-gradient(to bottom right, #f8f8f8, #eaeaea);
-    cursor: pointer;
-    border: none;
-    right: 0;
-    bottom: 0;
-    transition: box-shadow 0.2s, translate 0.2s;
-}
-
-#event-form button:hover {
-    translate: -2% -2%;
-    box-shadow: 5px 5px 5px rgb(0, 0, 0, 0.3), inset 2px 2px 5px rgb(255, 255, 255, 0.8);
-}
-
-#event-form fieldset {
-    display: grid;
-    border: none;
-    width: 50%;
-    height: 70%;
-    margin: 1rem;
-    gap: .5rem;
-    position: absolute;
-    top: 2rem;
-    right: .5rem;
-}
-
 #event-form fieldset input {
     display: none;
 }
@@ -402,15 +362,10 @@ ion-icon[name="trash-outline"]:hover {
 }
 
 #event-form fieldset label:hover {
-    box-shadow: 5px 5px 5px rgb(0, 0, 0, 0.3), inset 2px 2px 5px rgb(255, 255, 255, 0.8);
     translate: -2% -2%;
 }
 
 #event-form fieldset label[for="urgent"] {
-    position: absolute;
-    top: 0;
-    right: -.5rem;
-    height: 100%;
     background-color: var(--urgent-color);
 }
 
@@ -471,4 +426,20 @@ fieldset input[type='radio'][name='priority']:checked + label{
 } 
 #held {
     background-color: red;
+}
+
+/* Animación de entrada para modales y ventanas emergentes (igual que home.css) */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeSlideUp .45s ease both;
 }

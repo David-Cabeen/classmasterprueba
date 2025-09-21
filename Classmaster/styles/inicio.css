@@ -8,12 +8,20 @@
 }
 
 :root {
-	--bg: #0e0e10;
-	--panel: #16161a;
-	--muted: #9ca3af;
-	--text: #f3f4f6;
-	--line: #26262b;
-	--accent: #ffffff;
+  --bg: #0e0e10;
+  --panel: #16161a;
+  --muted: #9ca3af;
+  --text: #f3f4f6;
+  --line: #26262b;
+  --accent: #ffffff;
+  --gradient-dark-blue: #23233a;
+  --gradient-mid-blue: #181824;
+  --shadow-black: #000;
+  --input-link: #141414;
+  --toast-error: #ef4444;
+  --toast-success: #22c55e;
+  --toast-bg: rgba(30, 41, 59, 0.95);
+  --toast-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
 body {
@@ -22,7 +30,7 @@ body {
   justify-content: center;
   align-items: center;
 	min-height: 100vh;
-  background: radial-gradient(1200px 800px at 80% -10%, #23233a 0%, #181824 45%, #0e0e10 100%);
+  background: radial-gradient(1200px 800px at 80% -10%, var(--gradient-dark-blue) 0%, var(--gradient-mid-blue) 45%, var(--bg) 100%);
 	color: var(--text);
 	scroll-behavior: smooth;
 }
@@ -36,7 +44,7 @@ body {
   border-radius: 15px;
   overflow: hidden;
   border: 2px solid var(--line);
-  box-shadow: inset 0 0 10px #000;
+  box-shadow: inset 0 0 10px var(--shadow-black);
 }
 
 .container-form {
@@ -106,7 +114,7 @@ body {
 }
 
 .container-form a {
-  color: rgb(20, 20, 20);
+  color: var(--input-link);
   font-size: 14px;
   margin-bottom: 20px;
   margin-top: 5px;
@@ -239,7 +247,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .sign-up p {
   font-size: 14px;
-  color: #ef4444;
+  color: var(--toast-error);
   text-align: center;
 }
 
@@ -254,14 +262,14 @@ input[type="number"]::-webkit-inner-spin-button {
   max-width: 90vw;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  color: #fff;
-  background: rgba(30, 41, 59, 0.95);
+  box-shadow: var(--toast-shadow);
+  color: var(--text);
+  background: var(--toast-bg);
   font-size: 1rem;
   text-align: center;
   pointer-events: auto;
   opacity: 1;
   transition: transform .25s, opacity .25s;
 }
-.toast.bg-red-500 { background: #ef4444 !important; color: #fff !important; }
-.toast.bg-green-500 { background: #22c55e !important; color: #fff !important; }
+.toast.bg-red-500 { background: var(--toast-error) !important; color: var(--text) !important; }
+.toast.bg-green-500 { background: var(--toast-success) !important; color: var(--text) !important; }

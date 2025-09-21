@@ -18,7 +18,7 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-white/10 selection:text-white bg-gradient-to-br from-[#202024] via-[#121214] to-[#0d0d0f] text-gray-100">
+<body class="min-h-screen flex flex-col selection:bg-white/10 selection:text-white text-gray-100">
     <!-- Header -->
     <header class="w-full">
         <div class="max-w-4xl mx-auto px-6 pt-8 pb-6">

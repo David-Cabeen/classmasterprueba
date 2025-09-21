@@ -14,17 +14,13 @@
     <link rel="stylesheet" href="../styles/calendario.css">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     <div id="overlay"></div>
-    <div class="container">
-        <div class="navigation">
-            <ion-icon id="prev" name="arrow-back"></ion-icon>
-            <h1 id="month-year"></h1>
-            <ion-icon id="next" name="arrow-forward"></ion-icon>
-        </div>
-        <div id="calendar">
-            <div class="weekdays">
+    <div class="container glass rounded-2xl border border-white/10 animate-in">
+        <div id="calendar" class="rounded-xl shadow-lg border border-white/10 glass my-4">
+            <div class="weekdays grid grid-cols-7 text-center gap-2 text-white/70 font-semibold text-base">
                 <div>Dom</div>
                 <div>Lun</div>
                 <div>Mar</div>
@@ -33,36 +29,24 @@
                 <div>Vie</div>
                 <div>Sab</div>
             </div>
-            <div id="days"></div>
+            <div id="days" class="mt-2"></div>
         </div>
-        <div id="events">
-            <div class="day-header">
-                <h1 id="day-number"></h1>
-                <ion-icon id="close" name="close"></ion-icon>
-                <p id="distance"></p>
+        <div class="navigation flex items-center justify-between border border-white/10">
+            <ion-icon id="prev" class="hover:text-blue-500" name="arrow-back"></ion-icon>
+            <h1 id="month-year" class="tracking-tight"></h1>
+            <ion-icon id="next" class="hover:text-blue-500" name="arrow-forward"></ion-icon>
+        </div>
+        <div id="events" class="shadow-xl border border-white/10 bg-opacity-95">
+            <div class="day-header gap-3 px-6 pt-6 pb-2">
+                <h1 id="day-number" class="text-lg font-semibold text-white"></h1>
+                <ion-icon id="close" name="close" class="ml-auto text-2xl text-white/60 hover:text-red-500 cursor-pointer focus:outline-none"></ion-icon>
+                <p id="distance" class="text-sm text-white/40 ml-2"></p>
             </div>
-            <hr>
-            <h2>Eventos</h2>
-            <ul id="event-list"></ul>
-            <button id="event-adder" tabindex="-1">Añadir evento</button>
+            <div class="divider my-3"></div>
+            <h2 class="px-6 text-base font-bold text-white/80 mb-2 tracking-wide">Eventos</h2>
+            <ul id="event-list" class="px-4"></ul>
+            <button id="event-adder" tabindex="-1" class="absolute bottom-4 right-4">Añadir evento</button>
         </div>
-    </div>
-    <div id="event-window">
-        <h1>Añadir evento</h1>
-        <ion-icon id="close-event" name="close"></ion-icon> <hr>
-        <form id="event-form">
-            <input type="text" id="event-input" placeholder="Título" required/> <br>
-            <textarea name="event-description" placeholder="Descripción" id="event-description"></textarea>
-            <fieldset>
-                <input type="radio" name="priority" id="normal" value="normal">
-                <label for="normal">Normal <ion-icon name="ellipse-outline"/></label>
-                <input type="radio" name="priority" id="important" value="important">
-                <label for="important">Importante <ion-icon name="ellipse-outline"/></label>
-                <input type="radio" name="priority" id="urgent" value="urgent">
-                <label for="urgent">Urgente <ion-icon name="ellipse-outline"/></label>
-            </fieldset>
-            <button type="submit">Añadir</button>
-        </form>
     </div>
     <script src="../scripts/calendario.js"></script>
 </body>

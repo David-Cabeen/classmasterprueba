@@ -6,15 +6,9 @@ window.addEventListener('DOMContentLoaded', function () {
     daysContainer = document.getElementById('days'),
     prevButton = document.getElementById('prev'),
     nextButton = document.getElementById('next'),
-    eventForm = document.getElementById('event-form'),
     eventAdder = document.getElementById('event-adder'),
-    eventWindow = document.getElementById('event-window'),
-    eventList = document.getElementById('event-list'),
-    closeWindowButton = document.getElementById('close-event'),
-    priorityLabel = eventWindow.querySelectorAll('label'),
-    priorityRadio = eventWindow.querySelectorAll('input[type="radio"]');
-    let selectedDay = document.getElementById('day-number'),
-    eventWindowIsOpen = false;
+    eventList = document.getElementById('event-list');
+    let selectedDay = document.getElementById('day-number');
     const months = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -45,17 +39,11 @@ window.addEventListener('DOMContentLoaded', function () {
         for (let i = 1; i <= lastDay; i++) {
             const dayDiv = document.createElement('div');
             dayDiv.textContent = i;
-
             if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
                 dayDiv.classList.add('today');
-            } if (localStorage.getItem('events')) {
-                const events = JSON.parse(localStorage.getItem('events')) || {};
-                if (events[`${i} / ${months[month]} / ${year}`]) {
-                    dayDiv.classList.add('has-event');
-                } ;
-            };
-            daysContainer.appendChild(dayDiv); // Lo embaraza
-        };
+            }
+            daysContainer.appendChild(dayDiv);
+        }
 
         // Días del siguiente mes
         const nextMonthStartDay = 7 - new Date(year, month + 1, 0).getDay() - 1;
@@ -64,7 +52,17 @@ window.addEventListener('DOMContentLoaded', function () {
             dayDiv.textContent = i;
             dayDiv.classList.add('fade');
             daysContainer.appendChild(dayDiv);
-        };
+        }
+
+        // Ajustar el ancho de la grilla de días según el número de filas
+        // Cada fila tiene 7 días, así que filas = Math.ceil(childElementCount / 7)
+        const numRows = Math.ceil(daysContainer.childElementCount / 7);
+        const root = document.documentElement;
+        if (numRows > 5) {
+            root.style.setProperty('--width', '90%');
+        } else {
+            root.style.setProperty('--width', '100%');
+        }
     };
 
     // Botones para cambiar de mes
@@ -83,23 +81,7 @@ window.addEventListener('DOMContentLoaded', function () {
     renderCalendar(currentDate);
     checkForEvents();
 
-    daysContainer.addEventListener('click', function (e) {
-        for (let i = 0; i < daysContainer.childElementCount; i++) {  
-            if (e.target.parentElement !== daysContainer) {
-                if (e.target.parentElement.textContent === daysContainer.children[i].textContent) {
-                    const marker = e.target
-                    if (marker) {
-                        marker.addEventListener('mousedown', function () {
-                            marker.setAttribute('id','held');
-                        });
-                        marker.addEventListener('mouseup', function () {
-                            marker.setAttribute('id','');
-                        });
-                    };
-                };           
-            }  
-        };
-    });
+    // Removed unnecessary click handler for 'held' id
 
 
     // Fetch events from DB and mark days
@@ -152,26 +134,9 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-
-
-    // Cambiar icono de prioridad
-    priorityRadio.forEach((radio) => {
-        radio.addEventListener('change', function () {
-            const icon = radio.nextElementSibling.querySelector('ion-icon');
-            if (radio.checked) {
-                icon.setAttribute('name', 'checkmark-circle');
-                for(let i = 0; i < priorityRadio.length; i++) {
-                    if (priorityRadio[i] !== radio) {
-                        priorityRadio[i].nextElementSibling.querySelector('ion-icon').setAttribute('name', 'ellipse-outline');
-                    }
-                }
-            }
-        });
-    });
-
     // Cerrar ventana de eventos
     closeButton.addEventListener('click', function () {
-        events.style.translate = '100%';
+        events.style.translate = '150%';
         setTimeout(() => {
             events.style.boxShadow = 'none';
         }, 300);
@@ -182,6 +147,120 @@ window.addEventListener('DOMContentLoaded', function () {
         );
     });
 
+    function eventModal({ onConfirm = () => { } } = {}) {
+        const overlay = document.createElement("div");
+        overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-50";
+        overlay.innerHTML = `
+            <div class="event-window w-full sm:max-w-md glass rounded-2xl border border-white/10 p-5 sm:p-6 animate-in" role="dialog" aria-modal="true">
+                <h1>Agregar evento</h1>
+                <form id="event-form">
+                    <input type="text" id="event-input" placeholder="Título" required/> <br>
+                    <textarea name="event-description" placeholder="Descripción" id="event-description"></textarea>
+                    <fieldset>
+                        <input type="radio" name="priority" id="normal" value="normal">
+                        <label for="normal">Normal <ion-icon name="ellipse-outline"/></label>
+                        <input type="radio" name="priority" id="important" value="important">
+                        <label for="important">Importante <ion-icon name="ellipse-outline"/></label>
+                        <input type="radio" name="priority" id="urgent" value="urgent">
+                        <label for="urgent">Urgente <ion-icon name="ellipse-outline"/></label>
+                    </fieldset>
+                    <div class="flex gap-3 justify-end mt-5">
+                        <button id="cm-cancel" class="px-4 py-2 rounded-lg hover:bg-white/5 transition focus-outline">Cancelar</button>
+                        <button id="cm-ok" class="px-4 py-2 rounded-lg bg-white text-black hover:opacity-90 transition focus-outline">Agregar</button>
+                    </div>
+                </form>
+            </div>
+            `;
+        document.body.appendChild(overlay);
+        const eventWindow = overlay.eventWindow,
+        priorityLabel = overlay.querySelectorAll('label'),
+        priorityRadio = overlay.querySelectorAll('input[type="radio"]'),
+        ok = overlay.querySelector("#cm-ok"),
+        cancel = overlay.querySelector("#cm-cancel");
+
+        const close = () => overlay.remove();
+        ok.addEventListener("click", () => { close(); onConfirm(); });
+        cancel.addEventListener("click", close);
+        overlay.addEventListener("click", (e) => {
+            if (e.target === overlay) close();
+        });
+        document.addEventListener("keydown", function esc(e) {
+            if (e.key === "Escape") {
+                close();
+                document.removeEventListener("keydown", esc);
+            }
+        });
+
+        // Animación de selectores de prioridad
+        priorityLabel.forEach((label) => {
+            let xAngle = getComputedStyle(
+            document.querySelector(":root")
+            ).getPropertyValue("--rotateX");
+            let yAngle = getComputedStyle(
+            document.querySelector(":root")
+            ).getPropertyValue("--rotateY");
+            label.addEventListener("click", function (e) {
+            const rect = label.getBoundingClientRect();
+            const xDecimal = (e.clientX - rect.left) / label.offsetWidth;
+            const yDecimal = (e.clientY - rect.top) / label.offsetHeight;
+            const xMapped = xDecimal * 20 - 10;
+            const yMapped = yDecimal * 4 - 2;
+            xAngle = Math.max(-10, Math.min(10, xMapped));
+            yAngle = Math.max(-4, Math.min(4, yMapped));
+            label.style.setProperty("--rotateY", xAngle + "deg");
+            label.style.setProperty("--rotateX", yAngle * -1 + "deg");
+            });
+        });
+
+            // Cambiar icono de prioridad
+        priorityRadio.forEach((radio) => {
+            radio.addEventListener('change', function () {
+                const icon = radio.nextElementSibling.querySelector('ion-icon');
+                if (radio.checked) {
+                    icon.setAttribute('name', 'checkmark-circle');
+                    for(let i = 0; i < priorityRadio.length; i++) {
+                        if (priorityRadio[i] !== radio) {
+                            priorityRadio[i].nextElementSibling.querySelector('ion-icon').setAttribute('name', 'ellipse-outline');
+                        }
+                    }
+                }
+            });
+        });
+};
+
+        const createEvent = async () => {
+            const eventInput = document.getElementById('event-input');
+            let priorityInput = document.getElementsByName('priority');
+            const eventDescription = document.getElementById('event-description');
+            let prioridad = 'normal';
+            for (let i = 0; i < priorityInput.length; i++) {
+                if (priorityInput[i].checked) {
+                    priorityInput[i].nextElementSibling.querySelector('ion-icon').setAttribute('name', 'ellipse-outline');
+                    priorityInput[i].checked = false;
+                    prioridad = priorityInput[i].value;
+                }
+            }
+            const [day, monthName, year] = selectedDay.textContent.split(' / ');
+            const month = months.indexOf(monthName) + 1;
+            const fecha = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            const titulo = eventInput.value.trim();
+            const descripcion = eventDescription.value.trim();
+            if (!titulo) return;
+            // AJAX create
+            const formData = new FormData();
+            formData.append('action', 'create');
+            formData.append('titulo', titulo);
+            formData.append('descripcion', descripcion);
+            formData.append('prioridad', prioridad);
+            formData.append('fecha', fecha);
+            await fetch('../php/eventos.php', { method: 'POST', body: formData });
+            eventInput.value = '';
+            eventDescription.value = '';
+            loadEvent();
+            checkForEvents();
+        };
+
+
     // Abrir ventana de eventos
     daysContainer.addEventListener('click', function (e) {
         if (e.target && e.target.parentElement === daysContainer) {
@@ -191,7 +270,7 @@ window.addEventListener('DOMContentLoaded', function () {
             events.style.translate = '0';
             events.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
             selectedDay.textContent = e.target.textContent + ' / ' + months[currentDate.getMonth()] + ' / ' + currentDate.getFullYear();
-            distance.textContent = checkDistanceFromToday(currentDate.getDate(), selectedDay.textContent);
+            distance.textContent = checkDistanceFromToday(selectedDay.textContent);
             daysContainer.querySelectorAll('div').forEach(div => {
                 div.classList.remove('selected');
             }
@@ -201,42 +280,6 @@ window.addEventListener('DOMContentLoaded', function () {
             eventWindowIsOpen = true;
         }
     });
-
-
-    // Crear evento en DB
-    eventForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const eventInput = document.getElementById('event-input');
-        let priorityInput = document.getElementsByName('priority');
-        const eventDescription = document.getElementById('event-description');
-        let prioridad = 'normal';
-        for (let i = 0; i < priorityInput.length; i++) {
-            if (priorityInput[i].checked) {
-                priorityInput[i].nextElementSibling.querySelector('ion-icon').setAttribute('name', 'ellipse-outline');
-                priorityInput[i].checked = false;
-                prioridad = priorityInput[i].value;
-            }
-        }
-        const [day, monthName, year] = selectedDay.textContent.split(' / ');
-        const month = months.indexOf(monthName) + 1;
-        const fecha = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        const titulo = eventInput.value.trim();
-        const descripcion = eventDescription.value.trim();
-        if (!titulo) return;
-        // AJAX create
-        const formData = new FormData();
-        formData.append('action', 'create');
-        formData.append('titulo', titulo);
-        formData.append('descripcion', descripcion);
-        formData.append('prioridad', prioridad);
-        formData.append('fecha', fecha);
-        await fetch('../php/eventos.php', { method: 'POST', body: formData });
-        eventInput.value = '';
-        eventDescription.value = '';
-        loadEvent();
-        checkForEvents();
-    });
-
 
     // Cargar eventos desde DB
     async function loadEvent() {
@@ -277,62 +320,13 @@ window.addEventListener('DOMContentLoaded', function () {
             }
             eventList.appendChild(div);
         });
-    }
+    };
 
     // Abrir ventana de añadir evento
-    eventAdder.addEventListener('click', function () {
-        eventWindow.style.display = "block";
-        overlay.style.display = "block";
-        setTimeout(() => {
-            overlay.style.opacity = 1;
-            eventWindow.style.opacity = 1;
-            eventWindow.style.top = '50%';
-        }, 1);
-    });
-
-    // Cerrar ventana de añadir evento
-    closeWindowButton.addEventListener('click', function () {
-        const priorityInput = document.getElementsByName('priority');
-        const eventInput = document.getElementById('event-input');
-        const eventDescription = document.getElementById('event-description');
-        eventWindow.style.opacity = 0;
-        overlay.style.opacity = 0;
-        eventWindow.style.top = '55%';
-        setTimeout(() => {
-            eventWindow.style.display = "none";
-            overlay.style.display = "none";
-            eventInput.value = '';
-            eventDescription.value = '';
-            for (let i = 0; i < priorityInput.length; i++) {
-                priorityInput[i].nextElementSibling.querySelector('ion-icon').setAttribute('name', 'ellipse-outline');
-                priorityInput[i].checked = false;
-            }
-        }, 300);
-    });
-
-    // Animación de selectores de prioridad
-    priorityLabel.forEach((label) => {
-        let xAngle = getComputedStyle(
-          document.querySelector(":root")
-        ).getPropertyValue("--rotateX");
-        let yAngle = getComputedStyle(
-          document.querySelector(":root")
-        ).getPropertyValue("--rotateY");
-        label.addEventListener("click", function (e) {
-          const rect = label.getBoundingClientRect();
-          const xDecimal = (e.clientX - rect.left) / label.offsetWidth;
-          const yDecimal = (e.clientY - rect.top) / label.offsetHeight;
-          const xMapped = xDecimal * 20 - 10;
-          const yMapped = yDecimal * 4 - 2;
-          xAngle = Math.max(-10, Math.min(10, xMapped));
-          yAngle = Math.max(-4, Math.min(4, yMapped));
-          label.style.setProperty("--rotateY", xAngle + "deg");
-          label.style.setProperty("--rotateX", yAngle * -1 + "deg");
-        });
-      });
+    eventAdder.addEventListener('click', () => eventModal({ onConfirm: createEvent }));
 
     // Calcular distancia desde hoy usando Date objects
-    function checkDistanceFromToday(todayDay, selectedDayStr) {
+    function checkDistanceFromToday(selectedDayStr) {
         const [day, monthName, year] = selectedDayStr.split(' / ');
         const month = months.indexOf(monthName);
         const selectedDate = new Date(parseInt(year), month, parseInt(day));
