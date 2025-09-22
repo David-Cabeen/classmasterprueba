@@ -116,17 +116,26 @@ window.addEventListener('DOMContentLoaded', function () {
                     if (ev.prioridad === 'importante') hasImportant = true;
                     if (ev.prioridad === 'normal') hasNormal = true;
                 });
+                dayDiv.style.position = 'relative';
                 const dotContainer = document.createElement('div');
                 dotContainer.className = 'event-dot-container';
                 dotContainer.style.position = 'absolute';
-                dotContainer.style.left = '50%';
-                dotContainer.style.bottom = '4px';
-                dotContainer.style.transform = 'translateX(-50%)';
                 dotContainer.style.display = 'flex';
-                dotContainer.style.gap = '2px';
-                if (hasUrgent) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'hsl(11, 80%, 65%)'; dotContainer.appendChild(dot); }
-                if (hasImportant) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'hsl(175, 40%, 45%)'; dotContainer.appendChild(dot); }
-                if (hasNormal) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'hsl(255, 75%, 70%)'; dotContainer.appendChild(dot); }
+                dotContainer.style.alignContent = 'flex-end'
+                dotContainer.style.gap = '3px';
+                // Default: bottom left
+                dotContainer.style.left = '5%';
+                dotContainer.style.bottom = '5%';
+                dotContainer.style.right = '';
+                // If today, move to bottom right
+                if (dayDiv.classList.contains('today')) {
+                    dotContainer.style.left = '';
+                    dotContainer.style.right = '5%';
+                    dotContainer.style.justifyContent = 'flex-end';
+                }
+                if (hasUrgent) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'var(--urgent-color)'; dotContainer.appendChild(dot); }
+                if (hasImportant) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'var(--important-color)'; dotContainer.appendChild(dot); }
+                if (hasNormal) { let dot = document.createElement('div'); dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.backgroundColor = 'var(--normal-color)'; dotContainer.appendChild(dot); }
                 dayDiv.appendChild(dotContainer);
             } else {
                 dayDiv.classList.remove('has-event');
@@ -142,7 +151,6 @@ window.addEventListener('DOMContentLoaded', function () {
         }, 300);
         daysContainer.querySelectorAll('div').forEach(div => {
             div.classList.remove('selected');
-            eventWindowIsOpen = false;
         }
         );
     });
@@ -151,35 +159,34 @@ window.addEventListener('DOMContentLoaded', function () {
         const overlay = document.createElement("div");
         overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-50";
         overlay.innerHTML = `
-            <div class="event-window w-full sm:max-w-md glass rounded-2xl border border-white/10 p-5 sm:p-6 animate-in" role="dialog" aria-modal="true">
-                <h1>Agregar evento</h1>
-                <form id="event-form">
-                    <input type="text" id="event-input" placeholder="Título" required/> <br>
-                    <textarea name="event-description" placeholder="Descripción" id="event-description"></textarea>
-                    <fieldset>
+            <div class="event-window w-full sm:max-w-md rounded-2xl border border-white/10 p-6 animate-in" role="dialog" aria-modal="true">
+                <h1 class="text-xl font-semibold text-white mb-4">Agregar evento</h1>
+                <form id="event-form" class="flex flex-col gap-4">
+                    <input type="text" id="event-input" placeholder="Título" required class="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-lg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+                    <textarea name="event-description" placeholder="Descripción" id="event-description" class="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-base placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none min-h-[60px]"></textarea>
+                    <fieldset class="flex gap-2 justify-between mt-2">
                         <input type="radio" name="priority" id="normal" value="normal">
-                        <label for="normal">Normal <ion-icon name="ellipse-outline"/></label>
-                        <input type="radio" name="priority" id="important" value="important">
-                        <label for="important">Importante <ion-icon name="ellipse-outline"/></label>
-                        <input type="radio" name="priority" id="urgent" value="urgent">
-                        <label for="urgent">Urgente <ion-icon name="ellipse-outline"/></label>
+                        <label for="normal" class="flex-1 flex items-center justify-center gap-2 bg-green-500/80 hover:bg-green-400/90 rounded-lg py-2 cursor-pointer font-medium transition">Normal <ion-icon name="ellipse-outline"/></label>
+                        <input type="radio" name="priority" id="important" value="importante">
+                        <label for="important" class="flex-1 flex items-center justify-center gap-2 bg-yellow-400/80 hover:bg-yellow-300/90 rounded-lg py-2 cursor-pointer font-medium transition">Importante <ion-icon name="ellipse-outline"/></label>
+                        <input type="radio" name="priority" id="urgent" value="urgente">
+                        <label for="urgent" class="flex-1 flex items-center justify-center gap-2 bg-red-500/80 hover:bg-red-400/90 rounded-lg py-2 cursor-pointer font-medium transition">Urgente <ion-icon name="ellipse-outline"/></label>
                     </fieldset>
-                    <div class="flex gap-3 justify-end mt-5">
-                        <button id="cm-cancel" class="px-4 py-2 rounded-lg hover:bg-white/5 transition focus-outline">Cancelar</button>
-                        <button id="cm-ok" class="px-4 py-2 rounded-lg bg-white text-black hover:opacity-90 transition focus-outline">Agregar</button>
+                    <div class="flex gap-3 justify-end mt-4">
+                        <button id="cm-cancel" type="button" class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition focus:outline-none">Cancelar</button>
+                        <button id="cm-ok" type="submit" class="px-4 py-2 rounded-lg bg-blue-500 font-semibold hover:bg-blue-600 transition focus:outline-none">Agregar</button>
                     </div>
                 </form>
             </div>
             `;
         document.body.appendChild(overlay);
-        const eventWindow = overlay.eventWindow,
-        priorityLabel = overlay.querySelectorAll('label'),
+        const priorityLabel = overlay.querySelectorAll('label'),
         priorityRadio = overlay.querySelectorAll('input[type="radio"]'),
         ok = overlay.querySelector("#cm-ok"),
         cancel = overlay.querySelector("#cm-cancel");
 
         const close = () => overlay.remove();
-        ok.addEventListener("click", () => { close(); onConfirm(); });
+        ok.addEventListener("click", () => { onConfirm(); close(); });
         cancel.addEventListener("click", close);
         overlay.addEventListener("click", (e) => {
             if (e.target === overlay) close();
@@ -240,6 +247,7 @@ window.addEventListener('DOMContentLoaded', function () {
                     prioridad = priorityInput[i].value;
                 }
             }
+            console.log(prioridad)
             const [day, monthName, year] = selectedDay.textContent.split(' / ');
             const month = months.indexOf(monthName) + 1;
             const fecha = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -277,7 +285,6 @@ window.addEventListener('DOMContentLoaded', function () {
             );
             e.target.classList.add('selected');
             loadEvent(); // Cargar eventos para el día seleccionado
-            eventWindowIsOpen = true;
         }
     });
 

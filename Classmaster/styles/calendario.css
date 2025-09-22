@@ -100,8 +100,6 @@ body {
 
 .glass {
 	background: rgba(255, 255, 255, 0.04);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
 	border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -271,17 +269,6 @@ ion-icon:hover:is([name="arrow-forward"], [name="arrow-back"], [name="close"]) {
     scale: 1.05;
 }
 
-#overlay {
-    display: none;
-    opacity: 0;
-    height: 100dvh;
-    width: 100%;
-    position: fixed;
-    z-index: 10;
-    background-color: rgba(0, 0, 0, 0.4);
-    transition: opacity 0.3s ease-in-out;
-}
-
 #events h2 {
     margin: .5rem;
 }
@@ -321,17 +308,6 @@ ion-icon[name="trash-outline"]:hover {
     color: red;
 }
 
-#days div.has-event > div {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 10%;
-    aspect-ratio: 1;
-    margin: .5rem;
-    border-radius: 50%;
-    transition: scale 0.2s;
-}
-
 #days div.has-event.urgent > div {
     background-color: var(--urgent-color);
 }
@@ -351,77 +327,52 @@ ion-icon[name="trash-outline"]:hover {
 }
 
 #event-form fieldset label{
-    display: grid;
-    align-items: center;
-    position: relative;
-    width: 50%;
-    text-align: center;
+    background-color: transparent;
     border-radius: 10px;
-    font-size: 2rem;
-    transition: box-shadow 0.2s, translate 0.2s, font-weight 0.2s;
+    transition: font-weight 0.2s;
+    border: 2px var(--line) solid;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
 }
 
-#event-form fieldset label:hover {
-    translate: -2% -2%;
+#event-form fieldset input:checked + label[for="urgent"]{
+    border-color: var(--urgent-color);
 }
 
-#event-form fieldset label[for="urgent"] {
-    background-color: var(--urgent-color);
+#event-form fieldset input:checked + label[for="important"] {
+    border-color: var(--important-color);
 }
 
-#event-form fieldset label[for="important"] {
-    background-color: var(--important-color);
-}
-
-#event-form fieldset label[for="normal"] {
-    background-color: var(--normal-color);
+#event-form fieldset input:checked + label[for="normal"] {
+    border-color: var(--normal-color);
 }
 
 ion-icon[name=checkmark-circle], ion-icon[name='ellipse-outline'] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: .5rem;
-    justify-self: center;
     font-size: 1.2rem;
+    position: static;
+    margin: 0;
 }  
 
 fieldset input[type='radio'][name='priority']:checked + label{
     animation: priority .6s;
-    box-shadow: 5px 5px 5px rgb(0, 0, 0, 0.3), inset 2px 2px 5px rgb(255, 255, 255, 0.8);
-    translate: -2% -2%;
     font-weight: 600;
 }
 
 .normal {
-    background-color: var(--normal-color);
+    border: 1px solid var(--normal-color);
 }
 .important {
-    background-color: var(--important-color);
+    border: 1px solid var(--important-color);
 }
 .urgent {
-    background-color: var(--urgent-color);
-}
-
-#event-input {
-    margin: 1rem;
-    font-size: 1.8rem;
-    padding: .5rem;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-    width: 40%;
+    border: 1px solid var(--urgent-color);
 }
 
 #event-description {
-    margin: 1rem;
-    font-size: 1.2rem;
-    padding: .5rem;
-    border-radius: 10px;
-    width: 40%;
-    height: 52%;
-    border: none;
-    outline: none;
     resize: none;
 } 
 #held {
