@@ -1,9 +1,6 @@
 <?php
     session_start();
     require_once 'connection.php';
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    ob_start();
 
     $id = $_POST['id'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -12,6 +9,7 @@
     switch($type) {
         case 'estudiante': $db = 'users'; $auth = 'id'; $bind = 'i'; break;
         case 'acudiente': $db = 'acudientes'; $auth = 'email'; $bind = 's'; break;
+        case 'administrador': $db = 'administradores'; $auth = 'id'; $bind = 's'; break;
     };
 
     // Verifica que ambos campos estén presentes

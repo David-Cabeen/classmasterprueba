@@ -93,6 +93,8 @@ signin.addEventListener('submit', async (e) => {
         type = "estudiante";
     } else if(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(idInput.value.trim()) ){
         type = "acudiente";
+    } else if (/^[A-Za-z0-9]+$/.test(idInput.value.trim())) {
+        type = "administrador";
     };
 
     const result = await checkAccount(idInput.value, passwordInput.value, type);
@@ -115,7 +117,7 @@ async function checkAccount(id, password, type) {
         });
         return await response.json();
     } catch (err) {
-        return { success: false, error: 'No se pudo conectar al servidor'};
+        return { success: false, error: 'No se pudo conectar al servidor \n' + err};
     }
 }
 

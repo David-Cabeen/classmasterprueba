@@ -10,6 +10,6 @@ if (ini_get("session.use_cookies")) {
         $params["secure"], $params["httponly"]
     );
 }
-header("Location: inicio.html");
+header("Location: ../index.html");
 exit();
 ?>

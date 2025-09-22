@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	if (!isset($_SESSION['user_id'])) {
-		header('Location: inicio.html');
+		header('Location: ../index.php');
 		exit();
 	}
 ?>
@@ -190,8 +190,23 @@
 						<p class="text-sm text-white/60 mt-1">Recursos útiles.</p>
 						</a>
 					</div>';
-				}
+				} else if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'administrador') {
+					echo '
+					<div class="grid sm:grid-cols-1 lg:grid-cols-1 gap-6">
+						<a href="#"
+						data-href="entidades.php"
+						class="card-link card-tile hover-glow group rounded-2xl p-6 focus-outline">
+						<div class="flex items-center justify-between">
+							<span class="text-3xl" aria-hidden="true">👥</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Entidades</span>
+						</div>
+						<h3 class="mt-4 text-xl font-semibold">Entidades</h3>
+						<p class="text-sm text-white/60 mt-1">Gestiona usuarios y acudientes.</p>
+						</a>
+					</div>';
+				};
 				?>
+				
 
 				<!-- Frase motivacional -->
 				<section class="mt-10">
