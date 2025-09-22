@@ -96,7 +96,7 @@ $("#btnCerrar").addEventListener("click", () => {
 			// Llama a logout.php para destruir la sesión
 			await fetch("../php/logout.php", { method: "GET", credentials: "same-origin" });
 			setTimeout(() => {
-				window.location.href = '../pages/inicio.html';
+				window.location.href = '../index.php';
 			}, 900);
 		}
 	});

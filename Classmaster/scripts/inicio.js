@@ -99,7 +99,7 @@ signin.addEventListener('submit', async (e) => {
     if (result.success) {
         toast(result.message, "success");
         setTimeout(() => {
-            window.location.assign('home.php');
+            window.location.assign('./pages/home.php');
         }, 1000);
     } else {
         toast(result.error, "error");
@@ -108,7 +108,7 @@ signin.addEventListener('submit', async (e) => {
 
 async function checkAccount(id, password, type) {
     try {
-        const response = await fetch('../php/inicio.php', {
+        const response = await fetch('./php/inicio.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `id=${encodeURIComponent(id)}&password=${encodeURIComponent(password)}&type=${encodeURIComponent(type)}`
@@ -121,7 +121,7 @@ async function checkAccount(id, password, type) {
 
 async function registerStudent(email, password) {
     try {
-        const response = await fetch('../php/registro.php', {
+        const response = await fetch('./php/registro.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&nombre=${encodeURIComponent(document.getElementById("nombre").value)}`

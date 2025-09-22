@@ -48,6 +48,41 @@
         if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
         response(false, $stmt->error);
     }
+    if ($action === 'create' && $type === 'admin') {
+    $id = $_POST['id'] ?? '';
+    $nombre = $_POST['nombre'] ?? '';
+    $apellido = $_POST['apellido'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    if (!$id || !$nombre || !$apellido || !$email || !$password) response(false, 'Faltan campos obligatorios');
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $stmt = $conn->prepare("INSERT INTO administradores (id, nombre, apellido, email, password, fecha_registro) VALUES (?, ?, ?, ?, ?, NOW())");
+    $stmt->bind_param("sssss", $id, $nombre, $apellido, $email, $hash);
+    if ($stmt->execute()) {
+        // Send email with ID and password using PHPMailer
+        require_once __DIR__ . '/PHPMailerConfig.php';
+        require_once __DIR__ . '/PHPMailerAutoload.php';
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host = SMTP_HOST;
+            $mail->SMTPAuth = true;
+            $mail->Username = SMTP_USER;
+            $mail->Password = SMTP_PASS;
+            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = SMTP_PORT;
+            $mail->setFrom(SMTP_FROM, SMTP_FROMNAME);
+            $mail->addAddress($email, $nombre . ' ' . $apellido);
+            $mail->Subject = 'Tu cuenta de administrador en ClassMaster';
+            $mail->Body = "Hola $nombre,\n\nTu cuenta de administrador ha sido creada.\nID: $id\nContraseña: $password\n\nPor favor guarda esta información de forma segura.";
+            $mail->send();
+        } catch (Exception $e) {
+            // Optionally log or handle email error
+        }
+        response(true, '', ['id' => $id, 'password' => $password]);
+    }
+    response(false, $stmt->error);
+    }
     if ($action === 'update' && $type && isset($_POST['id'])) {
         $id = $_POST['id'];
         $fields = $_POST;

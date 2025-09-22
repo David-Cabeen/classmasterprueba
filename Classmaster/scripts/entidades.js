@@ -47,12 +47,95 @@ async function loadEntities() {
                 teachersCount.textContent = (data.teachers || []).length;
             }
 
+            // Cargar administradores
+            renderAdmins(data.admins || []);
+            if (typeof adminsCount !== 'undefined') {
+                adminsCount.textContent = (data.admins || []).length;
+            }
+
             // Mostrar contenido
             loading.style.display = 'none';
             contentGrid.style.display = 'block';
         } else {
             throw new Error(data.error || 'Error desconocido');
         }
+// Función para renderizar administradores
+function renderAdmins(admins) {
+    adminsTable.innerHTML = '';
+    if (admins.length === 0) {
+        adminsTable.innerHTML = `
+            <tr>
+                <td colspan="5" class="no-data">No hay administradores registrados</td>
+            </tr>
+        `;
+    } else {
+        admins.forEach(admin => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${admin.id}</td>
+                <td>${admin.nombre}</td>
+                <td>${admin.apellido}</td>
+                <td>${admin.email}</td>
+                <td>${formatDate(admin.fecha_registro)}</td>
+            `;
+            adminsTable.appendChild(row);
+        });
+    }
+    // Add new admin row
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td style="font-weight:600">+</td>
+        <td><input type="text" id="newAdminNombre" placeholder="Nombre"></td>
+        <td><input type="text" id="newAdminApellido" placeholder="Apellido"></td>
+        <td><input type="email" id="newAdminEmail" placeholder="Email"></td>
+        <td><button id="createAdminBtn">Crear admin</button></td>
+    `;
+    adminsTable.appendChild(newRow);
+    document.getElementById('createAdminBtn').onclick = async function() {
+        const nombre = document.getElementById('newAdminNombre').value.charAt(0).toUpperCase() + document.getElementById('newAdminNombre').value.slice(1).toLowerCase().trim();
+        const apellido = document.getElementById('newAdminApellido').value.charAt(0).toUpperCase() + document.getElementById('newAdminApellido').value.slice(1).toLowerCase().trim();
+        const email = document.getElementById('newAdminEmail').value.trim();
+        // Generate random ID (11 chars, uppercase letters and numbers)
+        function randomId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let id = '';
+            for (let i = 0; i < 11; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+            return id;
+        }
+        // Generate random password (11 chars, mixed case letters and numbers)
+        function randomPassword() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let pw = '';
+            for (let i = 0; i < 11; i++) pw += chars.charAt(Math.floor(Math.random() * chars.length));
+            return pw;
+        }
+        const id = randomId();
+        const password = randomPassword();
+        if (!nombre || !apellido || !email || !password) {
+            alert('Todos los campos obligatorios deben estar completos.');
+            return;
+        }
+        const data = new FormData();
+        data.append('action', 'create');
+        data.append('type', 'admin');
+        data.append('id', id);
+        data.append('nombre', nombre);
+        data.append('apellido', apellido);
+        data.append('email', email);
+        data.append('password', password);
+        const res = await fetch('../php/manage_entidad.php', { method: 'POST', body: data });
+        const json = await res.json();
+        if (json.success) {
+            document.getElementById('newAdminNombre').value = '';
+            document.getElementById('newAdminApellido').value = '';
+            document.getElementById('newAdminEmail').value = '';
+            alert(`Administrador creado.\nID: ${id}\nContraseña: ${password}`);
+            loadEntities();
+        } else {
+            alert(json.error);
+        }
+    };
+}
     } catch (error) {
         console.error('Error:', error);
         loading.style.display = 'none';

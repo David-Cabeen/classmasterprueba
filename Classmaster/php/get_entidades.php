@@ -33,6 +33,16 @@
         }
     }
 
+    // Obtener administradores
+    $sql_admins = "SELECT id, nombre, apellido, email, fecha_registro FROM administradores ORDER BY id";
+    $result_admins = $conn->query($sql_admins);
+    $admins = [];
+    if ($result_admins && $result_admins->num_rows > 0) {
+        while($row = $result_admins->fetch_assoc()) {
+            $admins[] = $row;
+        }
+    }
+
     // Cerrar conexión
     $conn->close();
 
@@ -41,6 +51,7 @@
         'success' => true,
         'users' => $users,
         'acudientes' => $acudientes,
-        'teachers' => $teachers
+        'teachers' => $teachers,
+        'admins' => $admins
     ]);
 ?>

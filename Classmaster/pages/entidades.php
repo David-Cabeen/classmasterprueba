@@ -117,6 +117,30 @@
                 </div>
             </section>
 
+        <!-- Sección de Administradores -->
+        <section class="entity-section">
+                <div class="section-header">
+                    <h3><ion-icon name="people-outline"></ion-icon>Administradores</h3>
+                    <span class="count-badge" id="adminsCount">0</span>
+                </div>
+                <div class="table-container">
+                    <table class="entity-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Email</th>
+                                <th>Fecha Registro</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminsTable">
+                            <!-- Los datos se cargarán de la BBDD -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
         <div class="error-message" id="errorMessage" style="display: none;">
             <ion-icon name="alert-circle-outline"></ion-icon>
             <span id="errorText">Error al cargar los datos</span>
