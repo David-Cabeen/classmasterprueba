@@ -115,7 +115,7 @@ async function checkAccount(id, password, type) {
         });
         return await response.json();
     } catch (err) {
-        return { success: false, error: err};
+        return { success: false, error: 'No se pudo conectar al servidor'};
     }
 }
 
