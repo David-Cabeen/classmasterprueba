@@ -1,28 +1,53 @@
-const body = document.querySelector('body'),
-  sidebar = body.querySelector('nav'),
-  toggle = body.querySelector(".toggle"),
-  searchBtn = body.querySelector(".search-box"),
-  modeSwitch = body.querySelector(".toggle-switch"),
-  modeText = body.querySelector(".mode-text");
+import { toast } from "./components.js";
 
-// Toggle sidebar visibility
-toggle.addEventListener("click", () => {
-  sidebar.classList.toggle("close");
-})
+const sidebar = document.getElementById("sidebar");
+const sidebarToggle = document.getElementById("sidebarToggle");
+const sidebarTexts = document.querySelectorAll(".sidebar-text");
+const sideLogout = document.getElementById("sideLogout");
 
-// Show sidebar when search button is clicked
-searchBtn.addEventListener("click", () => {
-  sidebar.classList.remove("close");
-})
+sideLogout.addEventListener("click", () => {
+  logout();
+});
 
-// Toggle dark mode and update mode text
-modeSwitch.addEventListener("click", () => {
-  body.classList.toggle("dark");
-
-  // Update mode text based on the current mode
-  if (body.classList.contains("dark")) {
-    modeText.innerText = "Light mode";
+let sidebarOpen = false;
+sidebarToggle.addEventListener("click", () => {
+  sidebarOpen = !sidebarOpen;
+  if (sidebarOpen) {
+    sidebar.classList.add("sidebar-open");
+    sidebarToggle.classList.add("open");
+    setTimeout(() => {
+      sidebarToggle.classList.add("rotate");
+    }, 100);
+    sidebarTexts.forEach((t) => t.classList.remove("hidden"));
   } else {
-    modeText.innerText = "Dark mode";
+    sidebar.classList.remove("sidebar-open");
+    setTimeout(() => {
+      sidebarToggle.classList.remove("rotate");
+    }, 100);
+    setTimeout(() => {
+      sidebarToggle.classList.remove("open");
+      sidebarTexts.forEach((t) => t.classList.add("hidden"));
+    }, 300);
+
   }
 });
+
+function logout() {
+  confirmModal({
+    titulo: "¿Cerrar sesión?",
+    descripcion: "Se cerrará tu sesión actual.",
+    confirmarTxt: "Sí, salir",
+    cancelarTxt: "Cancelar",
+    onConfirm: async () => {
+      toast("Sesión cerrada");
+      // Llama a logout.php para destruir la sesión
+      await fetch("../php/logout.php", {
+        method: "GET",
+        credentials: "same-origin",
+      });
+      setTimeout(() => {
+        window.location.href = "../index.php";
+      }, 900);
+    },
+  });
+}

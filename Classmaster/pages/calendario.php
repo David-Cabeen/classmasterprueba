@@ -15,9 +15,10 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../styles/sidebar.css"/>
 </head>
 <body>
-    <div id="overlay"></div>
+    <?php include '../components/sidebar.php'; ?>
     <div class="container glass rounded-2xl border border-white/10 animate-in">
         <div id="calendar" class="rounded-xl border border-white/10 glass my-4">
             <div class="weekdays grid grid-cols-7 text-center gap-2 text-white/70 font-semibold text-base">
@@ -48,6 +49,9 @@
             <button id="event-adder" tabindex="-1" class="absolute bottom-4 right-4">Añadir evento</button>
         </div>
     </div>
+    <script>
+        window.rol = "<?php echo $_SESSION['rol']; ?>";
+    </script>
     <script src="../scripts/calendario.js"></script>
 </body>
 </html>

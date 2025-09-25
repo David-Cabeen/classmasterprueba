@@ -1,4 +1,4 @@
-import { toast } from "./components.js";
+import { toast, checkType } from "./components.js";
 
 const container = document.querySelector(".container");
 const btnsignin = document.getElementById("btn-sign-in");
@@ -10,7 +10,6 @@ const signup = document.querySelector(".sign-up");
 const overlay = document.getElementById("overlay");
 const emailInput = document.getElementById("email");
 const numberInput = document.getElementById("number");
-const feedbackClose = document.getElementById("feedback-close");
 
 btnsignin.addEventListener("click", () => {
     container.classList.remove("toggle");
@@ -87,15 +86,7 @@ signin.addEventListener('submit', async (e) => {
     e.preventDefault();
     const idInput = document.getElementById("id"),
     passwordInput = document.getElementById("password");
-    let type = "";
-
-    if(/^[0-9]+$/.test(idInput.value.trim()) ){
-        type = "estudiante";
-    } else if(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(idInput.value.trim()) ){
-        type = "acudiente";
-    } else if (/^[A-Za-z0-9]+$/.test(idInput.value.trim())) {
-        type = "administrador";
-    };
+    let type = checkType(idInput.value.trim());
 
     const result = await checkAccount(idInput.value, passwordInput.value, type);
     if (result.success) {

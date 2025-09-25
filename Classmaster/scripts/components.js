@@ -45,4 +45,16 @@ function toast(msg = "Hecho", type = "") {
     }, 2500);
 };
 
-export { confirmModal, toast };
+function checkType(id) {
+    if(/^[0-9]+$/.test(id) ){
+        return "estudiante";
+    } else if(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(id) ){
+        return "acudiente";
+    } else if (/^P[0-9]{6}$/.test(id)) {
+		return "profesor";
+	} else if (/^[A-Za-z0-9]+$/.test(id)) {
+        return "administrador";
+    };
+}
+
+export { confirmModal, toast, checkType };

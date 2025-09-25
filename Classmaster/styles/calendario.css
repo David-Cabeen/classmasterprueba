@@ -201,7 +201,7 @@ body {
     background-color: hsl(244, 70%, 70%);
 }
 
-ion-icon {
+.container ion-icon {
     font-size: 3rem;
     cursor: pointer;
     margin: 0 1rem;
@@ -365,19 +365,16 @@ fieldset input[type='radio'][name='priority']:checked + label{
 .normal {
     border: 1px solid var(--normal-color);
 }
-.important {
+.importante {
     border: 1px solid var(--important-color);
 }
-.urgent {
+.urgente {
     border: 1px solid var(--urgent-color);
 }
 
 #event-description {
     resize: none;
 } 
-#held {
-    background-color: red;
-}
 
 /* Animación de entrada para modales y ventanas emergentes (igual que home.css) */
 @keyframes fadeSlideUp {

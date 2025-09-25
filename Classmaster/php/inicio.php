@@ -9,6 +9,7 @@
     switch($type) {
         case 'estudiante': $db = 'users'; $auth = 'id'; $bind = 'i'; break;
         case 'acudiente': $db = 'acudientes'; $auth = 'email'; $bind = 's'; break;
+        case 'profesor': $db = 'profesores'; $auth = 'id'; $bind = 's'; break;
         case 'administrador': $db = 'administradores'; $auth = 'id'; $bind = 's'; break;
     };
 
@@ -46,7 +47,7 @@
         $_SESSION['nombre'] = $nombre; // Guarda el nombre del usuario en la sesión
         $_SESSION['rol'] = $type; // Guarda el rol del usuario en la sesión
         $_SESSION['apellido'] = $apellido; // Guarda el apellido del usuario en la sesión
-        echo json_encode(['success' => true, 'message' => 'Inicio de sesión exitoso. Bienvenido ' . $nombre]);
+        echo json_encode(['success' => true, 'message' => 'Inicio de sesión exitoso. Bienvenid@ ' . $nombre]);
         $stmt->close();
         $conn->close();
         exit;

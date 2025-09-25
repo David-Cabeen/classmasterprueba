@@ -20,9 +20,24 @@
         $stmt = $conn->prepare("INSERT INTO users (nombre, apellido, email, password, grado, seccion, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, NOW())");
         $stmt->bind_param("ssssss", $nombre, $apellido, $email, $hash, $grado, $seccion);
         if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
+        
+        $stmt->close();
+        $stmt = $conn->prepare("SELECT id FROM cursos WHERE grado = ? AND seccion = ?");
+        $stmt->bind_param("ss", $grado, $seccion);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $curso_id = $row['id'];
+            $user_id = $conn->insert_id;
+            $stmt->close();
+            $stmt = $conn->prepare("INSERT INTO curso_estudiante (estudiante_id, curso_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $user_id, $curso_id);
+            $stmt->execute();
+            $stmt->close();
+        };
         response(false, $stmt->error);
-    }
-        if ($action === 'create' && $type === 'acudiente') {
+    };
+    if ($action === 'create' && $type === 'acudiente') {
         $nombre = $_POST['nombre'] ?? '';
         $apellido = $_POST['apellido'] ?? '';
         $email = $_POST['email'] ?? '';
@@ -41,10 +56,11 @@
         $email = $_POST['email'] ?? '';
         $materias = $_POST['materias'] ?? '';
         $password = $_POST['password'] ?? '';
+        $id = 'P' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         if (!$nombre || !$apellido || !$email || !$password) response(false, 'Faltan campos obligatorios');
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO profesores (nombre, apellido, email, materias, password, fecha_registro) VALUES (?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param("sssss", $nombre, $apellido, $email, $materias, $hash);
+        $stmt = $conn->prepare("INSERT INTO profesores (id, nombre, apellido, email, materias, password, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("ssssss", $id, $nombre, $apellido, $email, $materias, $hash);
         if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
         response(false, $stmt->error);
     }
@@ -83,6 +99,7 @@
     }
     response(false, $stmt->error);
     }
+
     if ($action === 'update' && $type && isset($_POST['id'])) {
         $id = $_POST['id'];
         $fields = $_POST;

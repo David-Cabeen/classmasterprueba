@@ -31,7 +31,7 @@ if (isset($_SESSION['user_id'])) {
                     <input id="password" type="password" class="password" placeholder="Password">
                     <ion-icon class="eye-icon" name="eye-off-outline"></ion-icon>
                 </section>
-                <a href="#">¿Haz olvidado tu contraseña?</a>
+                <a href="./pages/password.php">¿Haz olvidado tu contraseña?</a>
                 <button class="button">Iniciar Sesión</button>
             </form>
         </section>

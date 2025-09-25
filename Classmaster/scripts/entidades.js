@@ -97,7 +97,7 @@ function renderAdmins(admins) {
         const email = document.getElementById('newAdminEmail').value.trim();
         // Generate random ID (11 chars, uppercase letters and numbers)
         function randomId() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; 
             let id = '';
             for (let i = 0; i < 11; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
             return id;

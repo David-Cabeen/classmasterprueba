@@ -15,6 +15,7 @@ window.addEventListener('DOMContentLoaded', function () {
     ];
     let currentDate = new Date();
     let today = new Date();
+    let selectedCursoId = null;
 
     // Renderizar el calendario
     function renderCalendar(date) {
@@ -158,10 +159,21 @@ window.addEventListener('DOMContentLoaded', function () {
     function eventModal({ onConfirm = () => { } } = {}) {
         const overlay = document.createElement("div");
         overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-50";
+        let searchbarHtml = '';
+        if (window.rol === 'profesor') {
+            searchbarHtml = `
+                <div class="mb-4">
+                    <label for="curso-search" class="block mb-2 font-semibold text-white">Buscar curso:</label>
+                    <input type="text" id="curso-search" placeholder="Nombre del curso" class="w-full p-2 rounded border bg-white/10 text-white placeholder-white/60" autocomplete="off" />
+                    <ul id="curso-results" class="bg-white/10 rounded mt-2 max-h-32 overflow-y-auto"></ul>
+                </div>
+            `;
+        }
         overlay.innerHTML = `
             <div class="event-window w-full sm:max-w-md rounded-2xl border border-white/10 p-6 animate-in" role="dialog" aria-modal="true">
                 <h1 class="text-xl font-semibold text-white mb-4">Agregar evento</h1>
                 <form id="event-form" class="flex flex-col gap-4">
+                    ${searchbarHtml}
                     <input type="text" id="event-input" placeholder="Título" required class="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-lg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
                     <textarea name="event-description" placeholder="Descripción" id="event-description" class="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-base placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none min-h-[60px]"></textarea>
                     <fieldset class="flex gap-2 justify-between mt-2">
@@ -179,6 +191,53 @@ window.addEventListener('DOMContentLoaded', function () {
                 </form>
             </div>
             `;
+        if (window.rol === 'profesor'){
+            overlay.innerHTML = `
+            <div class="event-window w-full sm:max-w-md rounded-2xl border border-white/10 p-6 animate-in" role="dialog" aria-modal="true">
+                <h1 class="text-xl font-semibold text-white mb-4">Agregar evento</h1>
+                <form id="event-form" class="flex flex-col gap-4">
+                    <input type="text" id="event-input" placeholder="Título" required class="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-lg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" />
+                    <textarea name="event-description" placeholder="Descripción" id="event-description" class="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-base placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none min-h-[60px]"></textarea>
+                    <input type="search" id="curso-search" placeholder="Buscar curso" class="bg-white/10 border border-white/10 rounded-lg px-4 py-2 text-lg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-400 transition" autocomplete="off"/>
+                    <ul id="curso-results" class="bg-white/10 border border-white/10 rounded-lg mt-2 max-h-32 overflow-y-auto"></ul>
+                    <fieldset class="flex gap-2 justify-between mt-2">
+                        <input type="radio" name="priority" id="normal" value="normal">
+                        <label for="normal" class="flex-1 flex items-center justify-center gap-2 bg-green-500/80 hover:bg-green-400/90 rounded-lg py-2 cursor-pointer font-medium transition">Normal <ion-icon name="ellipse-outline"/></label>
+                        <input type="radio" name="priority" id="important" value="importante">
+                        <label for="important" class="flex-1 flex items-center justify-center gap-2 bg-yellow-400/80 hover:bg-yellow-300/90 rounded-lg py-2 cursor-pointer font-medium transition">Importante <ion-icon name="ellipse-outline"/></label>
+                        <input type="radio" name="priority" id="urgent" value="urgente">
+                        <label for="urgent" class="flex-1 flex items-center justify-center gap-2 bg-red-500/80 hover:bg-red-400/90 rounded-lg py-2 cursor-pointer font-medium transition">Urgente <ion-icon name="ellipse-outline"/></label>
+                    </fieldset>
+                    <div class="flex gap-3 justify-end mt-4">
+                        <button id="cm-cancel" type="button" class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition focus:outline-none">Cancelar</button>
+                        <button id="cm-ok" type="submit" class="px-4 py-2 rounded-lg bg-blue-500 font-semibold hover:bg-blue-600 transition focus:outline-none">Agregar</button>
+                    </div>
+                </form>
+            </div>
+            `;
+            const searchInput = overlay.querySelector('#curso-search');
+            const resultsList = overlay.querySelector('#curso-results');
+            searchInput.addEventListener('input', async function() {
+                const term = searchInput.value.trim();
+                resultsList.innerHTML = '';
+                if (term.length < 2) return;
+                const res = await fetch(`../php/search_cursos.php?term=${encodeURIComponent(term)}`);
+                const data = await res.json();
+                if (data.success && data.cursos.length > 0) {
+                    data.cursos.forEach(curso => {
+                        const li = document.createElement('li');
+                        li.textContent = curso.nombre;
+                        li.className = 'cursor-pointer p-2 hover:bg-blue-500/30';
+                        li.onclick = () => {
+                            selectedCursoId = curso.id;
+                            searchInput.value = curso.nombre;
+                            resultsList.innerHTML = '';
+                        };
+                        resultsList.appendChild(li);
+                    });
+                }
+            });
+        }
         document.body.appendChild(overlay);
         const priorityLabel = overlay.querySelectorAll('label'),
         priorityRadio = overlay.querySelectorAll('input[type="radio"]'),
@@ -247,7 +306,6 @@ window.addEventListener('DOMContentLoaded', function () {
                     prioridad = priorityInput[i].value;
                 }
             }
-            console.log(prioridad)
             const [day, monthName, year] = selectedDay.textContent.split(' / ');
             const month = months.indexOf(monthName) + 1;
             const fecha = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -255,12 +313,16 @@ window.addEventListener('DOMContentLoaded', function () {
             const descripcion = eventDescription.value.trim();
             if (!titulo) return;
             // AJAX create
+            let action = 'create';
+            console.log(window.rol)
+            if (window.rol === 'profesor') action = 'create_profesor'; 
             const formData = new FormData();
-            formData.append('action', 'create');
+            formData.append('action', action);
             formData.append('titulo', titulo);
             formData.append('descripcion', descripcion);
             formData.append('prioridad', prioridad);
             formData.append('fecha', fecha);
+            if (window.rol === 'profesor') formData.append('curso_id', selectedCursoId);
             await fetch('../php/eventos.php', { method: 'POST', body: formData });
             eventInput.value = '';
             eventDescription.value = '';

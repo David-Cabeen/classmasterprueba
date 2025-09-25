@@ -14,6 +14,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Hogar</title>
 	<link rel="stylesheet" href="../styles/home.css" />
+	<link rel="stylesheet" href="../styles/sidebar.css" />
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script type="module" src="../scripts/home.js" defer></script>
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
@@ -21,7 +22,8 @@
 </head>
 
 <body class="min-h-screen flex flex-col selection:bg-white/10 selection:text-white">
-
+	<?php include '../components/sidebar.php'; ?>
+	<div id="mainContent" class="transition-all duration-300 ease-in-out ml-16">
 	<!-- Header -->
 	<header class="w-full">
 		<div class="max-w-6xl mx-auto px-6 pt-8 pb-6">
@@ -150,14 +152,14 @@
 						<p class="text-sm text-white/60 mt-1">Planifica tu semana.</p>
 						</a>
 						<a href="#"
-						data-href="tareas.php"
+						data-href="flashcards.php"
 						class="card-link card-tile hover-glow group rounded-2xl p-6 focus-outline">
 						<div class="flex items-center justify-between">
 							<span class="text-3xl">📝</span>
-							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Tareas</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Flashcards</span>
 						</div>
-						<h3 class="mt-4 text-xl font-semibold">Tareas</h3>
-						<p class="text-sm text-white/60 mt-1">Gestiona tu lista.</p>
+						<h3 class="mt-4 text-xl font-semibold">Flashcards</h3>
+						<p class="text-sm text-white/60 mt-1">Estudia con flashcards.</p>
 						</a>
 						<a href="#"
 						data-href="pomodoro.php"
@@ -170,14 +172,14 @@
 						<p class="text-sm text-white/60 mt-1">Enfoque por intervalos.</p>
 						</a>
 						<a href="#"
-						data-href="metodos.php"
+						data-href="cornell.php"
 						class="card-link card-tile hover-glow group rounded-2xl p-6 focus-outline">
 						<div class="flex items-center justify-between">
 							<span class="text-3xl">📒</span>
-							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Métodos</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Notas de Cornell</span>
 						</div>
-						<h3 class="mt-4 text-xl font-semibold">Métodos</h3>
-						<p class="text-sm text-white/60 mt-1">Técnicas de estudio.</p>
+						<h3 class="mt-4 text-xl font-semibold">Notas de Cornell</h3>
+						<p class="text-sm text-white/60 mt-1">Toma de apuntes eficazmente.</p>
 						</a>
 						<a href="#"
 						data-href="ayudas.php"
@@ -188,6 +190,30 @@
 						</div>
 						<h3 class="mt-4 text-xl font-semibold">Ayudas</h3>
 						<p class="text-sm text-white/60 mt-1">Recursos útiles.</p>
+						</a>
+					</div>';
+				} else if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
+					echo '
+					<div class="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
+						<a href="#"
+						data-href="notas.php"
+						class="card-link card-tile hover-glow group rounded-2xl p-6	focus-outline">
+						<div class="flex items-center justify-between">
+							<span class="text-3xl" aria-hidden="true">📚</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Notas</span>
+						</div>
+						<h3 class="mt-4 text-xl font-semibold">Notas</h3>
+						<p class="text-sm text-white/60 mt-1">Consulta y gestiona las notas.</p>
+						</a>
+						<a href="#"
+						data-href="calendario.php"
+						class="card-link card-tile hover-glow group rounded-2xl p-6 focus-outline">
+						<div class="flex items-center justify-between">
+							<span class="text-3xl">🗓️</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Calendario</span>
+						</div>
+						<h3 class="mt-4 text-xl font-semibold">Calendario</h3>
+						<p class="text-sm text-white/60 mt-1">Consulta y gestiona el calendario.</p>
 						</a>
 					</div>';
 				} else if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'administrador') {
@@ -206,7 +232,6 @@
 					</div>';
 				};
 				?>
-				
 
 				<!-- Frase motivacional -->
 				<section class="mt-10">
@@ -219,7 +244,7 @@
 				</section>
 		</section>
 	</main>
-
+	<aside>
 	<!-- Footer -->
 	<footer class="mt-auto">
 		<div class="divider"></div>
@@ -227,50 +252,6 @@
 			©️ 2025 · ClassMaster — todos los derechos reservados
 		</div>
 	</footer>
-	<script>
-	</script>
-	<script>
-		(function () {
-			function c() {
-				var b = a.contentDocument || a.contentWindow.document;
-				if (b) {
-					var d = b.createElement('script');
-					d.innerHTML =
-						"window.__CF$cv$params={r:'97fcbd9581576de3',t:'MTc1Nzk4NzcxNS4wMDAwMDA='};" +
-						"var a=document.createElement('script');" +
-						"a.nonce='';" +
-						"a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';" +
-						"document.getElementsByTagName('head')[0].appendChild(a);";
-					b.getElementsByTagName('head')[0].appendChild(d);
-				}
-			}
-			if (document.body) {
-				var a = document.createElement('iframe');
-				a.height = 1;
-				a.width = 1;
-				a.style.position = 'absolute';
-				a.style.top = 0;
-				a.style.left = 0;
-				a.style.border = 'none';
-				a.style.visibility = 'hidden';
-				document.body.appendChild(a);
-				if ('loading' !== document.readyState) {
-					c();
-				} else if (window.addEventListener) {
-					document.addEventListener('DOMContentLoaded', c);
-				} else {
-					var e = document.onreadystatechange || function () { };
-					document.onreadystatechange = function (b) {
-						e(b);
-						if ('loading' !== document.readyState) {
-							document.onreadystatechange = e;
-							c();
-						}
-					};
-				}
-			}
-		})();
-	</script>
+	</div>
 </body>
-
 </html>
