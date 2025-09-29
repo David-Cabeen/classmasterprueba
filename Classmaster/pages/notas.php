@@ -27,27 +27,15 @@
                 <option value="3">3</option>
                 <option value="4">4</option>
             </select>
-            <span>Grado: </span>
-            <select name="grado" id="grado">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-            </select>
+            <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
+                echo '<span>Grado: </span>
+                    <select name="grado" id="grado">
+                        <!--Cargar grados del maestro desde la bbdd-->
+                    </select>';
+            } ?>
             <span>Materia: </span>
             <select name="materia" id="materia">
-                <option value="espanol">Español</option>
-                <option value="matematicas">Matemáticas</option>
-                <option value="ciencias">Ciencias</option>
-                <option value="historia">Historia</option>
-                <option value="geografia">Geografía</option>
+                <!--Cargar materias del maestro desde la bbdd-->
             </select>
             <input type="search" name="" id="search" placeholder="Buscar estudiante...">
         </section>
@@ -55,77 +43,45 @@
             <thead>
                 <tr>
                     <th>Nombre</th>
-                    <th>Tarea 1</th> <!--Reemplazar estas tareas por las notas agregadas en la BBDD-->
-                    <th>Tarea 2</th>
-                    <th>Promedio</th>
+                        <!--Reemplazar estas tareas por las notas agregadas en la BBDD-->
                 </tr>
             </thead>
             <tbody>
                 <!--Reemplazar estos estudiantes por los que cumplan los requistos de 
                 los filtros de grado, periodo y materia. Son tomados de la BBDD-->
-                <tr>
-                    <td>Juan Pérez</td>
-                    <td>8.5</td>
-                    <td>9.0</td>
-                    <td>8.75</td>
-                </tr>
-                <tr>
-                    <td>María López</td>
-                    <td>7.0</td>
-                    <td>8.5</td>
-                    <td>7.75</td>
-                </tr>
-                <tr>
-                    <td>Carlos García</td>
-                    <td>9.0</td>
-                    <td>9.5</td>
-                    <td>9.25</td>
-                </tr>
-                <tr>
-                    <td>Laura Martínez</td>
-                    <td>6.5</td>
-                    <td>7.0</td>
-                    <td>6.75</td>
-                </tr>
-                <tr>
-                    <td>Pedro Sánchez</td>
-                    <td>8.0</td>
-                    <td>8.5</td>
-                    <td>8.25</td>
-                </tr>
-                <tr>
-                    <td>Lucía Fernández</td>
-                    <td>9.5</td>
-                    <td>10.0</td>
-                    <td>9.75</td>
-                </tr>
-                <tr>
-                    <td>Jorge Ramírez</td>
-                    <td>7.5</td>
-                    <td>8.0</td>
-                    <td>7.75</td>
-                </tr>
-                <tr>
-                    <td>Ana Torres</td>
-                    <td>8.0</td>
-                    <td>9.0</td>
-                    <td>8.50</td>
-                </tr>
-                <tr>
-                    <td>Diego Flores</td>
-                    <td>6.0</td>
-                    <td>7.5</td>
-                    <td>6.75</td>
-                </tr>
-                <tr>
-                    <td>Sofía Gómez</td>
-                    <td>9.0</td>
-                    <td>9.5</td>
-                    <td>9.25</td>
-                </tr>
             </tbody>
         </table>
     </main>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script>
+        window.rol = "<?php echo $_SESSION['rol']; ?>";
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.rol === 'profesor') {
+                fetch('../php/get_profesor_materias_grados.php')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const materiaSelect = document.getElementById('materia');
+                            materiaSelect.innerHTML = '';
+                            data.materias.forEach(m => {
+                                const opt = document.createElement('option');
+                                opt.value = m;
+                                opt.textContent = m;
+                                materiaSelect.appendChild(opt);
+                            });
+                            const gradoSelect = document.getElementById('grado');
+                            if (gradoSelect) {
+                                gradoSelect.innerHTML = '';
+                                data.grados.forEach(g => {
+                                    const opt = document.createElement('option');
+                                    opt.value = g;
+                                    opt.textContent = g;
+                                    gradoSelect.appendChild(opt);
+                                });
+                            }
+                        }
+                    });
+            }
+        });
+    </script>
 </body>
 </html>

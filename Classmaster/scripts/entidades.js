@@ -262,13 +262,7 @@ function renderTeachers(teachers) {
         <td><input type="email" id="newTeacherEmail" placeholder="Email"></td>
         <td>
             <select id="newTeacherMaterias" multiple>
-                <option value="Matemáticas">Matemáticas</option>
-                <option value="Ciencias">Ciencias</option>
-                <option value="Lengua">Lengua</option>
-                <option value="Historia">Historia</option>
-                <option value="Inglés">Inglés</option>
-                <option value="Arte">Arte</option>
-                <option value="Educación Física">Educación Física</option>
+                
             </select>
         </td>
         <td><button id="createTeacherBtn">Crear maestro</button></td>

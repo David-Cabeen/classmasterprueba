@@ -19,24 +19,31 @@
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO users (nombre, apellido, email, password, grado, seccion, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, NOW())");
         $stmt->bind_param("ssssss", $nombre, $apellido, $email, $hash, $grado, $seccion);
-        if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
-        
+        if (!$stmt->execute()) {
+            response(false, $stmt->error);
+        }
+        $user_id = $conn->insert_id;
         $stmt->close();
+        // Link the new student to every course with the same grado and seccion
         $stmt = $conn->prepare("SELECT id FROM cursos WHERE grado = ? AND seccion = ?");
         $stmt->bind_param("ss", $grado, $seccion);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            $curso_id = $row['id'];
-            $user_id = $conn->insert_id;
-            $stmt->close();
+        $curso_ids = [];
+        while ($row = $result->fetch_assoc()) {
+            $curso_ids[] = $row['id'];
+        }
+        $stmt->close();
+        if (!empty($curso_ids)) {
             $stmt = $conn->prepare("INSERT INTO curso_estudiante (estudiante_id, curso_id) VALUES (?, ?)");
-            $stmt->bind_param("ii", $user_id, $curso_id);
-            $stmt->execute();
+            foreach ($curso_ids as $curso_id) {
+                $stmt->bind_param("ii", $user_id, $curso_id);
+                $stmt->execute();
+            }
             $stmt->close();
-        };
-        response(false, $stmt->error);
-    };
+        }
+        response(true, '', ['id' => $user_id]);
+    }
     if ($action === 'create' && $type === 'acudiente') {
         $nombre = $_POST['nombre'] ?? '';
         $apellido = $_POST['apellido'] ?? '';
