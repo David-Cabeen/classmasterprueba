@@ -376,7 +376,6 @@ fieldset input[type='radio'][name='priority']:checked + label{
     resize: none;
 } 
 
-/* Animación de entrada para modales y ventanas emergentes (igual que home.css) */
 @keyframes fadeSlideUp {
     from {
         opacity: 0;

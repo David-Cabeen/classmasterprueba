@@ -191,7 +191,7 @@ body {
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 500;
-    transition: scale 0.2s, background 0.3s, box-shadow 0.3s;
+    transition: scale 0.3s, background-color 0.3s, box-shadow 0.3s;
     box-shadow: 0 2px 8px rgba(255, 107, 107, 0.15);
     display: flex;
     align-items: center;
@@ -199,7 +199,7 @@ body {
 }
 
 .delete-btn:hover {
-    background: linear-gradient(135deg, #ff5252, #e53e3e);
+    background-color: #ff4b3e;
     scale: 1.05;
     box-shadow: 0 4px 16px rgba(255, 107, 107, 0.2);
 }
@@ -254,4 +254,37 @@ body {
         padding: 1.2rem;
         font-size: 1rem;
     }
+}
+
+button[type='submit'] {
+    border: 2px solid var(--accent);
+    padding: 12px 24px;
+    background: transparent;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, scale .3s;
+}
+
+button[type='submit']:hover {
+    scale: 1.05;
+    background-color: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+}
+
+/* Animación de entrada para modales y ventanas emergentes (igual que home.css) */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeSlideUp .45s ease both;
 }

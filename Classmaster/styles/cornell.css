@@ -8,10 +8,8 @@
     --glass: rgba(255,255,255,0.04);
     --glass-border: rgba(255,255,255,0.08);
     --accent: #ffffff;
-    --primary: #667eea;
-    --secondary: #764ba2;
-    --danger: #e84f4f;
-    --success: #38a169;
+	--gradient-dark-blue: #23233a;
+	--gradient-mid-blue: #181824;
 }
 * {
     margin: 0;
@@ -20,7 +18,7 @@
     font-family: "Outfit", sans-serif;
 }
 body {
-    background: radial-gradient(1200px 800px at 80% -10%, #202024 0%, #121214 45%, #0d0d0f 100%);
+    background: radial-gradient(1200px 800px at 80% -10%, var(--gradient-dark-blue) 0%, var(--gradient-mid-blue) 45%, var(--bg) 100%);
     min-height: 100vh;
     color: var(--text);
     padding: 20px;

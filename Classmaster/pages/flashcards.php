@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="../styles/flashcards.css">
     <link rel="stylesheet" href="../styles/sidebar.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../scripts/flashcards.js" defer></script>
+    <script type="module" src="../scripts/flashcards.js" defer></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
@@ -35,10 +35,10 @@ if (!isset($_SESSION['user_id'])) {
         <main class="flex-1 w-full">
             <section class="max-w-6xl mx-auto px-6 py-8">
                 <div class="glass rounded-2xl p-6 md:p-8 ring-soft border border-white/10 animate-fadeInUp mb-8">
-                    <div class="flex justify-center gap-2 mb-8">
-                        <button class="tab active px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10" onclick="switchTab('creator')">➕ Crear Flashcards</button>
-                        <button class="tab px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10" onclick="switchTab('study')">🎓 Estudiar</button>
-                        <button class="tab px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10" onclick="switchTab('manage')">📋 Gestionar</button>
+                    <div id="tabButtons" class="flex justify-center gap-2 mb-8">
+                        <button class="tab active px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10">➕ Crear Flashcards</button>
+                        <button class="tab px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10">🎓 Estudiar</button>
+                        <button class="tab px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10">📋 Gestionar</button>
                     </div>
                     <!-- Sección Crear -->
                     <div id="creator" class="tab-content active animate-fadeInUp">
@@ -53,7 +53,7 @@ if (!isset($_SESSION['user_id'])) {
                                     <label for="answer" class="block mb-2 font-medium text-white/70">💡 Respuesta:</label>
                                     <textarea id="answer" class="w-full rounded-lg bg-black/30 text-white p-3 border border-white/10 focus:outline-none focus:ring-2 focus:ring-accent" placeholder="Escribe la respuesta aquí..." required></textarea>
                                 </div>
-                                <button type="submit" class="btn bg-accent text-white font-semibold px-6 py-2 rounded-lg shadow hover:bg-accent/90 transition">Agregar Flashcard</button>
+                                <button type="submit" class="btn bg-accent text-white font-semibold px-6 py-2 rounded-lg shadow">Agregar Flashcard</button>
                             </form>
                         </div>
                     </div>

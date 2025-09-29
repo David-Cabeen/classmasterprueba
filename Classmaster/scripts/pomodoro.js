@@ -16,12 +16,13 @@ active = false, // Variable para controlar el estado de los controles
 rotateValue = -360, // Valor de rotación inicial para el botón de reinicio
 circleAngle = 100, // Variable para el ángulo del círculo
 cyclesCompleted = 0, // Variable para calcular los ciclos
+isWorkPhase = null, // Variable para controlar si es fase de trabajo o descanso
 updateCircle = null; // Variable para detener el intervalo globalmente
 
 // Inicio del timer
 startButton.addEventListener('click', function () {
     if (isPaused == null) {
-        timeLeft = workTimeInput.value * 60;
+        timeLeft = (workTimeInput.value * 60) - 1;
         circleAnim(workTimeInput.value);
     } else if (isPaused == true) {
         timeLeft = currentTime;
@@ -30,24 +31,26 @@ startButton.addEventListener('click', function () {
 
     isPaused = false;
 
-    let isWorkPhase = true;
+    isWorkPhase = true;
     let completedWorkBreakCycles = 0;
 
     timer = setInterval(() => {
         if (timeLeft === 0) {
             if (isWorkPhase) {
+                cancelAnimationFrame(updateCircle);
+                circleAnim(breakTimeInput.value);
                 isWorkPhase = false;
                 timeLeft = breakTimeInput.value * 60;
-                document.querySelector(':root').style.setProperty('--primary-color', '#0099ff');
+                document.querySelector(':root').style.setProperty('--primary-color', '#2b30bf');
                 timeDisplay.textContent = `${breakTimeInput.value}:00`;
-                circleAnim(breakTimeInput.value);
             } else {
                 isWorkPhase = true;
                 completedWorkBreakCycles++;
+                console.log(completedWorkBreakCycles);
 
                 if (completedWorkBreakCycles < cyclesInput.value) {
                     timeLeft = workTimeInput.value * 60;
-                    document.querySelector(':root').style.setProperty('--primary-color', '#ff6347');
+                    document.querySelector(':root').style.setProperty('--primary-color', '#702bbf');
                     timeDisplay.textContent = `${workTimeInput.value}:00`;
                     circleAnim(workTimeInput.value);
                 } else {
@@ -76,7 +79,7 @@ function circleAnim(total) {
     };
     updateCircle = () => {
         const elapsedTime = (performance.now() - startTime) - pauseTime; // Calcula el tiempo transcurrido
-        circleAngle = ((totalTime * 100)/(workTimeInput.value*60*100)) - ((elapsedTime / totalTime)*10);
+        circleAngle = ((totalTime * 100)/(total*60*100)) - ((elapsedTime / totalTime)*10);
         document.querySelector(":root").style.setProperty("--circleAngle", `${circleAngle}%`);
 
         if (circleAngle !== 0 && isPaused == false) {
@@ -100,51 +103,68 @@ pauseButton.addEventListener('click', function () {
 // Botón de reinicio
 resetButton.addEventListener('click', function () {
     if (timeLeft !== 0) {
+        rotateValue -= 360;
+        resetButton.style.rotate = `${rotateValue}deg`;
         clearInterval(timer);
         cancelAnimationFrame(updateCircle);
-        resetButton.style.rotate = `${rotateValue}deg`;
-        rotateValue -= 360;
-
-        // Reset variables
-        timeLeft = workTimeInput.value * 60; // Reset timeLeft to the work time input
-        circleAngle = 100; // Reset circleAngle to 100%
-        document.querySelector(":root").style.setProperty("--circleAngle", `${circleAngle}%`);
-        timeDisplay.textContent = `${workTimeInput.value}:00`; // Reset time display
+        cyclesCompleted = 0;
         isPaused = null; // Reset isPaused to null
 
         // Call reset animations
         circleRotateBack();
-        timeBack();
+        switch (isWorkPhase) {
+            case true:
+                timeBack(workTimeInput.value);
+                break;
+            case false:
+                timeBack(breakTimeInput.value);
+                break;
+        }
     }
 });
 
+
 function circleRotateBack() {
-    let distanceLeft = 100 - circleAngle;
-    let interval = distanceLeft / 100;
-    console.log(interval)
+    let start = circleAngle;
+    let end = 100;
+    let steps = Math.abs(end - start);
+    if (steps === 0) return;
+    let interval = 300 / steps;
     const back = setInterval(() => {
         if (circleAngle >= 100) {
             clearInterval(back);
+            circleAngle = 100;
+            document.querySelector(":root").style.setProperty("--circleAngle", `100%`);
             return;
         } else {
-            circleAngle ++;
+            circleAngle++;
             document.querySelector(":root").style.setProperty("--circleAngle", `${circleAngle}%`);
-        };
+        }
     }, interval);
 }
 
-function timeBack() {
+
+function timeBack(timeType) {
+    clearInterval(timer);
+    let totalTime = timeType * 60;
+    let steps = totalTime - timeLeft;
+    if (steps <= 0) return;
+    let interval = 300 / steps;
     const time = setInterval(() => {
-        if (timeDisplay.textContent == `${workTimeInput.value}:00`) {
+        if (timeLeft >= totalTime) {
             clearInterval(time);
-            return
-        } else {
-            timeLeft ++;
+            timeLeft = totalTime;
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        };
-    }, 10);
+            return;
+        } else {
+            timeLeft++;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+    }, interval);
 }
 
 controlsToggle.addEventListener('click', function() {
