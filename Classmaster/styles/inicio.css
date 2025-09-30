@@ -273,3 +273,12 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 .toast.bg-red-500 { background: var(--toast-error) !important; color: var(--text) !important; }
 .toast.bg-green-500 { background: var(--toast-success) !important; color: var(--text) !important; }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text); /* Replace with your desired color */
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset; /* Replace with your desired background color */
+  transition: background-color 5000s ease-in-out 0s;
+}
