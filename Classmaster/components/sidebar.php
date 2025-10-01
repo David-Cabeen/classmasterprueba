@@ -49,7 +49,22 @@
         const mainContent = document.getElementById('mainContent');
         const sideLogout = document.getElementById('sideLogout');
         sideLogout.addEventListener('click', () => {
-            logout();
+            // Use confirmModal from components.js
+            if (typeof confirmModal === 'function') {
+                confirmModal({
+                    titulo: 'Cerrar sesión',
+                    descripcion: '¿Estás seguro de que deseas cerrar sesión?',
+                    confirmarTxt: 'Cerrar sesión',
+                    cancelarTxt: 'Cancelar',
+                    onConfirm: () => {
+                        window.location.href = 'logout.php';
+                    }
+                });
+            } else {
+                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                    window.location.href = 'logout.php';
+                }
+            }
         });
         let sidebarOpen = false;
         sidebarToggle.addEventListener('click', () => {
