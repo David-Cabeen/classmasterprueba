@@ -70,7 +70,7 @@ signup.addEventListener("submit", async (e) => {
             if (result.success) {
                 toast(result.message, "success");
                 setTimeout(() => {
-                    window.location.assign("home.php");
+                    window.location.assign("/pages/home.php");
                 }, 1000);
             } else {
                 toast(result.error, "error");

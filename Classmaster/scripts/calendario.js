@@ -1,3 +1,5 @@
+import { toast } from './components.js';
+
 window.addEventListener('DOMContentLoaded', function () {
     const closeButton = document.getElementById('close'),
     distance = document.getElementById('distance'),
@@ -82,19 +84,20 @@ window.addEventListener('DOMContentLoaded', function () {
     renderCalendar(currentDate);
     checkForEvents();
 
-    // Removed unnecessary click handler for 'held' id
-
-
     // Fetch events from DB and mark days
     async function checkForEvents() {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth() + 1;
         let eventos = [];
+        let eventosCurso = [];
         try {
             const res = await fetch(`../php/eventos.php?year=${year}&month=${month}`);
             const data = await res.json();
-            if (data.success) eventos = data.eventos;
-        } catch (e) { eventos = []; }
+            if (data.success) {
+                eventos = data.eventos;
+                eventosCurso = data.eventos_curso;
+            }
+        } catch (e) { eventos = []; eventosCurso = []; }
         for (let i = 0; i < daysContainer.childElementCount; i++) {
             const dayDiv = daysContainer.children[i];
             const dayNumber = parseInt(dayDiv.textContent.trim());
@@ -105,14 +108,15 @@ window.addEventListener('DOMContentLoaded', function () {
                 dayDiv.classList.remove('has-event');
                 continue;
             }
-            // Find events for this day
+            // Find events for this day (personal and curso)
             const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(dayNumber).padStart(2,'0')}`;
             const dayEvents = eventos.filter(ev => ev.fecha === dateStr);
-            if (dayEvents.length > 0) {
+            const dayCursoEvents = eventosCurso.filter(ev => ev.fecha === dateStr);
+            if (dayEvents.length > 0 || dayCursoEvents.length > 0) {
                 dayDiv.classList.add('has-event');
-                // Priority dots
+                // Priority dots (combine both)
                 let hasUrgent = false, hasImportant = false, hasNormal = false;
-                dayEvents.forEach(ev => {
+                [...dayEvents, ...dayCursoEvents].forEach(ev => {
                     if (ev.prioridad === 'urgente') hasUrgent = true;
                     if (ev.prioridad === 'importante') hasImportant = true;
                     if (ev.prioridad === 'normal') hasNormal = true;
@@ -122,7 +126,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 dotContainer.className = 'event-dot-container';
                 dotContainer.style.position = 'absolute';
                 dotContainer.style.display = 'flex';
-                dotContainer.style.alignContent = 'flex-end'
+                dotContainer.style.alignContent = 'flex-end';
                 dotContainer.style.gap = '3px';
                 // Default: bottom left
                 dotContainer.style.left = '5%';
@@ -314,7 +318,6 @@ window.addEventListener('DOMContentLoaded', function () {
             if (!titulo) return;
             // AJAX create
             let action = 'create';
-            console.log(window.rol)
             if (window.rol === 'profesor') action = 'create_profesor'; 
             const formData = new FormData();
             formData.append('action', action);
@@ -323,7 +326,17 @@ window.addEventListener('DOMContentLoaded', function () {
             formData.append('prioridad', prioridad);
             formData.append('fecha', fecha);
             if (window.rol === 'profesor') formData.append('curso_id', selectedCursoId);
-            await fetch('../php/eventos.php', { method: 'POST', body: formData });
+            try {
+                const res = await fetch('../php/eventos.php', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    toast('Evento creado correctamente', 'success');
+                } else {
+                    toast(data.error || 'Error al crear el evento', 'error');
+                }
+            } catch (e) {
+                toast('Error de red al crear el evento', 'error');
+            }
             eventInput.value = '';
             eventDescription.value = '';
             loadEvent();
@@ -357,11 +370,16 @@ window.addEventListener('DOMContentLoaded', function () {
         const month = months.indexOf(monthName) + 1;
         const fecha = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         let eventos = [];
+        let eventosCurso = [];
         try {
             const res = await fetch(`../php/eventos.php?year=${year}&month=${month}`);
             const data = await res.json();
-            if (data.success) eventos = data.eventos.filter(ev => ev.fecha === fecha);
-        } catch (e) { eventos = []; }
+            if (data.success) {
+                eventos = data.eventos.filter(ev => ev.fecha === fecha);
+                eventosCurso = data.eventos_curso.filter(ev => ev.fecha === fecha);
+            }
+        } catch (e) { eventos = []; eventosCurso = []; }
+        // Render personal events
         eventos.forEach(ev => {
             let div = document.createElement('div');
             div.classList.add(ev.prioridad);
@@ -376,11 +394,29 @@ window.addEventListener('DOMContentLoaded', function () {
                 const formData = new FormData();
                 formData.append('action', 'delete');
                 formData.append('id', ev.id);
-                await fetch('../php/eventos.php', { method: 'POST', body: formData });
+                try {
+                    await fetch('../php/eventos.php', { method: 'POST', body: formData });
+                } catch (e) {}
                 loadEvent();
                 checkForEvents();
             };
             div.appendChild(deleteButton);
+            div.appendChild(title);
+            if (ev.descripcion) {
+                let description = document.createElement('p');
+                description.innerHTML = ev.descripcion;
+                div.appendChild(description);
+            }
+            eventList.appendChild(div);
+        });
+        // Render course events
+        eventosCurso.forEach(ev => {
+            let div = document.createElement('div');
+            div.classList.add(ev.prioridad);
+            div.classList.add('curso-event');
+            let title = document.createElement('h3');
+            let courseName = ev.curso_nombre ? ev.curso_nombre : 'Curso';
+            title.innerHTML = `${ev.titulo} <span style="font-size:0.8em;color:#6cf;">[${courseName}]</span>`;
             div.appendChild(title);
             if (ev.descripcion) {
                 let description = document.createElement('p');

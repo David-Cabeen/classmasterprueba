@@ -39,26 +39,48 @@ if ($method === 'GET') {
 
     // Get eventos_curso for those cursos
     $eventos_curso = [];
+    $eventos_curso_ids = [];
     if (!empty($curso_ids)) {
         $placeholders = implode(',', array_fill(0, count($curso_ids), '?'));
         if ($year && $month) {
-            $sql = "SELECT id, curso_id, titulo, descripcion, prioridad, fecha, creado_por_profesor_id FROM eventos_curso WHERE YEAR(fecha) = ? AND MONTH(fecha) = ? AND curso_id IN ($placeholders) ORDER BY fecha ASC";
+            $sql = "SELECT ec.id, ec.curso_id, c.nombre as curso_nombre, ec.titulo, ec.descripcion, ec.prioridad, ec.fecha, ec.creado_por_profesor_id FROM eventos_curso ec JOIN cursos c ON ec.curso_id = c.id WHERE YEAR(ec.fecha) = ? AND MONTH(ec.fecha) = ? AND ec.curso_id IN ($placeholders) ORDER BY ec.fecha ASC";
             $stmt = $conn->prepare($sql);
             $types = str_repeat('i', count($curso_ids));
             $bind_types = 'ii' . $types;
             $params = array_merge([$year, $month], $curso_ids);
         } else {
-            $sql = "SELECT id, curso_id, titulo, descripcion, prioridad, fecha, creado_por_profesor_id FROM eventos_curso WHERE curso_id IN ($placeholders) ORDER BY fecha ASC";
+            $sql = "SELECT ec.id, ec.curso_id, c.nombre as curso_nombre, ec.titulo, ec.descripcion, ec.prioridad, ec.fecha, ec.creado_por_profesor_id FROM eventos_curso ec JOIN cursos c ON ec.curso_id = c.id WHERE ec.curso_id IN ($placeholders) ORDER BY ec.fecha ASC";
             $stmt = $conn->prepare($sql);
             $bind_types = str_repeat('i', count($curso_ids));
             $params = $curso_ids;
         }
-        // Dynamic bind_param
         $stmt->bind_param($bind_types, ...$params);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
             $eventos_curso[] = $row;
+            $eventos_curso_ids[$row['id']] = true;
+        }
+        $stmt->close();
+    }
+
+    // If user is a profesor, also get events created by them (even if not in their courses as student)
+    if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
+        if ($year && $month) {
+            $sql = "SELECT ec.id, ec.curso_id, c.nombre as curso_nombre, ec.titulo, ec.descripcion, ec.prioridad, ec.fecha, ec.creado_por_profesor_id FROM eventos_curso ec JOIN cursos c ON ec.curso_id = c.id WHERE YEAR(ec.fecha) = ? AND MONTH(ec.fecha) = ? AND ec.creado_por_profesor_id = ? ORDER BY ec.fecha ASC";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('iis', $year, $month, $_SESSION['user_id']);
+        } else {
+            $sql = "SELECT ec.id, ec.curso_id, c.nombre as curso_nombre, ec.titulo, ec.descripcion, ec.prioridad, ec.fecha, ec.creado_por_profesor_id FROM eventos_curso ec JOIN cursos c ON ec.curso_id = c.id WHERE ec.creado_por_profesor_id = ? ORDER BY ec.fecha ASC";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('s', $_SESSION['user_id']);
+        }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            if (!isset($eventos_curso_ids[$row['id']])) {
+                $eventos_curso[] = $row;
+            }
         }
         $stmt->close();
     }
@@ -89,15 +111,28 @@ if ($method === 'POST') {
         exit;
     } else if ($action === 'delete') {
         $id = $_POST['id'] ?? 0;
-        echo '<script>console.log("Deleting event with ID: ' . $id . '");</script>';
+        // Try to delete from eventos (personal events)
         $stmt = $conn->prepare("DELETE FROM eventos WHERE id = ?");
         $stmt->bind_param('i', $id);
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false, 'error' => $stmt->error]);
-        }
+        $stmt->execute();
+        $deleted_personal = $stmt->affected_rows > 0;
         $stmt->close();
+        // If not deleted, try to delete from eventos_curso if user is the creator
+        if (!$deleted_personal && isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor' && isset($_SESSION['profesor_id'])) {
+            $stmt = $conn->prepare("DELETE FROM eventos_curso WHERE id = ? AND creado_por_profesor_id = ?");
+            $stmt->bind_param('is', $id, $_SESSION['profesor_id']);
+            $stmt->execute();
+            $deleted_curso = $stmt->affected_rows > 0;
+            $stmt->close();
+            if ($deleted_curso) {
+                echo json_encode(['success' => true]);
+                exit;
+            }
+        } else if ($deleted_personal) {
+            echo json_encode(['success' => true]);
+            exit;
+        }
+        echo json_encode(['success' => false, 'error' => 'No se pudo eliminar el evento o no tienes permisos.']);
         exit;
     } else if ($action === 'create_profesor') {
         $titulo = $_POST['titulo'] ?? '';

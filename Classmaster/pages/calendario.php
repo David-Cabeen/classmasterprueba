@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario</title>
+    <script type="module" src="../scripts/calendario.js"></script>
     <link rel="stylesheet" href="../styles/calendario.css">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
@@ -52,6 +53,5 @@
     <script>
         window.rol = "<?php echo $_SESSION['rol']; ?>";
     </script>
-    <script src="../scripts/calendario.js"></script>
 </body>
 </html>

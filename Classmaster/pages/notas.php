@@ -42,11 +42,19 @@
                 </select>
                 <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
                     echo '<label for="grado" class="text-white/80 font-medium">Grado:</label>
-                        <select name="grado" id="grado" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"></select>';
+                        <select name="grado" id="grado" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"></select>
+                        <label for="seccion" class="text-white/80 font-medium ml-4">Sección:</label>
+                        <select name="seccion" id="seccion" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                    ';
                 } ?>
                 <label for="materia" class="text-white/80 font-medium">Materia:</label>
                 <select name="materia" id="materia" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"></select>
-                <input type="search" id="search" placeholder="Buscar estudiante..." class="ml-auto bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30 w-56" />
+                <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
+                    echo '<input type="search" id="search" placeholder="Buscar estudiante..." class="ml-auto bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30 w-56" />';
+                } ?>
             </section>
             <div class="container rounded-xl overflow-x-auto animate-fadeInUp">
                 <table class="min-w-full text-left text-white/90 notas-table">

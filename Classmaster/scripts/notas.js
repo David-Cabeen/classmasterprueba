@@ -2,22 +2,8 @@ import { toast } from './components.js'
 
 document.addEventListener('DOMContentLoaded', function() {
     const table = document.querySelector('table');
-    let btn = null;
-
-    // Busqueda por nombre
-    const search = document.getElementById('search');
-    search.addEventListener('input', function() {
-        const filter = search.value.toLowerCase();
-        const rows = document.querySelectorAll('tbody tr');
-        rows.forEach(row => {
-            const studentName = row.cells[0]?.textContent.toLowerCase() || '';
-            if (studentName.includes(filter)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
+    let btn = null,
+    overlay;
 
     // Opciones de los filtros
     if (window.rol === 'profesor') {
@@ -49,6 +35,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                 };
             });
+
+        // Busqueda por nombre
+        const search = document.getElementById('search');
+        search.addEventListener('input', function() {
+            const filter = search.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const studentName = row.cells[0]?.textContent.toLowerCase() || '';
+                if (studentName.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        
     } else if(window.rol === "estudiante") {
         fetch('../php/notas_filtros.php')
             .then(res => res.json())
@@ -67,7 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function crearTarea(){
-        const data = new FormData()
+        const data = new FormData();
+        data.append('curso_id', document.getElementById('curso'));
+        data.append('periodo', document.getElementById('periodo').value);
         data.append('titulo', overlay.querySelector('#tarea-input').value);
         data.append('descripcion', overlay.querySelector('#tarea-descripcion').value);
         data.append('porcentaje', overlay.querySelector('#porcentaje').value);
@@ -78,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(btn !== null){
         btn.addEventListener('click', (e) => {
             e.preventDefault()
-            const overlay = document.createElement("div");
+            overlay = document.createElement("div");
             overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-50";
             overlay.innerHTML = `
                 <div class="crear-tarea w-full sm:max-w-md rounded-2xl border border-white/10 p-6 animate-in" role="dialog" aria-modal="true">
