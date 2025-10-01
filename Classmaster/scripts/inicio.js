@@ -1,5 +1,7 @@
+// Importa funciones utilitarias para mostrar notificaciones (toast) y determinar el tipo de usuario (checkType)
 import { toast, checkType } from "./components.js";
 
+// Elementos del DOM para manipular la UI de inicio/registro de sesión
 const container = document.querySelector(".container");
 const btnsignin = document.getElementById("btn-sign-in");
 const btnsignup = document.getElementById("btn-sign-up");
@@ -11,6 +13,7 @@ const overlay = document.getElementById("overlay");
 const emailInput = document.getElementById("email");
 const numberInput = document.getElementById("number");
 
+// Alterna entre los formularios de inicio de sesión y registro
 btnsignin.addEventListener("click", () => {
     container.classList.remove("toggle");
 });
@@ -19,6 +22,7 @@ btnsignup.addEventListener("click", () => {
     container.classList.add("toggle");
 });
 
+// Permite mostrar/ocultar la contraseña al hacer clic en el icono de ojo
 icons.forEach((icon, index) => {
     icon.addEventListener("click", () => {
         if (passwords[index].type === "password") {
@@ -31,6 +35,7 @@ icons.forEach((icon, index) => {
     });
 });
 
+// Valida la seguridad de la contraseña según criterios mínimos
 const checkPasswordValidity = (password) => {
     if (password.length < 8) {
         return "La contraseña debe tener por lo menos 8 caracteres.";
@@ -47,6 +52,7 @@ const checkPasswordValidity = (password) => {
     return "";
 };
 
+// Valida el formato del correo electrónico
 const checkEmailValidity = (email) => {
     const pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     if (!pattern.test(email)) {
@@ -55,6 +61,8 @@ const checkEmailValidity = (email) => {
     return "";
 };
 
+// Maneja el registro de nuevos estudiantes
+// Valida los campos y envía los datos al backend (php/registro.php), que los guarda en la base de datos
 signup.addEventListener("submit", async (e) => {
     e.preventDefault();
     if(!emailInput.value || !passwords[1].value){
@@ -65,7 +73,7 @@ signup.addEventListener("submit", async (e) => {
         const passwordError = checkPasswordValidity(passwords[1].value);
         
         if(emailError == "" && passwordError == ""){
-            // Enviar datos al servidor
+            // Enviar datos al servidor para registrar estudiante
             const result = await registerStudent(emailInput.value, passwords[1].value);
             if (result.success) {
                 toast(result.message, "success");
@@ -82,6 +90,8 @@ signup.addEventListener("submit", async (e) => {
     };
 });
 
+// Maneja el inicio de sesión de cualquier tipo de usuario
+// Envía los datos a php/inicio.php, que valida contra la base de datos y retorna el resultado
 signin.addEventListener('submit', async (e) => {
     e.preventDefault();
     const idInput = document.getElementById("id"),
@@ -99,6 +109,8 @@ signin.addEventListener('submit', async (e) => {
     };
 });
 
+// Consulta al backend para validar credenciales de usuario
+// Relación con la BBDD: php/inicio.php consulta las tablas de usuarios, profesores o acudientes según el tipo
 async function checkAccount(id, password, type) {
     try {
         const response = await fetch('./php/inicio.php', {
@@ -112,6 +124,8 @@ async function checkAccount(id, password, type) {
     }
 }
 
+// Envía los datos del nuevo estudiante al backend para registrarlo en la base de datos (tabla users)
+// php/registro.php se encarga de insertar el usuario y retornar el resultado
 async function registerStudent(email, password) {
     try {
         const response = await fetch('./php/registro.php', {

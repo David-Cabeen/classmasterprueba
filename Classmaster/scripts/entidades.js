@@ -253,6 +253,25 @@ function renderTeachers(teachers) {
             teachersTable.appendChild(row);
         });
     }
+    // Opciones posibles del set 'materias' en la tabla profesores
+    const materiasOptions = [
+        'Matemáticas',
+        'Física',
+        'Química',
+        'Inglés',
+        'Español',
+        'Educación Física',
+        'Sociales',
+        'Filosofía',
+        'Religión',
+        'Ética',
+        'Ciencias Políticas',
+        'Artística',
+        'Science',
+        'Programación',
+        'Informática',
+        'Robótica'
+    ];
     // Always add the new teacher row
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
@@ -262,7 +281,7 @@ function renderTeachers(teachers) {
         <td><input type="email" id="newTeacherEmail" placeholder="Email"></td>
         <td>
             <select id="newTeacherMaterias" multiple>
-                
+                ${materiasOptions.map(m => `<option value="${m}">${m}</option>`).join('')}
             </select>
         </td>
         <td><button id="createTeacherBtn">Crear maestro</button></td>

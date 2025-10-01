@@ -1,15 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Outfit:wght@100..900&display=swap");
 
 :root {
-    --background-color: #eee;
-    --text-color: #141414;
-    --math-color: #f13838;
-    --chem-color: #38f1a3;
-    --history-color: #f1c938;
-    --spanish-color: #3875f1;
-    --others-color: #a138f1;
-    --info-color: #f1a138;
+    --bg: #0e0e10;
+    --panel: #16161a;
+    --muted: #9ca3af;
+    --text: #f3f4f6;
+    --line: #26262b;
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+    --accent: #ffffff;
 }
+
 * {
     margin: 0;
     padding: 0;
@@ -19,101 +20,193 @@
 }
 
 body {
-    background-color: var(--background-color);
+    min-height: 100vh;
+    background: radial-gradient(1200px 800px at 80% -10%, #202024 0%, #121214 45%, #0d0d0f 100%);
+    color: var(--text);
     display: flex;
     flex-direction: column;
-    color: var(--text-color);
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-}
-
-section {
-    margin: 20px;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 4px 4px 8px #888;
 }
 
 header {
-    background-color: #282828;
-    color: #eee;
-    padding: 12px;
+    width: 100%;
+    background: var(--panel);
+    color: var(--accent);
+    padding: 1.5rem 0 1rem 0;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2.2rem;
     font-weight: bold;
-    box-shadow: 4px 4px 8px #888;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 16px rgba(255,255,255,0.04);
+    border-bottom: 1.5px solid var(--glass-border);
 }
 
 main {
-    height: 138vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 2fr;
-    grid-template-areas:
-    "spanish history chem"
-    "math math others"
-    "info info others"
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1rem 1.5rem 1rem;
+    gap: 2.5rem;
+}
+
+section {
+    background: var(--glass);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(255,255,255,0.07), 0 0 5px var(--accent);
+    border: 1.5px solid var(--glass-border);
+    padding: 2rem 2.2rem 1.5rem 2.2rem;
+    min-width: 320px;
+    max-width: 420px;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    transition: box-shadow 0.3s, scale 0.3s, border-color 0.3s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section:hover {
+    box-shadow: 0 0 32px 0 rgba(255,255,255,0.18), 0 10px 30px rgba(255,255,255,0.07);
+    border-color: var(--accent);
+    scale: 1.025;
+}
+
+section h2 {
+    color: var(--accent);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-align: center;
+}
+
+section p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+section ion-icon {
+    font-size: 2.2rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+
+section a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: .7rem;
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+section a:hover {
+    color: #bdbdbd;
+}
+
+section img {
+    border-radius: 50%;
+    outline: solid var(--panel) 3px;
+    margin-top: 1rem;
+    width: 90px;
+    height: 90px;
+    transition: scale .3s, box-shadow .2s;
+    background: #fff1;
+    object-fit: cover;
+}
+
+section a:hover img {
+    scale: 1.07;
+    box-shadow: 0 0 16px 0 rgba(255,255,255,0.18);
+}
+
+h3 {
+    margin-top: 10px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+    transition: scale .3s;
+    color: var(--accent);
+}
+
+section a:hover h3 {
+    scale: 1.05;
+    color: var(--accent);
+}
+
+section > span, .others > span {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    width: 100%;
+}
+
+footer {
+    width: 100%;
+    background: var(--panel);
+    color: var(--muted);
+    text-align: center;
+    padding: 1.2rem 0 0.7rem 0;
+    font-size: 1rem;
+    border-top: 1.5px solid var(--glass-border);
+    letter-spacing: 0.01em;
+    margin-top: 2rem;
+    box-shadow: 0 -2px 16px rgba(255,255,255,0.04);
+}
+
+@media (min-width: 900px) {
+    main {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 2.5rem;
+    }
+    section {
+        min-width: 340px;
+        max-width: 420px;
+        flex: 1 1 340px;
+    }
 }
 
 @media (max-width: 900px) {
     main {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        grid-template-areas:
-            "spanish"
-            "history"
-            "chem"
-            "math"
-            "others";
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
     }
     section {
-        margin: 10px;
-        padding: 12px;
-        font-size: 1rem;
-        min-width: 0;
-        width: 100%;
-        height: auto !important;
-    }
-    section h2 {
-        font-size: 1.2rem;
-    }
-    section ion-icon {
-        font-size: 1.5rem;
-        top: 0.5rem;
-        right: 0.5rem;
-    }
-    section img {
-        width: 80px !important;
-        height: 80px !important;
-    }
-    .math {
-        height: auto !important;
-    }
-    .chem {
-        height: auto !important;
+        min-width: 90vw;
+        max-width: 98vw;
+        padding: 1.2rem 0.7rem;
     }
 }
 
 @media (max-width: 600px) {
-    body {
-        font-size: 0.9rem;
-    }
     header {
         font-size: 1.1rem;
         padding: 8px;
     }
     section {
-        margin: 5px;
-        padding: 8px;
-        font-size: 0.9rem;
+        min-width: 98vw;
+        max-width: 100vw;
+        padding: 0.7rem 0.5rem;
     }
     section h2 {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
     section ion-icon {
         font-size: 1.2rem;
@@ -122,95 +215,7 @@ main {
         width: 60px !important;
         height: 60px !important;
     }
-}
-
-.math {
-    background-color: var(--math-color);
-    grid-area: math;
-    display: inline-flex;
-    justify-content: space-evenly;
-}
-
-.chem {
-    background-color: var(--chem-color);
-    grid-area: chem;
-}
-
-.history {
-    background-color: var(--history-color);
-    grid-area: history;
-}
-
-.spanish {
-    background-color: var(--spanish-color);
-    grid-area: spanish;
-}
-
-.others {
-    background-color: var(--others-color);
-    grid-area: others;
-}
-
-.info {
-    background-color: var(--info-color);
-    grid-area: info;
-}
-
-section {
-    transition: box-shadow 0.3s ease, translate 0.3s ease;
-    position: relative;
-}
-
-section:hover {
-    box-shadow: 6px 6px 12px #666;
-    translate: -5px -5px;
-}
-
-section h2 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-}
-
-section ion-icon {
-    font-size: 2rem;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-}
-
-section img {
-    border-radius: 50%;
-    outline: solid #141414 3px;
-    margin-top: 1rem;
-    transition: scale .3s ease, box-shadow .2s ease;
-}
-
-img:hover {
-    scale: 1.05;
-    box-shadow: 5px 5px 25px #070707;
-}
-
-h3 {
-    margin-top: 10px;
-    transition: scale .3s ease;
-}
-
-img:hover + h3 {
-    scale: 1.05;
-}
-
-.history > span, .chem > span {
-    display: inline-flex;
-    justify-content: space-between;
-}
-
-.others > span {
-    display: inline-flex;
-    justify-content: space-between;
-}
-
-footer {
-    background-color: #141414;
-    text-align: center;
-    color: #eee;
+    h3 {
+        font-size: 1rem;
+    }
 }

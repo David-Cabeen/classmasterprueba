@@ -127,6 +127,7 @@ body {
 }
 .cornell-container {
     display: grid;
+    grid-template-areas: 'cues notes' 'summary summary';
     grid-template-columns: 1fr 2.5fr;
     grid-template-rows: auto 1fr auto;
     gap: 0;
@@ -158,6 +159,7 @@ body {
     color: var(--accent);
     font-size: 16px;
     font-weight: 600;
+    grid-area: 'cues';
     margin-bottom: 15px;
     text-align: center;
     padding-bottom: 10px;
@@ -165,6 +167,7 @@ body {
 }
 .cornell-notes {
     background: var(--panel);
+    grid-area: 'notes';
     padding: 25px;
 }
 .cornell-notes h3 {
@@ -179,6 +182,7 @@ body {
 .cornell-summary {
     grid-column: 1 / -1;
     background: var(--panel);
+    grid-area: 'summary';
     border-top: 1.5px solid var(--glass-border);
     padding: 25px;
 }
