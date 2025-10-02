@@ -153,7 +153,6 @@ function renderUsers(users) {
                 <td colspan="8" class="no-data">No hay usuarios registrados</td>
             </tr>
         `;
-        return;
     }
     users.forEach(user => {
         const row = document.createElement('tr');
@@ -177,7 +176,7 @@ function renderUsers(users) {
         <td><input type="email" id="newUserEmail" placeholder="Email"></td>
         <td><input type="number" id="newUserGrado" placeholder="Grado"></td>
         <td><input type="text" id="newUserSeccion" placeholder="Sección"></td>
-        <td><button id="createUserBtn">Crear usuario</button></td>
+        <td><button style='white-space: nowrap;' id="createUserBtn">Crear usuario</button></td>
     `;
     usersTable.appendChild(newRow);
     // Add event listener for create
@@ -280,19 +279,57 @@ function renderTeachers(teachers) {
         <td><input type="text" id="newTeacherApellido" placeholder="Apellido"></td>
         <td><input type="email" id="newTeacherEmail" placeholder="Email"></td>
         <td>
-            <select id="newTeacherMaterias" multiple>
-                ${materiasOptions.map(m => `<option value="${m}">${m}</option>`).join('')}
-            </select>
+            <div class="relative" id="materiasDropdownWrap">
+                <button type="button" id="materiasDropdownBtn" class="w-full min-w-[180px] max-w-xs px-3 py-2 bg-white/10 border border-white/20 text-white rounded focus:outline-none focus:ring-2 focus:ring-accent flex justify-between items-center">
+                    <span id="materiasDropdownLabel">Seleccionar materias</span>
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div id="materiasDropdown" class="absolute z-10 left-0 mt-1 w-full max-h-48 overflow-y-auto bg-panel border border-white/20 rounded shadow-lg hidden">
+                    ${materiasOptions.map((m, i) => `
+                        <label class="flex items-center gap-2 px-3 py-2 hover:bg-white/10 cursor-pointer">
+                            <input type="checkbox" class="materia-checkbox" value="${m}" id="materiaOpt${i}">
+                            <span>${m}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            </div>
         </td>
         <td><button id="createTeacherBtn">Crear maestro</button></td>
     `;
     teachersTable.appendChild(newRow);
+
+    // Dropdown logic
+    const dropdownBtn = document.getElementById('materiasDropdownBtn');
+    const dropdown = document.getElementById('materiasDropdown');
+    const label = document.getElementById('materiasDropdownLabel');
+    const checkboxes = dropdown.querySelectorAll('.materia-checkbox');
+    let open = false;
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        open = !open;
+        dropdown.classList.toggle('hidden', !open);
+        dropdownBtn.classList.toggle('ring-2', open);
+    });
+    document.addEventListener('click', (e) => {
+        if (open && !dropdown.contains(e.target) && e.target !== dropdownBtn) {
+            open = false;
+            dropdown.classList.add('hidden');
+            dropdownBtn.classList.remove('ring-2');
+        }
+    });
+    // Update label on selection
+    function updateLabel() {
+        const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+        label.textContent = selected.length ? selected.join(', ') : 'Seleccionar materias';
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', updateLabel));
+    // On create, collect checked materias
+
     document.getElementById('createTeacherBtn').onclick = async function() {
         const nombre = document.getElementById('newTeacherNombre').value.charAt(0).toUpperCase() + document.getElementById('newTeacherNombre').value.slice(1).toLowerCase().trim();
         const apellido = document.getElementById('newTeacherApellido').value.charAt(0).toUpperCase() + document.getElementById('newTeacherApellido').value.slice(1).toLowerCase().trim();
         const email = document.getElementById('newTeacherEmail').value.trim();
-        const materiasSelect = document.getElementById('newTeacherMaterias');
-        const materias = Array.from(materiasSelect.selectedOptions).map(opt => opt.value).join(',');
+        const materias = Array.from(document.querySelectorAll('.materia-checkbox:checked')).map(cb => cb.value).join(',');
         const password = 'Teacher_2025';
         if (!nombre || !apellido || !email || !materias || !password) {
             alert('Todos los campos obligatorios deben estar completos.');
@@ -313,7 +350,8 @@ function renderTeachers(teachers) {
             document.getElementById('newTeacherNombre').value = '';
             document.getElementById('newTeacherApellido').value = '';
             document.getElementById('newTeacherEmail').value = '';
-            document.getElementById('newTeacherMaterias').selectedIndex = -1;
+            checkboxes.forEach(cb => cb.checked = false);
+            updateLabel();
             loadEntities();
         } else {
             alert(json.error);

@@ -13,19 +13,19 @@
                 <span class="sidebar-text hidden">Perfil</span>
             </a>
             <a href="notas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="book" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Notas</span>
+                <ion-icon name="file-tray-full" class="text-xl"></ion-icon>
+                <span class="sidebar-text hidden">Calificaciones</span>
             </a>
             <a href="calendario.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
                 <ion-icon name="calendar" class="text-xl"></ion-icon>
                 <span class="sidebar-text hidden">Calendario</span>
             </a>
             <a href="flashcards.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="albums" class="text-xl"></ion-icon>
+                <ion-icon name="layers" class="text-xl"></ion-icon>
                 <span class="sidebar-text hidden">Flashcards</span>
             </a>
             <a href="pomodoro.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="timer" class="text-xl"></ion-icon>
+                <ion-icon name="alarm" class="text-xl"></ion-icon>
                 <span class="sidebar-text hidden">Pomodoro</span>
             </a>
             <a href="cornell.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
@@ -42,29 +42,29 @@
             </a>
         </nav>
     </aside>
-    <script>
+    <script type="module">
+        import { toast, confirmModal } from '../scripts/components.js';
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarTexts = document.querySelectorAll('.sidebar-text');
         const mainContent = document.getElementById('mainContent');
         const sideLogout = document.getElementById('sideLogout');
         sideLogout.addEventListener('click', () => {
-            // Use confirmModal from components.js
-            if (typeof confirmModal === 'function') {
-                confirmModal({
-                    titulo: 'Cerrar sesión',
-                    descripcion: '¿Estás seguro de que deseas cerrar sesión?',
-                    confirmarTxt: 'Cerrar sesión',
-                    cancelarTxt: 'Cancelar',
-                    onConfirm: () => {
-                        window.location.href = 'logout.php';
-                    }
-                });
-            } else {
-                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                    window.location.href = 'logout.php';
-                }
-            }
+        // Use confirmModal from components.js
+        confirmModal({
+            titulo: 'Cerrar sesión',
+            descripcion: '¿Estás seguro de que deseas cerrar sesión?',
+            confirmarTxt: 'Cerrar sesión',
+            cancelarTxt: 'Cancelar',
+            onConfirm: () => {
+                toast("Sesión cerrada");
+                // Llama a logout.php para destruir la sesión
+                fetch("../php/logout.php", { method: "GET", credentials: "same-origin" });
+                setTimeout(() => {
+                    window.location.href = '../index.php';
+                }, 900);
+            },
+            });
         });
         let sidebarOpen = false;
         sidebarToggle.addEventListener('click', () => {

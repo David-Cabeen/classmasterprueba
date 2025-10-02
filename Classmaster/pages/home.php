@@ -20,7 +20,6 @@
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
-
 <body class="min-h-screen flex flex-col selection:bg-white/10 selection:text-white">
 	<?php include '../components/sidebar.php'; ?>
 	<div id="mainContent" class="transition-all duration-300 ease-in-out ml-16">
@@ -110,10 +109,10 @@
 						class="card-link card-tile hover-glow group rounded-2xl p-6 focus-outline">
 						<div class="flex items-center justify-between">
 							<span class="text-3xl" aria-hidden="true">📚</span>
-							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Notas</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Calificaciones</span>
 						</div>
-						<h3 class="mt-4 text-xl font-semibold">Notas</h3>
-						<p class="text-sm text-white/60 mt-1">Revisa tus notas.</p>
+						<h3 class="mt-4 text-xl font-semibold">Calificaciones</h3>
+						<p class="text-sm text-white/60 mt-1">Revisa tus calificaciones.</p>
 						</a>
 
 						<a href="#"
@@ -136,10 +135,10 @@
 						class="card-link card-tile hover-glow group rounded-2xl p-6 focus-outline">
 						<div class="flex items-center justify-between">
 							<span class="text-3xl" aria-hidden="true">📚</span>
-							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Notas</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Calificaciones</span>
 						</div>
-						<h3 class="mt-4 text-xl font-semibold">Notas</h3>
-						<p class="text-sm text-white/60 mt-1">Revisa tus notas.</p>
+						<h3 class="mt-4 text-xl font-semibold">Calificaciones</h3>
+						<p class="text-sm text-white/60 mt-1">Revisa tus calificaciones.</p>
 						</a>
 						<a href="#"
 						data-href="calendario.php"
@@ -200,10 +199,10 @@
 						class="card-link card-tile hover-glow group rounded-2xl p-6	focus-outline">
 						<div class="flex items-center justify-between">
 							<span class="text-3xl" aria-hidden="true">📚</span>
-							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Notas</span>
+							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Calificaciones</span>
 						</div>
-						<h3 class="mt-4 text-xl font-semibold">Notas</h3>
-						<p class="text-sm text-white/60 mt-1">Consulta y gestiona las notas.</p>
+						<h3 class="mt-4 text-xl font-semibold">Calificaciones</h3>
+						<p class="text-sm text-white/60 mt-1">Consulta y gestiona las calificaciones.</p>
 						</a>
 						<a href="#"
 						data-href="calendario.php"
@@ -244,7 +243,6 @@
 				</section>
 		</section>
 	</main>
-	<aside>
 	<!-- Footer -->
 	<footer class="mt-auto">
 		<div class="divider"></div>
@@ -253,5 +251,8 @@
 		</div>
 	</footer>
 	</div>
+	<script>
+		window.rol = "<?php echo $_SESSION['rol']; ?>";
+	</script>
 </body>
 </html>

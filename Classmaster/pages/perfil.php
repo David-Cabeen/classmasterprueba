@@ -50,18 +50,6 @@
                         Información Personal
                     </h2>
                     <div class="flex flex-col sm:flex-row gap-8 items-start">
-                        <div class="flex flex-col items-center gap-3 w-full sm:w-auto">
-                            <form id="formCambiarFoto" enctype="multipart/form-data" class="flex flex-col items-center gap-2">
-                                <label for="profilePicInput" class="cursor-pointer group">
-                                    <span class="sr-only">Cambiar foto de perfil</span>
-                                    <img id="profilePicPreview" src="<?php echo isset($_SESSION['foto_perfil']) ? htmlspecialchars($_SESSION['foto_perfil']) : '../assets/logo.svg'; ?>" alt="Foto de perfil" class="w-24 h-24 rounded-full object-cover border-2 border-white/20 group-hover:opacity-80 transition" />
-                                    <div class="text-xs text-white/60 mt-1 group-hover:text-white/80 transition">Editar foto</div>
-                                </label>
-                                <input type="file" id="profilePicInput" name="profilePic" accept="image/*" class="hidden" />
-                                <button type="submit" class="px-4 py-1.5 rounded-lg bg-blue-500/80 hover:bg-blue-600 text-white font-semibold text-sm transition focus-outline mt-2">Guardar</button>
-                                <span id="profilePicMsg" class="text-xs mt-1"></span>
-                            </form>
-                        </div>
                         <div class="space-y-5 flex-1">
                             <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
                                 <label class="w-32 text-white/60 font-medium">Nombre:</label>

@@ -10,6 +10,32 @@ document.addEventListener('DOMContentLoaded', () => {
 		{ texto: "La constancia vence lo que la dicha no alcanza.", autor: "Refrán" }
 	];
 
+	if (window.rol == 'acudiente'){
+		const number = Math.random();
+		console.log(number);
+		if (number < 1) {
+			fetch('../php/phone.php', { method: 'GET', credentials: 'same-origin' })
+			.then(res => res.json())
+			.then(data => {
+				if (data.success && data.hasPhone) {
+					console.log("Has phone");
+					return;
+				} else {
+					console.log("No phone");
+					confirmModal({
+						titulo: 'No has agregado tu número de teléfono',
+						descripcion: 'Por favor, agrega tu número de teléfono para mejorar la comunicación.',
+						cancelarTxt: 'En otra ocasión',
+						confirmarTxt: 'Agregar teléfono',
+						onConfirm: () => window.location.href = '../pages/perfil.php'
+					});
+				}
+			});
+		} else {
+			console.log("No check phone");
+		}
+	};
+
 	// Utilidad: seleccionar
 	const $ = (sel, el = document) => el.querySelector(sel);
 	const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
