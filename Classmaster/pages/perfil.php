@@ -53,7 +53,11 @@
                         <div class="space-y-5 flex-1">
                             <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
                                 <label class="w-32 text-white/60 font-medium">Nombre:</label>
-                                <span id="nombre-usuario" class="text-lg font-semibold text-white/90"><?php echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : 'Usuario'; ?></span>
+                                <span id="nombre-usuario" class="text-lg font-semibold text-white/90"><?php echo htmlspecialchars($_SESSION['nombre']) . ' ' . htmlspecialchars($_SESSION['apellido']); ?></span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                                <label class="w-32 text-white/60 font-medium">Rol:</label>
+                                <span id="rol-usuario" class="text-lg font-semibold text-white/90"><?php echo isset($_SESSION['rol']) ? ucfirst(strtolower(htmlspecialchars($_SESSION['rol']))) : ''; ?></span>
                             </div>
                             <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
                                 <label class="w-32 text-white/60 font-medium">Email:</label>
@@ -85,10 +89,55 @@
                                     ?>
                                 </span>
                             </div>
-                            <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
-                                <label class="w-32 text-white/60 font-medium">Rol:</label>
-                                <span id="rol-usuario" class="text-lg font-semibold text-white/90"><?php echo isset($_SESSION['rol']) ? ucfirst(strtolower(htmlspecialchars($_SESSION['rol']))) : ''; ?></span>
-                            </div>
+                            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'estudiante'){
+
+                                require_once '../php/connection.php';
+                                $grado = 'No asignado';
+                                $stmt = $conn->prepare("SELECT grado, seccion, id_padre FROM users WHERE id = ?");
+                                $stmt->bind_param("i", $_SESSION['user_id']);
+                                $stmt->execute();
+                                $stmt->bind_result($grado_db, $seccion_db, $id_padre);
+                                if ($stmt->fetch()) {
+                                    $grado = htmlspecialchars($grado_db) . ' - ' . htmlspecialchars($seccion_db);
+                                }
+                                $stmt->close();
+                                $stmt = $conn->prepare("SELECT nombre, apellido FROM acudientes WHERE id = ?");
+                                $stmt->bind_param("i", $id_padre);
+                                $stmt->execute();
+                                $stmt->bind_result($nombre_padre, $apellido_padre);
+                                $acudiente = 'No asignado';
+                                if ($stmt->fetch()) {
+                                    $acudiente = htmlspecialchars($nombre_padre) . ' ' . htmlspecialchars($apellido_padre);
+                                };
+                                $stmt->close();
+
+                                echo '<div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                                        <label class="w-32 text-white/60 font-medium">Grado:</label>
+                                        <span id="grado-usuario" class="text-lg font-semibold text-white/90">' . $grado . '</span>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                                        <label class="w-32 text-white/60 font-medium">Acudiente:</label>
+                                        <span id="acudiente-usuario" class="text-lg font-semibold text-white/90">' . $acudiente . '</span>
+                                    </div>';
+                            } ?>
+                            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'acudiente'){
+
+                                require_once '../php/connection.php';
+                                $telefono = 'Sin teléfono';
+                                $stmt = $conn->prepare("SELECT telefono FROM acudientes WHERE id = ?");
+                                $stmt->bind_param("i", $_SESSION['user_id']);
+                                $stmt->execute();
+                                $stmt->bind_result($telefono_db);
+                                if ($stmt->fetch()) {
+                                    $telefono = htmlspecialchars($telefono_db);
+                                }
+
+                                echo '<div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                                        <label class="w-32 text-white/60 font-medium">Teléfono:</label>
+                                        <span id="telefono-usuario" class="text-lg font-semibold text-white/90">' . $telefono . '</span>
+                                        <ion-icon class="edit-icon cursor-pointer hover:scale-125 transition-transform" name="create"></ion-icon>
+                                    </div>';
+                            } ?>
                         </div>
                     </div>
                     <div class="divider my-4"></div>

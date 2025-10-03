@@ -35,7 +35,7 @@ function toast(msg = "Hecho", type = "") {
     const el = document.createElement("div");
     el.textContent = msg;
     el.setAttribute("role", "status");
-    el.className = `toast fixed inset-x-0 mx-auto bottom-6 w-fit max-w-[90%] text-sm md:text-base px-4 py-2 rounded-lg glass ring-soft shadow-2xl ${type === "error" ? "bg-red-500" : type === "success" ? "bg-green-500" : ""}`;
+    el.className = `toast fixed inset-x-0 z-50 mx-auto bottom-6 w-fit max-w-[90%] text-sm md:text-base px-4 py-2 rounded-lg glass ring-soft shadow-2xl ${type === "error" ? "bg-red-500" : type === "success" ? "bg-green-500" : ""}`;
     document.body.appendChild(el);
     setTimeout(() => {
         el.style.transition = "transform .25s ease, opacity .25s ease";
