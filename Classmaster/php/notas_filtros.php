@@ -38,15 +38,19 @@
             'materias' => $materias,
             'grados' => $grados
         ]);
-    } else if($_SESSION['rol'] == "estudiante"){
-        // Get the courses assigned to the student via curso_estudiante
+    } else if($_SESSION['rol'] == "estudiante" || $_SESSION['rol'] == "acudiente"){
+        // If acudiente, get estudiante_id from GET param
+        $estudiante_id = $user_id;
+        if($_SESSION['rol'] == "acudiente" && isset($_GET['estudiante_id'])) {
+            $estudiante_id = intval($_GET['estudiante_id']);
+        }
         $stmt = $conn->prepare('
             SELECT c.id AS curso_id, c.nombre AS curso_nombre, c.grado, c.seccion
             FROM curso_estudiante ce
             JOIN cursos c ON ce.curso_id = c.id
             WHERE ce.estudiante_id = ?
         ');
-        $stmt->bind_param('i', $user_id);
+        $stmt->bind_param('i', $estudiante_id);
         $stmt->execute();
         $result = $stmt->get_result();
 

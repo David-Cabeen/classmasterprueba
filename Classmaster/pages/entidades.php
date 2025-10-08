@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Entidades - ClassMaster</title>
+    <title>Classmaster | Entidades</title>
     <link rel="stylesheet" href="../styles/sidebar.css" />
     <link rel="stylesheet" href="../styles/entidades.css">
     <script src="https://cdn.tailwindcss.com"></script>

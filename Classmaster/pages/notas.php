@@ -10,7 +10,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas</title>
+    <link rel="icon" type="image/x-icon" href="../assets/logo.svg">
+    <title>Classmaster | Calificaciones</title>
     <link rel="stylesheet" href="../styles/sidebar.css" />
     <link rel="stylesheet" href="../styles/notas.css" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -40,7 +41,7 @@
                     <option value="3">3</option>
                     <option value="4">4</option>
                 </select>
-                <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
+                <?php if($_SESSION['rol'] === 'profesor') {
                     echo '<label for="grado" class="text-white/80 font-medium">Grado:</label>
                         <select name="grado" id="grado" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"></select>
                         <label for="seccion" class="text-white/80 font-medium ml-4">Sección:</label>
@@ -49,6 +50,10 @@
                             <option value="B">B</option>
                         </select>
                     ';
+                } ?>
+                <?php if($_SESSION['rol'] === 'acudiente') {
+                    echo '<label for="estudiante" class="text-white/80 font-medium">Estudiante:</label>';
+                    echo '<select name="estudiante" id="estudiante" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"></select>';
                 } ?>
                 <label for="materia" class="text-white/80 font-medium">Materia:</label>
                 <select name="materia" id="materia" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"></select>
@@ -59,13 +64,13 @@
             <div class="container rounded-xl overflow-x-auto animate-fadeInUp">
                 <table class="min-w-full text-left text-white/90 notas-table">
                     <thead class="notas-thead">
-                        <tr class="border-b border-white/10">
+                        <tr id="notas-header" class="border-b border-white/10">
                             <th class="px-6 py-4 font-semibold align-middle">Nombre</th>
                         </tr>
                         <!-- Aquí van las tareas creadas filtradas-->
                     </thead>
                     <tbody>
-                        <!-- Aquí van los estudiantes filtrados -->
+                        <!-- Aquí van las filas de estudiantes y sus notas -->
                     </tbody>
                 </table>
             </div>
@@ -74,32 +79,7 @@
     <script>
         window.rol = "<?php echo $_SESSION['rol']; ?>";
         document.addEventListener('DOMContentLoaded', function() {
-            if (window.rol === 'profesor') {
-                fetch('../php/get_profesor_materias_grados.php')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            const materiaSelect = document.getElementById('materia');
-                            materiaSelect.innerHTML = '';
-                            data.materias.forEach(m => {
-                                const opt = document.createElement('option');
-                                opt.value = m;
-                                opt.textContent = m;
-                                materiaSelect.appendChild(opt);
-                            });
-                            const gradoSelect = document.getElementById('grado');
-                            if (gradoSelect) {
-                                gradoSelect.innerHTML = '';
-                                data.grados.forEach(g => {
-                                    const opt = document.createElement('option');
-                                    opt.value = g;
-                                    opt.textContent = g;
-                                    gradoSelect.appendChild(opt);
-                                });
-                            }
-                        }
-                    });
-            }
+            // JS logic for profesor is now handled in scripts/notas.js
         });
     </script>
 </body>

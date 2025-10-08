@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil de Usuario</title>
+    <title>Classmaster | Perfil</title>
     <link rel="stylesheet" href="../styles/perfil.css">
     <link rel="stylesheet" href="../styles/sidebar.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -131,13 +131,36 @@
                                 if ($stmt->fetch()) {
                                     $telefono = htmlspecialchars($telefono_db);
                                 }
-
+                                $stmt->close();
+                                
                                 echo '<div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
                                         <label class="w-32 text-white/60 font-medium">Teléfono:</label>
                                         <span id="telefono-usuario" class="text-lg font-semibold text-white/90">' . $telefono . '</span>
                                         <ion-icon class="edit-icon cursor-pointer hover:scale-125 transition-transform" name="create"></ion-icon>
                                     </div>';
-                            } ?>
+                                
+                                // Obtener todos los estudiantes vinculados a este acudiente
+                                $stmt = $conn->prepare("SELECT nombre, apellido FROM users WHERE id_padre = ?");
+                                $stmt->bind_param("i", $_SESSION['user_id']);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+                                $estudiantes = array();
+                                while ($row = $result->fetch_assoc()) {
+                                    $estudiantes[] = htmlspecialchars($row['nombre']) . ' ' . htmlspecialchars($row['apellido']);
+                                }
+                                $stmt->close();
+
+                                echo '<div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">';
+                                echo '<label class="w-32 text-white/60 font-medium">Acudidos:</label>';
+                                echo '<span id="hijo-usuario" class="text-lg font-semibold text-white/90">';
+                                if (count($estudiantes) > 0) {
+                                    echo implode('<br>', $estudiantes);
+                                } else {
+                                    echo 'Sin acudidos vinculados';
+                                }
+                                echo '</span>';
+                                echo '</div>';
+                            }?>
                         </div>
                     </div>
                     <div class="divider my-4"></div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password recovery</title>
+    <title>Classmaster | Recuperar Contraseña</title>
 	<script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../styles/password.css">
 	<script type="module" src="../scripts/password.js" defer></script>

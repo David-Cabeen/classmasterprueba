@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cornell Notes</title>
+    <title>Classmaster | Notas de Cornell</title>
     <link rel="stylesheet" href="../styles/flashcards.css">
     <link rel="stylesheet" href="../styles/sidebar.css" />
     <link rel="stylesheet" href="../styles/cornell.css">
@@ -27,7 +27,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="max-w-6xl mx-auto px-6 pt-8 pb-6">
                 <div class="flex items-center gap-3 mb-2">
                     <div class="size-3 rounded-full bg-white/80 shadow-[0_0_24px_4px_rgba(255,255,255,0.25)]"></div>
-                    <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-accent">Cornell Notes</h1>
+                    <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-accent">Notas de Cornell</h1>
                 </div>
                 <p class="mt-2 text-sm text-white/60">Organiza tus notas con el método Cornell para un aprendizaje más efectivo</p>
             </div>
