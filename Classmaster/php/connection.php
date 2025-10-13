@@ -15,4 +15,3 @@
         echo json_encode(['success' => false, 'error' => 'Error de conexión: ' . $conn->connect_error]);
         exit;
     }
-?>

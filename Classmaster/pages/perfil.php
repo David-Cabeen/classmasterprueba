@@ -161,6 +161,23 @@
                                 echo '</span>';
                                 echo '</div>';
                             }?>
+                            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor'){
+                                require_once '../php/connection.php';
+                                $materias = [];
+                                $stmt = $conn->prepare("SELECT materias FROM profesores WHERE id = ?");
+                                $stmt->bind_param("s", $_SESSION['user_id']);
+                                $stmt->execute();
+                                $result = $stmt->get_result();
+                                while ($row = $result->fetch_assoc()) {
+                                    $materias[] = htmlspecialchars($row['materias']);
+                                }
+                                $stmt->close();
+                                echo '<div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                                        <label class="w-32 text-white/60 font-medium">Materias:</label>
+                                        <span id="materias-usuario" class="text-lg font-semibold text-white/90">' . (count($materias) > 0 ? implode($materias) : 'No asignadas') . '</span>
+                                    </div>';
+                            }
+                            ?>
                         </div>
                     </div>
                     <div class="divider my-4"></div>
