@@ -41,15 +41,17 @@ body {
 }
 
 .notas-thead th {
-    display: inline-flex;
+	display: table-cell;
 	font-weight: 600;
 	text-align: left;
 	vertical-align: middle !important;
-	transition: background 0.2s;
 }
 
-.notas-table tr {
-	transition: background 0.2s;
+.notas-table thead th {
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	background-color: var(--gradient-dark-blue);
 }
 
 select {
@@ -70,4 +72,37 @@ select {
 
 .animate-in {
 	animation: fadeSlideUp .45s ease both;
+}
+
+.notas-table input[type="number"] {
+    padding: 0.125rem 0.5rem;
+    height: 1.875rem;
+    font-size: 0.95rem;
+    line-height: 1.25rem;
+    border-width: 1px;
+    opacity: 0.95;
+    transition: box-shadow 180ms ease, transform 120ms ease, border-color 180ms ease;
+}
+
+.notas-table input[type="number"]:focus,
+.notas-table input[type="number"]:focus-visible {
+    outline: none;
+    border-color: rgba(96, 165, 250, 0.9);
+    box-shadow: 0 4px 14px rgba(2,6,23,0.35), 0 0 0 6px rgba(96,165,250,0.06);
+    transform: translateY(-1px);
+}
+
+/* remove native number spinners */
+.notas-table input[type="number"]::-webkit-outer-spin-button,
+.notas-table input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.notas-table input[type="number"] {
+	appearance: textfield;
+	-moz-appearance: textfield;
+}
+
+.notas-table td input[type="number"] {
+    border-color: rgba(255,255,255,0.06);
 }

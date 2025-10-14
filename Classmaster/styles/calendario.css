@@ -121,7 +121,6 @@ body {
 
 .navigation {
     border-radius: 15px;
-    height: 60px;
     background: var(--line);
     text-align: center;
     display: flex;

@@ -63,23 +63,38 @@
     }
 
     $estudiantes = [];
-    $stmt = $conn->prepare(
-        'SELECT u.id, u.nombre, u.apellido
-        FROM users u
-        JOIN curso_estudiante ce ON u.id = ce.estudiante_id
-        WHERE ce.curso_id = ?
-        ORDER BY u.apellido, u.nombre'
-    );
-    if ($stmt) {
-        $stmt->bind_param('i', $curso_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) {
-            // initialize notas map empty; will populate below
-            $row['notas'] = [];
-            $estudiantes[] = $row;
+    // If an estudiante_id was provided, only return that student (used by student role and acudiente selection)
+    if ($estudiante_id) {
+        $stmt = $conn->prepare('SELECT u.id, u.nombre, u.apellido FROM users u WHERE u.id = ?');
+        if ($stmt) {
+            $stmt->bind_param('i', $estudiante_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $row['notas'] = [];
+                $estudiantes[] = $row;
+            }
+            $stmt->close();
         }
-        $stmt->close();
+    } else {
+        $stmt = $conn->prepare(
+            'SELECT u.id, u.nombre, u.apellido
+            FROM users u
+            JOIN curso_estudiante ce ON u.id = ce.estudiante_id
+            WHERE ce.curso_id = ?
+            ORDER BY u.apellido, u.nombre'
+        );
+        if ($stmt) {
+            $stmt->bind_param('i', $curso_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                // initialize notas map empty; will populate below
+                $row['notas'] = [];
+                $estudiantes[] = $row;
+            }
+            $stmt->close();
+        }
     }
 
     // If there are tareas and estudiantes, fetch notas for these tareas

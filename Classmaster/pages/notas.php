@@ -78,8 +78,9 @@
     </div>
     <script>
         window.rol = "<?php echo $_SESSION['rol']; ?>";
+        window.user_id = "<?php echo $_SESSION['user_id']; ?>";
         document.addEventListener('DOMContentLoaded', function() {
-            // JS logic for profesor is now handled in scripts/notas.js
+            // Lógica de profesor manejada en scripts/notas.js
         });
     </script>
 </body>
