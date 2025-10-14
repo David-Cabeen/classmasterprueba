@@ -1,4 +1,10 @@
 <?php
+    // Helper to return JSON responses consistently
+    function response($success, $error = '', $data = []) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => $success, 'error' => $error, 'data' => $data]);
+        exit;
+    }
     session_start();
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
@@ -62,13 +68,14 @@
         $apellido = $_POST['apellido'] ?? '';
         $email = $_POST['email'] ?? '';
         $materias = $_POST['materias'] ?? '';
+        $grados = $_POST['grados'] ?? '';
         $password = $_POST['password'] ?? '';
         $id = 'P' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         if (!$nombre || !$apellido || !$email || !$password) response(false, 'Faltan campos obligatorios');
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO profesores (id, nombre, apellido, email, materias, password, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param("ssssss", $id, $nombre, $apellido, $email, $materias, $hash);
-        if ($stmt->execute()) response(true, '', ['id' => $conn->insert_id]);
+        $stmt = $conn->prepare("INSERT INTO profesores (id, nombre, apellido, email, grados, materias, password, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("sssssss", $id, $nombre, $apellido, $email, $grados, $materias, $hash);
+        if ($stmt->execute()) response(true, '', ['id' => $id]);
         response(false, $stmt->error);
     }
     if ($action === 'create' && $type === 'admin') {
@@ -115,25 +122,65 @@
         $params = [];
         $types = '';
         foreach ($fields as $k => $v) {
+            // If updating password, hash it
+            if ($k === 'password' && $v !== '') {
+                $v = password_hash($v, PASSWORD_DEFAULT);
+            }
+            // Skip empty password field to avoid overwriting with empty string
+            if ($k === 'password' && $v === '') continue;
             $set[] = "$k = ?";
             $params[] = $v;
             $types .= 's';
         }
         if (!$set) response(false, 'Nada que actualizar');
-            $table = $type === 'user' ? 'users' : 'acudientes';
+            if (!$set) response(false, 'Nada que actualizar');
+            if ($type === 'user') {
+                $table = 'users';
+            } elseif ($type === 'acudiente') {
+                $table = 'acudientes';
+            } elseif ($type === 'teacher') {
+                $table = 'profesores';
+            } elseif ($type === 'admin') {
+                $table = 'administradores';
+            } else {
+                response(false, 'Tipo no soportado');
+            }
         $sql = "UPDATE $table SET ".implode(',', $set)." WHERE id = ?";
-        $params[] = $id;
-        $types .= 'i';
+    $params[] = (string)$id;
+    // Bind id as string for compatibility with varchar PKs (admins/profesores). Using 's' works for numeric ids too.
+    $types .= 's';
         $stmt = $conn->prepare($sql);
+        if ($stmt === false) response(false, 'Error en la preparación de la consulta: ' . $conn->error);
         $stmt->bind_param($types, ...$params);
         if ($stmt->execute()) response(true);
         response(false, $stmt->error);
     }
     if ($action === 'delete' && $type && isset($_POST['id'])) {
         $id = $_POST['id'];
-            $table = $type === 'user' ? 'users' : 'acudientes';
+        if ($type === 'user') {
+            $table = 'users';
+            $bindType = 'i';
+        } elseif ($type === 'acudiente') {
+            $table = 'acudientes';
+            $bindType = 'i';
+        } elseif ($type === 'teacher') {
+            $table = 'profesores';
+            $bindType = 's';
+        } elseif ($type === 'admin') {
+            $table = 'administradores';
+            $bindType = 's';
+        } else {
+            response(false, 'Tipo no soportado');
+        }
         $stmt = $conn->prepare("DELETE FROM $table WHERE id = ?");
-        $stmt->bind_param('i', $id);
+        if ($stmt === false) response(false, 'Error al preparar DELETE: ' . $conn->error);
+        // bind as int or string depending on PK
+        if ($bindType === 'i') {
+            $stmt->bind_param('i', $id);
+        } else {
+            $strId = (string)$id;
+            $stmt->bind_param('s', $strId);
+        }
         if ($stmt->execute()) response(true);
         response(false, $stmt->error);
     }

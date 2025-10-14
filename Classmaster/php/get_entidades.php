@@ -23,7 +23,7 @@
         }
     }
 
-    $sql_teachers = "SELECT id, nombre, apellido, email, materias, fecha_registro FROM profesores ORDER BY id";
+    $sql_teachers = "SELECT id, nombre, apellido, email, grados, materias, fecha_registro FROM profesores ORDER BY id";
     $result_teachers = $conn->query($sql_teachers);
     $teachers = [];
 

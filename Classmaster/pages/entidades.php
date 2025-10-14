@@ -16,7 +16,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script src="../scripts/entidades.js" defer></script>
+    <script type="module" src="../scripts/entidades.js"></script>
 </head>
 <body>
     <?php include '../components/sidebar.php'; ?>
@@ -59,6 +59,7 @@
                                     <th>Grado</th>
                                     <th>Sección</th>
                                     <th>Fecha Registro</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="usersTable">
@@ -85,6 +86,7 @@
                                     <th>Apellido</th>
                                     <th>Teléfono</th>
                                     <th>Fecha Registro</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="acudientesTable">
@@ -109,8 +111,10 @@
                                     <th>Nombre</th>
                                     <th>Apellido</th>
                                     <th>Email</th>
+                                    <th>Grados</th>
                                     <th>Materias</th>
                                     <th>Fecha Registro</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="teachersTable">
@@ -136,6 +140,7 @@
                                     <th>Apellido</th>
                                     <th>Email</th>
                                     <th>Fecha Registro</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="adminsTable">
