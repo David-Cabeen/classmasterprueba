@@ -4,38 +4,114 @@
             <ion-icon name="chevron-forward-outline"></ion-icon>
         </button>
         <nav class="flex-1 flex flex-col gap-4 w-full">
-            <a href="home.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="home" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Inicio</span>
-            </a>
-            <a href="perfil.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="person" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Perfil</span>
-            </a>
-            <a href="notas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="file-tray-full" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Calificaciones</span>
-            </a>
-            <a href="calendario.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="calendar" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Calendario</span>
-            </a>
-            <a href="flashcards.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="layers" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Flashcards</span>
-            </a>
-            <a href="pomodoro.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="alarm" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Pomodoro</span>
-            </a>
-            <a href="cornell.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="document-text" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Cornell</span>
-            </a>
-            <a href="ayudas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
-                <ion-icon name="help-circle" class="text-xl"></ion-icon>
-                <span class="sidebar-text hidden">Ayudas</span>
-            </a>
+            <?php
+                $rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'estudiante';
+                if ($rol === 'estudiante') {
+            ?>
+                <a href="home.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="home" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Inicio</span>
+                </a>
+                <a href="perfil.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="person" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Perfil</span>
+                </a>
+                <a href="notas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="file-tray-full" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Calificaciones</span>
+                </a>
+                <a href="calendario.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="calendar" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Calendario</span>
+                </a>
+                <a href="flashcards.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="layers" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Flashcards</span>
+                </a>
+                <a href="pomodoro.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="alarm" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Pomodoro</span>
+                </a>
+                <a href="cornell.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="document-text" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Cornell</span>
+                </a>
+                <a href="ayudas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="help-circle" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Ayudas</span>
+                </a>
+            <?php
+                // profesor or acudiente: limited menu
+                } elseif ($rol === 'profesor' || $rol === 'acudiente') {
+            ?>
+                <a href="home.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="home" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Inicio</span>
+                </a>
+                <a href="perfil.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="person" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Perfil</span>
+                </a>
+                <a href="notas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="file-tray-full" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Calificaciones</span>
+                </a>
+                <a href="calendario.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="calendar" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Calendario</span>
+                </a>
+            <?php
+                } elseif ($rol === 'administrador') {
+            ?>
+                <a href="home.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="home" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Inicio</span>
+                </a>
+                <a href="perfil.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="person" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Perfil</span>
+                </a>
+                <a href="entidades.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="layers" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Entidades</span>
+                </a>
+            <?php
+                } else {
+            ?>
+                <a href="home.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="home" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Inicio</span>
+                </a>
+                <a href="perfil.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="person" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Perfil</span>
+                </a>
+                <a href="notas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="file-tray-full" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Calificaciones</span>
+                </a>
+                <a href="calendario.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="calendar" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Calendario</span>
+                </a>
+                <a href="flashcards.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="layers" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Flashcards</span>
+                </a>
+                <a href="pomodoro.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="alarm" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Pomodoro</span>
+                </a>
+                <a href="cornell.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="document-text" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Cornell</span>
+                </a>
+                <a href="ayudas.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
+                    <ion-icon name="help-circle" class="text-xl"></ion-icon>
+                    <span class="sidebar-text hidden">Ayudas</span>
+                </a>
+            <?php } ?>
+
             <a id='sideLogout' class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-red-500/10">
                 <ion-icon name="log-out" class="text-xl text-red-500"></ion-icon>
                 <span class="sidebar-text hidden text-red-500">Cerrar Sesión</span>
@@ -50,7 +126,6 @@
         const mainContent = document.getElementById('mainContent');
         const sideLogout = document.getElementById('sideLogout');
         sideLogout.addEventListener('click', () => {
-        // Use confirmModal from components.js
         confirmModal({
             titulo: 'Cerrar sesión',
             descripcion: '¿Estás seguro de que deseas cerrar sesión?',

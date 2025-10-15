@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../styles/sidebar.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="../scripts/perfil.js" defer></script>
+    <script type="module" src="../scripts/modalVinculo.js" defer></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" defer></script>
 </head>
@@ -89,10 +90,10 @@
                                     ?>
                                 </span>
                             </div>
-                            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'estudiante'){
-
+                            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'estudiante'): 
                                 require_once '../php/connection.php';
                                 $grado = 'No asignado';
+                                $id_padre = null;
                                 $stmt = $conn->prepare("SELECT grado, seccion, id_padre FROM users WHERE id = ?");
                                 $stmt->bind_param("i", $_SESSION['user_id']);
                                 $stmt->execute();
@@ -101,25 +102,31 @@
                                     $grado = htmlspecialchars($grado_db) . ' - ' . htmlspecialchars($seccion_db);
                                 }
                                 $stmt->close();
-                                $stmt = $conn->prepare("SELECT nombre, apellido FROM acudientes WHERE id = ?");
-                                $stmt->bind_param("i", $id_padre);
-                                $stmt->execute();
-                                $stmt->bind_result($nombre_padre, $apellido_padre);
-                                $acudiente = 'No asignado';
-                                if ($stmt->fetch()) {
-                                    $acudiente = htmlspecialchars($nombre_padre) . ' ' . htmlspecialchars($apellido_padre);
-                                };
-                                $stmt->close();
 
-                                echo '<div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
-                                        <label class="w-32 text-white/60 font-medium">Grado:</label>
-                                        <span id="grado-usuario" class="text-lg font-semibold text-white/90">' . $grado . '</span>
-                                    </div>
-                                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
-                                        <label class="w-32 text-white/60 font-medium">Acudiente:</label>
-                                        <span id="acudiente-usuario" class="text-lg font-semibold text-white/90">' . $acudiente . '</span>
-                                    </div>';
-                            } ?>
+                                $acudiente = 'No asignado';
+                                if (!empty($id_padre)) {
+                                    $stmt = $conn->prepare("SELECT nombre, apellido FROM acudientes WHERE id = ?");
+                                    $stmt->bind_param("i", $id_padre);
+                                    $stmt->execute();
+                                    $stmt->bind_result($nombre_padre, $apellido_padre);
+                                    if ($stmt->fetch()) {
+                                        $acudiente = htmlspecialchars($nombre_padre) . ' ' . htmlspecialchars($apellido_padre);
+                                    }
+                                    $stmt->close();
+                                }
+                            ?>
+                                <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                                    <label class="w-32 text-white/60 font-medium">Grado:</label>
+                                    <span id="grado-usuario" class="text-lg font-semibold text-white/90"><?php echo $grado; ?></span>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+                                    <label class="w-32 text-white/60 font-medium">Acudiente:</label>
+                                    <span id="acudiente-usuario" class="text-lg font-semibold text-white/90"><?php echo $acudiente; ?></span>
+                                    <?php if (empty($id_padre) || $id_padre == 0): ?>
+                                        <button id="btnAgregarAcudiente" class="ml-4 px-3 py-1 rounded-lg bg-green-500 text-white hover:bg-green-600">Agregar acudiente</button>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                             <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'acudiente'){
 
                                 require_once '../php/connection.php';
@@ -224,4 +231,19 @@
         </footer>
     </div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const btn = document.getElementById('btnAgregarAcudiente');
+        if (!btn) return;
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            if (typeof window.openModalVinculo === 'function') {
+                window.openModalVinculo();
+            } else {
+                // fallback: load the module dynamically
+                import('../scripts/modalVinculo.js').then(m => { if (m.openModalVinculo) m.openModalVinculo(); }).catch(err => console.error(err));
+            }
+        });
+    });
+</script>
 </html>
