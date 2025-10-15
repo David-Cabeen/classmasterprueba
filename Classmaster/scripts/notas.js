@@ -372,15 +372,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             // if the endpoint returned estudiantes (for acudiente), populate the selector
-            if (Array.isArray(data.estudiantes) && data.estudiantes.length > 0) {
-                const estSel = document.getElementById('estudiante');
-                if (estSel) {
-                    estSel.innerHTML = '';
-                    data.estudiantes.forEach(s => {
-                        const o = document.createElement('option'); o.value = s.id; o.textContent = s.nombre; estSel.appendChild(o);
-                    });
-                }
-            }
+                    if (Array.isArray(data.estudiantes) && data.estudiantes.length > 0) {
+                        const estSel = document.getElementById('estudiante');
+                        if (estSel) {
+                            // preserve current value so we can restore selection after rebuilding options
+                            const curVal = estSel.value;
+                            estSel.innerHTML = '';
+                            data.estudiantes.forEach(s => {
+                                const o = document.createElement('option'); o.value = s.id; o.textContent = s.nombre; estSel.appendChild(o);
+                            });
+                            // Restore previous selection if still present, otherwise default to first
+                            if (curVal) {
+                                const exists = Array.from(estSel.options).some(o => o.value === curVal);
+                                if (exists) estSel.value = curVal; else estSel.selectedIndex = 0;
+                            } else {
+                                estSel.selectedIndex = 0;
+                            }
+                            // debug: list options and current selection
+                            try { console.debug('estudiantes populated', Array.from(estSel.options).map(o => ({value:o.value, text:o.text})), 'selected', estSel.value); } catch(e){}
+                        }
+                    }
             return { hasGrados, hasMaterias };
         } catch (err) {
             console.error('Error loading filter options', err);
@@ -420,7 +431,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // attach filtros
     const filtros = document.querySelectorAll('#grado, #seccion, #materia, #periodo'); filtros.forEach(f => f.addEventListener('change', updateTable));
-    const estSelect = document.getElementById('estudiante'); if(estSelect) estSelect.addEventListener('change', updateTable);
+    const estSelect = document.getElementById('estudiante');
+    if (estSelect) {
+        estSelect.addEventListener('change', function() {
+            try { console.debug('estudiante changed to', estSelect.value); } catch(e){}
+            // When parent selects a different student, reload filter options (materias/grados)
+            loadFilterOptions().then(() => {
+                // ensure sensible defaults then reload table
+                ensureDefaultFilters();
+                updateTable();
+            });
+        });
+    }
     // load filter options (async) then pick defaults and load the table
     loadFilterOptions().then((res) => {
         // If profesor and filters empty, tell user to set materias/grados in profile instead of requesting notas

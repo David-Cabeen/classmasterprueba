@@ -231,6 +231,43 @@ ion-icon:hover:is([name="arrow-forward"], [name="arrow-back"], [name="close"]) {
     z-index: 1;
 }
 
+/* Parent-only student selector area */
+#student-selector {
+    grid-area: studentselector;
+    height: 100px; /* same height as nav (100px) */
+    align-items: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: 14px;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.75rem 1rem;
+}
+
+/* When container has student selector, adjust grid to include new row */
+.container.has-studentselector {
+    grid-template-rows: 100px 1fr 100px;
+    grid-template-areas:
+        "calendar nav"
+        "calendar events"
+        "calendar studentselector";
+}
+
+#student-selector select {
+    min-width: 220px;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+#student-selector select:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45), 0 0 0 3px rgba(99,102,241,0.08);
+    outline: none;
+}
+
+.glass.animate-in {
+    animation: fadeSlideUp .45s ease both;
+}
+
 #day-number {
     margin-top: .25rem;
     margin-left: .25rem;

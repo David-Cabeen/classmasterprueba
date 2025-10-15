@@ -52,26 +52,37 @@
                 }
                 $stmt->close();
             }
-            // Optionally, also include materias for the first child (if any) so the client can prefill
-            $materias = [];
-            if (!empty($children)) {
-                $firstId = $children[0]['id'];
-                $stmt = $conn->prepare('
-                    SELECT c.nombre AS curso_nombre
-                    FROM curso_estudiante ce
-                    JOIN cursos c ON ce.curso_id = c.id
-                    WHERE ce.estudiante_id = ?
-                ');
-                if ($stmt) {
-                    $stmt->bind_param('i', $firstId);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    while ($row = $result->fetch_assoc()) {
-                        $materias[] = $row['curso_nombre'];
+                // Optionally, include materias for a specific child if requested via GET (estudiante_id),
+                // otherwise use the first child so the client can prefill.
+                $materias = [];
+                if (!empty($children)) {
+                    $requested = isset($_GET['estudiante_id']) ? intval($_GET['estudiante_id']) : null;
+                    // Verify requested student belongs to this parent
+                    $firstId = $children[0]['id'];
+                    $targetId = $firstId;
+                    if ($requested) {
+                        $found = false;
+                        foreach ($children as $c) {
+                            if ($c['id'] === $requested) { $found = true; break; }
+                        }
+                        if ($found) $targetId = $requested;
                     }
-                    $stmt->close();
+                    $stmt = $conn->prepare('
+                        SELECT c.nombre AS curso_nombre
+                        FROM curso_estudiante ce
+                        JOIN cursos c ON ce.curso_id = c.id
+                        WHERE ce.estudiante_id = ?
+                    ');
+                    if ($stmt) {
+                        $stmt->bind_param('i', $targetId);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+                        while ($row = $result->fetch_assoc()) {
+                            $materias[] = $row['curso_nombre'];
+                        }
+                        $stmt->close();
+                    }
                 }
-            }
 
             echo json_encode([
                 'success' => true,

@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded', function () {
     let currentDate = new Date();
     let today = new Date();
     let selectedCursoId = null;
+    let viewingEstudianteId = null; // for parent viewing a child
 
     // Renderizar el calendario
     function renderCalendar(date) {
@@ -91,13 +92,17 @@ window.addEventListener('DOMContentLoaded', function () {
         let eventos = [];
         let eventosCurso = [];
         try {
-            const res = await fetch(`../php/eventos.php?year=${year}&month=${month}`);
+            const params = new URLSearchParams({ year, month });
+            if (viewingEstudianteId) params.set('estudiante_id', viewingEstudianteId);
+            const res = await fetch(`../php/eventos.php?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 eventos = data.eventos;
                 eventosCurso = data.eventos_curso;
             }
-        } catch (e) { eventos = []; eventosCurso = []; }
+    } catch (e) { eventos = []; eventosCurso = []; }
+    // Debug: log summary (remove in production if desired)
+    try { console.debug('checkForEvents', { year: currentDate.getFullYear(), month: currentDate.getMonth()+1, viewingEstudianteId, eventosCount: eventos.length, eventosCursoCount: eventosCurso.length }); } catch(e){}
         for (let i = 0; i < daysContainer.childElementCount; i++) {
             const dayDiv = daysContainer.children[i];
             const dayNumber = parseInt(dayDiv.textContent.trim());
@@ -242,7 +247,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }
-        document.body.appendChild(overlay);
+    document.body.appendChild(overlay);
         const priorityLabel = overlay.querySelectorAll('label'),
         priorityRadio = overlay.querySelectorAll('input[type="radio"]'),
         ok = overlay.querySelector("#cm-ok"),
@@ -326,6 +331,11 @@ window.addEventListener('DOMContentLoaded', function () {
             formData.append('prioridad', prioridad);
             formData.append('fecha', fecha);
             if (window.rol === 'profesor') formData.append('curso_id', selectedCursoId);
+            // If a parent is viewing a child calendar, prevent creating events
+            if (window.rol === 'acudiente' && viewingEstudianteId) {
+                toast('No tienes permisos para crear eventos en el calendario del estudiante', 'error');
+                return;
+            }
             try {
                 const res = await fetch('../php/eventos.php', { method: 'POST', body: formData });
                 const data = await res.json();
@@ -372,13 +382,24 @@ window.addEventListener('DOMContentLoaded', function () {
         let eventos = [];
         let eventosCurso = [];
         try {
-            const res = await fetch(`../php/eventos.php?year=${year}&month=${month}`);
+            const params = new URLSearchParams({ year, month });
+            if (viewingEstudianteId) params.set('estudiante_id', viewingEstudianteId);
+            const res = await fetch(`../php/eventos.php?${params.toString()}`);
             const data = await res.json();
+            console.debug('loadEvent fetched', { fecha, viewingEstudianteId, data });
             if (data.success) {
                 eventos = data.eventos.filter(ev => ev.fecha === fecha);
                 eventosCurso = data.eventos_curso.filter(ev => ev.fecha === fecha);
             }
         } catch (e) { eventos = []; eventosCurso = []; }
+
+        if (eventos.length === 0 && eventosCurso.length === 0) {
+            const noMsg = document.createElement('div');
+            noMsg.className = 'text-white/60 px-4 py-6';
+            noMsg.textContent = 'No hay eventos para este día.';
+            eventList.appendChild(noMsg);
+            return;
+        }
         // Render personal events
         eventos.forEach(ev => {
             let div = document.createElement('div');
@@ -389,7 +410,9 @@ window.addEventListener('DOMContentLoaded', function () {
             let deleteButton = document.createElement('ion-icon');
             deleteButton.setAttribute('name', 'trash-outline');
             deleteButton.style.cursor = 'pointer';
-            deleteButton.onclick = async function() {
+            // Parents viewing a child's calendar cannot delete events
+            if (!(window.rol === 'acudiente' && viewingEstudianteId)) {
+                deleteButton.onclick = async function() {
                 // AJAX delete
                 const formData = new FormData();
                 formData.append('action', 'delete');
@@ -399,7 +422,11 @@ window.addEventListener('DOMContentLoaded', function () {
                 } catch (e) {}
                 loadEvent();
                 checkForEvents();
-            };
+                };
+            } else {
+                // visually hide delete button for parent view
+                deleteButton.style.display = 'none';
+            }
             div.appendChild(deleteButton);
             div.appendChild(title);
             if (ev.descripcion) {
@@ -429,6 +456,66 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Abrir ventana de añadir evento
     eventAdder.addEventListener('click', () => eventModal({ onConfirm: createEvent }));
+
+    // If parent, load their children into selector
+    async function loadChildrenForParent() {
+        const select = document.getElementById('student-select');
+        if (!select) return;
+        try {
+            const res = await fetch('../php/padre_estudiante.php');
+            const data = await res.json();
+            // API returns array of estudiantes
+            if (Array.isArray(data)) {
+                data.forEach((st, idx) => {
+                    const opt = document.createElement('option');
+                    opt.value = st.id;
+                    opt.textContent = st.nombre + ' ' + st.apellido;
+                    select.appendChild(opt);
+                    // Auto-select first child
+                    if (idx === 0) {
+                        select.value = st.id;
+                        viewingEstudianteId = st.id;
+                        const cur = document.getElementById('student-current');
+                        if (cur) cur.textContent = st.nombre + ' ' + st.apellido;
+                    }
+                });
+            }
+        } catch (e) {}
+        select.addEventListener('change', function() {
+            viewingEstudianteId = select.value || null;
+            // Hide add button when viewing a child
+            const adder = document.getElementById('event-adder');
+            if (viewingEstudianteId) {
+                adder.style.display = 'none';
+            } else {
+                adder.style.display = '';
+            }
+            const cur = document.getElementById('student-current');
+            if (cur) {
+                const opt = select.querySelector(`option[value="${select.value}"]`);
+                cur.textContent = opt ? opt.textContent : '';
+            }
+            // Refresh events
+            renderCalendar(currentDate);
+            checkForEvents();
+            // If events panel open, reload day events
+            if (events.style.translate === '0px' || events.style.translate === '0') {
+                loadEvent();
+            }
+        });
+        // If auto-selected, load events now
+        if (viewingEstudianteId) {
+            const adder = document.getElementById('event-adder');
+            if (adder) adder.style.display = 'none';
+            renderCalendar(currentDate);
+            checkForEvents();
+        }
+    }
+
+    // Initialize children selector if present
+    if (window.rol === 'acudiente') {
+        loadChildrenForParent();
+    }
 
     // Calcular distancia desde hoy usando Date objects
     function checkDistanceFromToday(selectedDayStr) {

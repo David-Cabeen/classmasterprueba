@@ -20,7 +20,8 @@
 </head>
 <body>
     <?php include '../components/sidebar.php'; ?>
-    <div class="container glass rounded-2xl border border-white/10 animate-in">
+    <?php $is_parent = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'acudiente'); ?>
+    <div class="container glass rounded-2xl border border-white/10 animate-in<?php echo $is_parent ? ' has-studentselector' : ''; ?>">
         <div id="calendar" class="rounded-xl border border-white/10 glass my-4">
             <div class="weekdays grid grid-cols-7 text-center gap-2 text-white/70 font-semibold text-base">
                 <div>Dom</div>
@@ -49,6 +50,13 @@
             <ul id="event-list" class="px-4"></ul>
             <button id="event-adder" tabindex="-1" class="absolute bottom-4 right-4">Añadir evento</button>
         </div>
+        <?php if ($is_parent): ?>
+        <div id="student-selector" class="border border-white/10 flex items-center px-6">
+            <label for="student-select" class="text-sm text-white/70 mr-3 font-semibold">Ver calendario de:</label>
+            <select id="student-select" class="bg-white/10 border border-white/10 rounded px-3 py-2 text-white">
+            </select>
+        </div>
+        <?php endif; ?>
     </div>
     <script>
         window.rol = "<?php echo $_SESSION['rol']; ?>";

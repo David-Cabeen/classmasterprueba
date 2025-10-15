@@ -8,15 +8,18 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     $year = isset($_GET['year']) ? intval($_GET['year']) : null;
     $month = isset($_GET['month']) ? intval($_GET['month']) : null;
+    $for_estudiante = isset($_GET['estudiante_id']) ? intval($_GET['estudiante_id']) : null;
     // Get personal events
     if ($year && $month) {
-        $sql = "SELECT id, titulo, descripcion, prioridad, fecha FROM eventos WHERE YEAR(fecha) = ? AND MONTH(fecha) = ? AND id_usuario = ? ORDER BY fecha ASC";
+        $sql = "SELECT id, titulo, descripcion, prioridad, fecha, id_usuario FROM eventos WHERE YEAR(fecha) = ? AND MONTH(fecha) = ? AND id_usuario = ? ORDER BY fecha ASC";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('iii', $year, $month, $_SESSION['user_id']);
+        $user_for_events = $for_estudiante ? $for_estudiante : $_SESSION['user_id'];
+        $stmt->bind_param('iii', $year, $month, $user_for_events);
     } else {
-        $sql = "SELECT id, titulo, descripcion, prioridad, fecha FROM eventos WHERE id_usuario = ? ORDER BY fecha ASC";
+        $sql = "SELECT id, titulo, descripcion, prioridad, fecha, id_usuario FROM eventos WHERE id_usuario = ? ORDER BY fecha ASC";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $_SESSION['user_id']);
+        $user_for_events = $for_estudiante ? $for_estudiante : $_SESSION['user_id'];
+        $stmt->bind_param('i', $user_for_events);
     }
     $stmt->execute();
     $result = $stmt->get_result();
@@ -26,10 +29,11 @@ if ($method === 'GET') {
     }
     $stmt->close();
 
-    // Get curso_ids for the user
+    // Get curso_ids for the user (or for the requested estudiante if provided)
     $curso_ids = [];
+    $target_estudiante = $for_estudiante ? $for_estudiante : $_SESSION['user_id'];
     $stmt = $conn->prepare("SELECT curso_id FROM curso_estudiante WHERE estudiante_id = ?");
-    $stmt->bind_param('i', $_SESSION['user_id']);
+    $stmt->bind_param('i', $target_estudiante);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
@@ -110,15 +114,39 @@ if ($method === 'POST') {
         $stmt->close();
         exit;
     } else if ($action === 'delete') {
-        $id = $_POST['id'] ?? 0;
-        // Try to delete from eventos (personal events)
-        $stmt = $conn->prepare("DELETE FROM eventos WHERE id = ?");
+        $id = intval($_POST['id'] ?? 0);
+        if (!$id) {
+            echo json_encode(['success' => false, 'error' => 'ID inválido']);
+            exit;
+        }
+        // First, try to delete personal event but only if current user is the owner
+        $stmt = $conn->prepare("SELECT id_usuario FROM eventos WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        $deleted_personal = $stmt->affected_rows > 0;
+        $stmt->bind_result($owner_user_id);
+        $found = $stmt->fetch();
         $stmt->close();
-        // If not deleted, try to delete from eventos_curso if user is the creator
-        if (!$deleted_personal && isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor' && isset($_SESSION['profesor_id'])) {
+        if ($found) {
+            // Only the owner (id_usuario) can delete their personal event
+            if ($owner_user_id == $_SESSION['user_id']) {
+                $stmt = $conn->prepare("DELETE FROM eventos WHERE id = ?");
+                $stmt->bind_param('i', $id);
+                $stmt->execute();
+                $deleted_personal = $stmt->affected_rows > 0;
+                $stmt->close();
+                if ($deleted_personal) {
+                    echo json_encode(['success' => true]);
+                    exit;
+                }
+            } else {
+                // Not the owner: deny (this prevents parents deleting child events)
+                echo json_encode(['success' => false, 'error' => 'No tienes permiso para eliminar este evento.']);
+                exit;
+            }
+        }
+
+        // If not a personal event, allow profesor to delete course events they created
+        if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor' && isset($_SESSION['profesor_id'])) {
             $stmt = $conn->prepare("DELETE FROM eventos_curso WHERE id = ? AND creado_por_profesor_id = ?");
             $stmt->bind_param('is', $id, $_SESSION['profesor_id']);
             $stmt->execute();
@@ -128,10 +156,8 @@ if ($method === 'POST') {
                 echo json_encode(['success' => true]);
                 exit;
             }
-        } else if ($deleted_personal) {
-            echo json_encode(['success' => true]);
-            exit;
         }
+
         echo json_encode(['success' => false, 'error' => 'No se pudo eliminar el evento o no tienes permisos.']);
         exit;
     } else if ($action === 'create_profesor') {

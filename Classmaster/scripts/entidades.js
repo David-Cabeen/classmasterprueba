@@ -107,7 +107,7 @@ function renderUsers(users) {
         <td><input type="email" id="newUserEmail" placeholder="Email"></td>
         <td><input type="number" id="newUserGrado" placeholder="Grado"></td>
         <td><input type="text" id="newUserSeccion" placeholder="Sección"></td>
-        <td></td>
+        <td><input type="text" id="pass" placeholder="Contraseña"></td>
         <td><button style='white-space: nowrap;' id="createUserBtn">Crear usuario</button></td>
     `;
     usersTable.appendChild(newRow);
@@ -118,7 +118,7 @@ function renderUsers(users) {
         const email = document.getElementById('newUserEmail').value.trim();
         const grado =  document.getElementById('newUserGrado').value.trim();
         const seccion = document.getElementById('newUserSeccion').value.trim().toUpperCase();
-        const password = 'Student_2025';
+        const password = document.getElementById('pass').value.trim() || 'Student_2025';
         if (!nombre || !apellido || !email || !password) {
             alert('Todos los campos obligatorios deben estar completos.');
             return;
@@ -262,8 +262,8 @@ function renderTeachers(teachers) {
                 </div>
             </div>
         </td>
+        <td><input type="text" id="teacherPass" placeholder="Contraseña"></td>
         <td><button id="createTeacherBtn">Crear maestro</button></td>
-        <td></td>
     `;
     teachersTable.appendChild(newRow);
 
@@ -361,7 +361,7 @@ function renderTeachers(teachers) {
         const email = document.getElementById('newTeacherEmail').value.trim();
         const materias = Array.from(document.querySelectorAll('.materia-checkbox:checked')).map(cb => cb.value).join(',');
         const gradosSelected = Array.from(document.querySelectorAll('.grado-checkbox:checked')).map(cb => cb.value).join(',');
-        const password = 'Teacher_2025';
+        const password = document.getElementById('teacherPass').value.trim() || 'Teacher_2025';
         if (!nombre || !apellido || !email || !materias || !gradosSelected || !password) {
             alert('Todos los campos obligatorios deben estar completos.');
             return;
@@ -643,12 +643,8 @@ document.addEventListener('click', async (e) => {
         const tr = delBtn.closest('tr');
         const id = tr.dataset.id;
         const type = delBtn.dataset.type;
-        // Build a friendly label from the row: prefer nombre+apellido, fallback to email or id
-        const displayNameCell = tr.querySelector('.editable[data-field="nombre"]');
-        const displayEmailCell = tr.querySelector('.editable[data-field="email"]');
-        let displayLabel = tr.dataset.id;
-        if (displayNameCell && displayNameCell.textContent.trim()) displayLabel = displayNameCell.textContent.trim();
-        else if (displayEmailCell && displayEmailCell.textContent.trim()) displayLabel = displayEmailCell.textContent.trim();
+        const displayLabel = tr.querySelector('.editable[data-field="nombre"]').textContent + ' ' + tr.querySelector('.editable[data-field="apellido"]').textContent;
+
 
         confirmModal({
             titulo: 'Eliminar registro',
