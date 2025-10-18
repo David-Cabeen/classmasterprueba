@@ -154,15 +154,22 @@ window.addEventListener('DOMContentLoaded', function () {
     }
 
     // Cerrar ventana de eventos
-    closeButton.addEventListener('click', function () {
+    // Helper reutilizable: cierra el panel de eventos con la animación "fade-right"
+    function closeEventsPanel() {
         events.style.translate = '150%';
+        // Mantener la sombra mientras anima, eliminarla al terminar
         setTimeout(() => {
             events.style.boxShadow = 'none';
         }, 300);
+        // Quitar la clase 'selected' de cualquier día seleccionado
         daysContainer.querySelectorAll('div').forEach(div => {
             div.classList.remove('selected');
-        }
-        );
+        });
+    }
+
+    // Vincular el botón de cierre a la función reutilizable
+    closeButton.addEventListener('click', function () {
+        closeEventsPanel();
     });
 
     function eventModal({ onConfirm = () => { } } = {}) {
@@ -436,6 +443,7 @@ window.addEventListener('DOMContentLoaded', function () {
             }
             eventList.appendChild(div);
         });
+
         // Render course events
         eventosCurso.forEach(ev => {
             let div = document.createElement('div');
@@ -444,6 +452,21 @@ window.addEventListener('DOMContentLoaded', function () {
             let title = document.createElement('h3');
             let courseName = ev.curso_nombre ? ev.curso_nombre : 'Curso';
             title.innerHTML = `${ev.titulo} <span style="font-size:0.8em;color:#6cf;">[${courseName}]</span>`;
+            // If current user is the professor who created this course event, show delete icon
+            if (window.rol === 'profesor') {
+                const delIcon = document.createElement('ion-icon');
+                delIcon.setAttribute('name', 'trash-outline');
+                delIcon.style.cursor = 'pointer';
+                delIcon.style.marginRight = '8px';
+                delIcon.onclick = async function() {
+                    const formData = new FormData();
+                    formData.append('action', 'delete_profesor');
+                    formData.append('id', ev.id);
+                    try { await fetch('../php/eventos.php', { method: 'POST', body: formData }); } catch (e) {}
+                    loadEvent(); checkForEvents();
+                };
+                div.appendChild(delIcon);
+            }
             div.appendChild(title);
             if (ev.descripcion) {
                 let description = document.createElement('p');
@@ -498,9 +521,22 @@ window.addEventListener('DOMContentLoaded', function () {
             // Refresh events
             renderCalendar(currentDate);
             checkForEvents();
-            // If events panel open, reload day events
-            if (events.style.translate === '0px' || events.style.translate === '0') {
-                loadEvent();
+            // If events panel open, close it with animation (like clicking the close button),
+            // then reload events if the panel was open and should remain open for the newly selected student.
+            const panelOpen = (events.style.translate === '0px' || events.style.translate === '0');
+            if (panelOpen) {
+                // Close with same animation
+                closeEventsPanel();
+                // After animation completes, reload events for the potentially different student
+                setTimeout(() => {
+                    // If a day is selected, refresh its events for the new student view
+                    const selected = daysContainer.querySelector('div.selected');
+                    if (selected) {
+                        // ensure selectedDay text matches the selected element
+                        selectedDay.textContent = selected.textContent + ' / ' + months[currentDate.getMonth()] + ' / ' + currentDate.getFullYear();
+                        loadEvent();
+                    }
+                }, 320);
             }
         });
         // If auto-selected, load events now

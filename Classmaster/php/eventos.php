@@ -179,6 +179,30 @@ if ($method === 'POST') {
         }
         $stmt->close();
         exit;
+    } else if ($action == 'delete_profesor') {
+        $id = intval($_POST['id'] ?? 0);
+        if (!$id) {
+            echo json_encode(['success' => false, 'error' => 'ID inválido']);
+            exit;
+        }
+        // Only allow deletion if user is the profesor who created it
+        if ($_SESSION['rol'] === 'profesor') {
+            $stmt = $conn->prepare("DELETE FROM eventos_curso WHERE id = ? AND creado_por_profesor_id = ?");
+            $stmt->bind_param('is', $id, $_SESSION['user_id']);
+            $stmt->execute();
+            $deleted = $stmt->affected_rows > 0;
+            $stmt->close();
+            if ($deleted) {
+                echo json_encode(['success' => true]);
+                exit;
+            } else {
+                echo json_encode(['success' => false, 'error' => 'No se pudo eliminar el evento o no tienes permisos.']);
+                exit;
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'No tienes permiso para eliminar este evento.']);
+            exit;
+        }
     }
 }
 

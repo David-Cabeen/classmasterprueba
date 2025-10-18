@@ -1,12 +1,14 @@
 import { confirmModal, toast } from './components.js'
 
-// Rebuilt notas.js: consistent, renders inputs per (student,tarea) and saves via update_nota.php
+// Este archivo genera la tabla de notas dinámicamente, crea/edita/elimina tareas
+// y actualiza notas de estudiantes mediante llamadas a PHP (update_nota.php, crear_tarea.php, etc.).
 document.addEventListener('DOMContentLoaded', function() {
     const table = document.querySelector('table');
     let overlay = null;
     let tareaId = null;
     let escHandlerRef = null;
 
+    // Cierra y limpia el overlay/modal de creación/edición de tareas
     function closeOverlay() {
         if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
         if (escHandlerRef) {
@@ -16,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay = null;
     }
 
+    // Crea una nueva tarea enviando los filtros actuales al servidor.
     async function crearTarea() {
-        // include active filters so the server can resolve the curso robustly
         const materia = document.getElementById('materia')?.value || '';
         const grado = document.getElementById('grado')?.value || '';
         const seccion = document.getElementById('seccion')?.value || '';
@@ -25,15 +27,16 @@ document.addEventListener('DOMContentLoaded', function() {
             toast('Seleccione materia, grado y sección antes de crear una tarea', 'error');
             return;
         }
+
         const curso = `${materia} ${grado}${seccion}`.trim();
 
         const data = new FormData();
-        // send both composed curso_id and explicit fields
         data.append('curso_id', curso);
         data.append('materia', materia);
         data.append('grado', grado);
         data.append('seccion', seccion);
         data.append('periodo', document.getElementById('periodo')?.value || '');
+        
         data.append('titulo', overlay.querySelector('#tarea-input').value);
         data.append('descripcion', overlay.querySelector('#event-description').value);
         data.append('porcentaje', overlay.querySelector('#porcentaje').value);
@@ -52,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Edita una tarea existente (envía action=editar y el id al endpoint correspondiente)
     async function editarTarea() {
         const data = new FormData();
         data.append('action', 'editar');
@@ -74,6 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Elimina una tarea (se utiliza confirmModal antes desde el UI)
+    // Nota: el endpoint usado es editar_tarea.php con action=eliminar y el id
     async function eliminarTarea(id) {
         const data = new FormData();
         data.append('action', 'eliminar');
@@ -89,18 +95,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Guarda una nota para una tarea y estudiante específicos.
     async function saveNota(tarea_id, estudiante_id, valor, inputEl) {
         const data = new FormData();
         data.append('tarea_id', tarea_id);
         data.append('estudiante_id', estudiante_id);
         data.append('valor', valor);
 
-        inputEl.disabled = true;
+        inputEl.disabled = true; // Deshabilita el input para prevenir envíos duplicados
         try {
             const res = await fetch('../php/update_nota.php', { method: 'POST', body: data });
             const result = await res.json();
             if (result.success) {
-                // Actualizamos el modelo en memoria y el promedio en pantalla
                 toast(result.message || 'Nota actualizada correctamente', 'success');
                 if (window._notasData && Array.isArray(window._notasData.estudiantes)) {
                     const est = window._notasData.estudiantes.find(e => String(e.id) === String(estudiante_id));
@@ -109,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         est.notas[tarea_id] = parseFloat(valor);
                     }
                 }
-                // Recalcular promedio para este estudiante
                 recomputePromedio(estudiante_id);
             } else {
                 toast(result.message || result.error || 'Error al guardar la nota', 'error');
@@ -123,6 +128,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Recalcula el promedio ponderado de un estudiante y actualiza la celda correspondiente
+    // Explicación: el promedio es ponderado por el porcentaje de cada tarea.
+    // Si la suma de porcentajes no es 100, se divide por la suma de porcentajes
+    // (esto evita que el promedio baje automáticamente si no hay tareas que sumen 100%).
     function recomputePromedio(estudiante_id) {
         if (!window._notasData) return;
         const tareas = window._notasData.tareas || [];
@@ -130,6 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const est = estudiantes.find(e => String(e.id) === String(estudiante_id));
         if (!est) return;
 
+        // weightedSum acumula nota * (peso / 100) para todas las tareas con nota válida
+        // weightTotal acumula la suma de porcentajes (pesos). Si weightTotal === 0 no hay tareas con peso
         let weightedSum = 0.0;
         let weightTotal = 0.0;
         tareas.forEach(t => {
@@ -142,55 +152,67 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         let promedio = 0.0;
         if (weightTotal > 0) {
+            // Normalizamos al rango 0..100 basándonos en la suma de pesos
             promedio = (weightedSum / (weightTotal / 100.0));
         } else {
             promedio = 0.0;
         }
         const tbody = table.querySelector('tbody');
         const row = tbody.querySelector(`tr[data-estudiante-id="${estudiante_id}"]`);
+        // Actualizar la celda de promedio si la fila está en el DOM
         if (row) {
             const promTd = row.querySelector('td[data-promedio-for]');
             if (promTd) promTd.textContent = (isNaN(promedio) ? '0.00' : Number(promedio).toFixed(2));
         }
     }
 
+    // Adjunta manejadores a los inputs editables de nota
+    // - Se guarda el valor original para evitar reenvíos innecesarios
+    // - En 'blur' valida y normaliza el número y llama a saveNota cuando no se selecciona el input
+    // - Enter provoca blur para disparar la validación, evitando que el formulario se envíe
     function attachInputHandlers(input, tarea_id, estudiante_id) {
         let original = input.value;
         input.addEventListener('blur', function() {
             const val = input.value.trim();
-            if (val === original) return;
-            const num = parseFloat(val.replace(',', '.'));
+            if (val === original) return; // Si no cambió, no hacemos nada
+            const num = parseFloat(val.replace(',', '.')); // Reemplazamos coma decimal por punto
             if (isNaN(num)) { toast('Valor inválido', 'error'); input.value = original; return; }
-            original = input.value = num.toFixed(2);
+            original = input.value = num.toFixed(2); // Guardar formato uniforme con 2 decimales y enviar
             saveNota(tarea_id, estudiante_id, input.value, input);
         });
         input.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
     }
 
+    // Construye la cabecera de la tabla (encabezados por cada tarea)
+    // - Crea una columna 'Nombre'
+    // - Crea una columna por cada tarea con su título y porcentaje
     function buildHeader(tareas) {
         const tr = document.querySelector('#notas-header');
         tr.innerHTML = '';
-        const nameTh = document.createElement('th');
-        nameTh.className = 'px-6 py-4 font-semibold align-middle';
-        nameTh.textContent = 'Nombre';
+    const nameTh = document.createElement('th');
+    // Asegurarnos que el texto del encabezado 'Nombre' esté centrado horizontalmente
+    nameTh.className = 'px-6 py-4 text-center font-semibold align-middle';
+    nameTh.style.textAlign = 'center';
+    nameTh.textContent = 'Nombre';
         tr.appendChild(nameTh);
 
+        // Para cada tarea añadimos un th con dataset.tareaId usado para identificar clicks
         tareas.forEach(t => {
             const th = document.createElement('th');
-            th.className = 'px-6 py-4 cursor-pointer font-semibold align-middle';
+            th.className = 'px-6 py-4 cursor-pointer text-center font-semibold align-middle';
             th.textContent = `${t.titulo} (${t.porcentaje}%)`;
             th.dataset.tareaId = t.id;
             tr.appendChild(th);
         });
 
-        // Añadir columna de promedio (no editable) antes del botón de crear tarea
+        // Columna de promedio (no editable)
         const promTh = document.createElement('th');
-        promTh.className = 'px-6 py-4 font-semibold align-middle';
+        promTh.className = 'px-6 py-4 text-center text-center font-semibold align-middle';
         promTh.textContent = 'Promedio';
         promTh.dataset.promedio = 'true';
         tr.appendChild(promTh);
 
-        // Only show the crear-tarea button for professors
+        // Mostrar botón crear-tarea únicamente si el rol es profesor
         if (window.rol === 'profesor') {
             const btnTh = document.createElement('th');
             btnTh.className = 'px-6 py-4 align-middle';
@@ -199,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.textContent = '+';
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const existing = document.querySelector('.cm-overlay'); if (existing) closeOverlay();
+                const existing = document.querySelector('.cm-overlay'); if (existing) closeOverlay(); // Si ya hay un overlay abierto, cerrarlo primero
                 overlay = document.createElement('div');
                 overlay.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-50 cm-overlay';
                 overlay.innerHTML = `
@@ -218,21 +240,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 document.body.appendChild(overlay);
                 const ok = overlay.querySelector('#cm-ok'); const cancel = overlay.querySelector('#cm-cancel');
+
                 function escHandler(e){ if(e.key === 'Escape') closeOverlay(); }
                 escHandlerRef = escHandler; document.addEventListener('keydown', escHandlerRef);
                 ok.addEventListener('click', function(e){ e.preventDefault(); crearTarea(); });
                 cancel.addEventListener('click', closeOverlay);
+
                 overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
             });
             btnTh.appendChild(btn); tr.appendChild(btnTh);
         }
 
+        // Click handler global en la fila del header para editar tareas (solo profesores)
         tr.onclick = function(e){
-            // only professors can open the editar overlay
             if (window.rol !== 'profesor') return;
             const th = e.target.closest('th'); if(!th) return; const tareaIdClicked = th.dataset.tareaId; if(!tareaIdClicked) return;
+            // Obtener la tarea desde el modelo global window._notasData
             const tarea = (window._notasData && window._notasData.tareas) ? window._notasData.tareas.find(t => String(t.id) === String(tareaIdClicked)) : null; if (!tarea) return;
             const existing = document.querySelector('.cm-overlay'); if(existing) closeOverlay();
+            // Crear overlay para editar tarea con valores pre-llenados
             overlay = document.createElement('div'); overlay.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-50 cm-overlay';
             overlay.innerHTML = `
                 <div class="editar-tarea w-full sm:max-w-md rounded-2xl border border-white/10 p-6 animate-in" role="dialog" aria-modal="true">
@@ -253,41 +279,47 @@ document.addEventListener('DOMContentLoaded', function() {
             const ok = overlay.querySelector('#cm-ok'); const cancel = overlay.querySelector('#cm-cancel'); const del = overlay.querySelector('#cm-delete');
             function escHandler(e){ if(e.key === 'Escape') closeOverlay(); }
             escHandlerRef = escHandler; document.addEventListener('keydown', escHandlerRef);
+            // Botón eliminar muestra confirmModal y llama a eliminarTarea si confirma
             del.addEventListener('click', function(){ confirmModal({ titulo: 'Eliminar tarea', descripcion: '¿Estás seguro de que deseas eliminar esta tarea? Esta acción no se puede deshacer.', onConfirm: function(){ eliminarTarea(tareaId); closeOverlay(); } }); });
             ok.addEventListener('click', function(e){ e.preventDefault(); editarTarea(); });
             cancel.addEventListener('click', closeOverlay);
             overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeOverlay(); });
         };
-    }
+    };
 
+    // Construye el cuerpo de la tabla con una fila por estudiante
+    // Cada fila contendrá:
+    // - nombre del estudiante
+    // - una celda por tarea (input editable para profesores, solo-lectura para otros roles)
+    // - la celda de promedio calculada al final
     function buildBody(estudiantes, tareas){
+
         const tbody = table.querySelector('tbody'); tbody.innerHTML = '';
+
         estudiantes.forEach(est => {
-            const tr = document.createElement('tr'); tr.className = 'border-b border-white/10';
-            // tag row with estudiante id so recomputePromedio can update the Promedio cell without reloading whole table
+            const tr = document.createElement('tr'); tr.className = 'text-center border-b border-white/10';
             tr.setAttribute('data-estudiante-id', String(est.id));
-            const nameTd = document.createElement('td'); nameTd.className = 'px-6 py-4 font-semibold align-middle'; nameTd.textContent = `${est.nombre} ${est.apellido}`; tr.appendChild(nameTd);
-            // Por cada tarea añadimos una celda; si el rol es profesor, es un input editable, sino es texto sólo lectura
+            const nameTd = document.createElement('td'); nameTd.className = 'text-center px-6 py-4 font-semibold align-middle'; nameTd.textContent = `${est.nombre} ${est.apellido}`; tr.appendChild(nameTd);
+            
+            // Por cada tarea añadimos una celda; si el rol es profesor, creamos un input editable
             tareas.forEach(t => {
                 const td = document.createElement('td'); td.className = 'px-6 py-4 align-middle';
                 const notaVal = (est.notas && typeof est.notas[t.id] !== 'undefined' && est.notas[t.id] !== null) ? est.notas[t.id] : 3.20;
                 const displayVal = (typeof notaVal === 'number') ? Number(notaVal).toFixed(2) : parseFloat(notaVal || 3.2).toFixed(2);
+                
                 if (window.rol === 'profesor') {
-                    const input = document.createElement('input'); input.type = 'number'; input.step = '0.01'; input.className = 'w-full bg-transparent border border-white/10 rounded px-2 py-1 text-right';
+                    const input = document.createElement('input'); input.type = 'number'; input.step = '0.01'; input.className = 'w-full bg-transparent border border-white/10 rounded px-2 py-1 text-center';
                     input.value = displayVal;
                     td.appendChild(input);
                     attachInputHandlers(input, t.id, est.id);
                 } else {
-                    const span = document.createElement('div'); span.className = 'text-right'; span.textContent = displayVal; td.appendChild(span);
+                    const span = document.createElement('div'); span.className = 'text-center'; span.textContent = displayVal; td.appendChild(span);
                 }
                 tr.appendChild(td);
             });
 
-            // Calcular el promedio ponderado para este estudiante
-            // Lógica: para cada tarea considérese (nota * (porcentaje / 100)).
-            // Si la suma de porcentajes es menor a 100, se normaliza dividiendo por la suma de porcentajes (para evitar penalizar cuando no hay 100%).
-            const promTd = document.createElement('td'); promTd.className = 'px-6 py-4 align-middle font-medium text-right';
-            // calcular suma ponderada y suma de pesos
+            // Calcular y mostrar el promedio ponderado para este estudiante en esta misma función
+            const promTd = document.createElement('td'); promTd.className = 'px-6 py-4 align-middle font-medium text-center';
             let weightedSum = 0.0;
             let weightTotal = 0.0;
             tareas.forEach(t => {
@@ -300,13 +332,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             let promedio = 0.0;
             if (weightTotal > 0) {
-                // normalizar si la suma de pesos no es 100
                 promedio = (weightedSum / (weightTotal / 100.0));
             } else {
                 promedio = 0.0;
             }
             promTd.textContent = (isNaN(promedio) ? '0.00' : Number(promedio).toFixed(2));
-            // mark the promedio cell so it can be found by recomputePromedio
             promTd.setAttribute('data-promedio-for', String(est.id));
             tr.appendChild(promTd);
             tbody.appendChild(tr);
@@ -327,10 +357,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Fetch filter options from server and populate selects
+    // Solicita al servidor las opciones para los selects de filtro (grado, materia, seccion, periodo)
     async function loadFilterOptions() {
         try {
-            // If the logged role is 'acudiente' include estudiante_id so server returns only relevant materias
             let url = '../php/notas_filtros.php';
             if (window.rol === 'acudiente') {
                 const estSelect = document.getElementById('estudiante');
@@ -341,17 +370,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const res = await fetch(url);
             const data = await res.json();
             if (!data.success) {
-                // no filters available; return
+                // Si el servidor no devolvió filtros, devolvemos falsos para que el llamador maneje el caso
                 console.warn('no filter data', data);
                 return { hasGrados: false, hasMaterias: false };
             }
 
-            // populate grados if provided
+            // Llenar select de grados si el servidor lo envía
             let hasGrados = false;
             if (Array.isArray(data.grados) && data.grados.length > 0) {
                 const gradoSel = document.getElementById('grado');
                 if (gradoSel) {
-                    gradoSel.innerHTML = ''; // clear
+                    gradoSel.innerHTML = ''; // limpiar opciones previas
                     data.grados.forEach(g => {
                         const o = document.createElement('option'); o.value = g; o.textContent = g; gradoSel.appendChild(o);
                     });
@@ -359,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // populate materias if provided
+            // Llenar select de materias si el servidor lo envía
             let hasMaterias = false;
             if (Array.isArray(data.materias) && data.materias.length > 0) {
                 const matSel = document.getElementById('materia');
@@ -371,27 +400,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     hasMaterias = true;
                 }
             }
-            // if the endpoint returned estudiantes (for acudiente), populate the selector
-                    if (Array.isArray(data.estudiantes) && data.estudiantes.length > 0) {
-                        const estSel = document.getElementById('estudiante');
-                        if (estSel) {
-                            // preserve current value so we can restore selection after rebuilding options
-                            const curVal = estSel.value;
-                            estSel.innerHTML = '';
-                            data.estudiantes.forEach(s => {
-                                const o = document.createElement('option'); o.value = s.id; o.textContent = s.nombre; estSel.appendChild(o);
-                            });
-                            // Restore previous selection if still present, otherwise default to first
-                            if (curVal) {
-                                const exists = Array.from(estSel.options).some(o => o.value === curVal);
-                                if (exists) estSel.value = curVal; else estSel.selectedIndex = 0;
-                            } else {
-                                estSel.selectedIndex = 0;
-                            }
-                            // debug: list options and current selection
-                            try { console.debug('estudiantes populated', Array.from(estSel.options).map(o => ({value:o.value, text:o.text})), 'selected', estSel.value); } catch(e){}
-                        }
+
+            // Si el endpoint retornó estudiantes (caso acudiente), reconstruir el select de estudiantes
+            if (Array.isArray(data.estudiantes) && data.estudiantes.length > 0) {
+                const estSel = document.getElementById('estudiante');
+                if (estSel) {
+                    // preservamos la selección actual para no resetear la elección del usuario accidentalmente
+                    const curVal = estSel.value;
+                    estSel.innerHTML = '';
+                    data.estudiantes.forEach(s => {
+                        const o = document.createElement('option'); o.value = s.id; o.textContent = s.nombre; estSel.appendChild(o);
+                    });
+                    // Restaurar selección previa si aún existe
+                    if (curVal) {
+                        const exists = Array.from(estSel.options).some(o => o.value === curVal);
+                        if (exists) estSel.value = curVal; else estSel.selectedIndex = 0;
+                    } else {
+                        estSel.selectedIndex = 0;
                     }
+                    // Depuración: listar opciones cargadas
+                    try { console.debug('estudiantes populated', Array.from(estSel.options).map(o => ({value:o.value, text:o.text})), 'selected', estSel.value); } catch(e){}
+                }
+            }
             return { hasGrados, hasMaterias };
         } catch (err) {
             console.error('Error loading filter options', err);
@@ -399,12 +429,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Actualiza la tabla completa solicitando datos al servidor según los filtros
+    // Observación: algunos selects pueden ser poblados por otros scripts asíncronamente, por eso
+    // implementamos un pequeño retry hasta que los selects tengan opciones.
     function updateTable(){
-        // If filter selects are provided by other scripts asynchronously, wait until they have options
+        // Obtener selects relevantes
         const gradoSel = document.getElementById('grado');
         const materiaSel = document.getElementById('materia');
         const seccionSel = document.getElementById('seccion');
-        // If any select exists but has no options yet, retry shortly
+        // Si algún select existe pero aún no tiene opciones, reintentar breve
         const selectsToCheck = [gradoSel, materiaSel, seccionSel].filter(Boolean);
         const needsRetry = selectsToCheck.some(s => s.options.length === 0);
         if (needsRetry && _updateRetries < _updateMaxRetries) {
@@ -412,40 +445,42 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(updateTable, 200);
             return;
         }
-        // reset retry counter when proceeding
+        // reset del contador de reintentos
         _updateRetries = 0;
 
-        // Ensure sensible defaults if selects are present but have no value
+        // Asegurar valores por defecto si los selects están vacíos
         ensureDefaultFilters();
 
+        // Construir parámetros de consulta
         const filtros = { grado: gradoSel?.value || '', seccion: seccionSel?.value || '', materia: materiaSel?.value || '', periodo: document.getElementById('periodo')?.value || '' };
         const params = new URLSearchParams(filtros);
-        // if role is estudiante, always request only their own id
+        // Si el usuario es estudiante, pedir solo sus datos
         if (window.rol === 'estudiante') {
             params.append('estudiante_id', String(window.user_id || ''));
         } else if (window.rol === 'acudiente') {
             const estSelect = document.getElementById('estudiante'); if (estSelect && estSelect.value) params.append('estudiante_id', estSelect.value);
         }
+        // Llamada al endpoint que devuelve la tabla de notas (tareas + estudiantes + notas)
         fetch(`../php/notas_table.php?${params.toString()}`).then(res => res.json()).then(data => { if(!data.success){ toast(data.error || 'Error al cargar notas','error'); return; } window._notasData = data; buildHeader(data.tareas || []); buildBody(data.estudiantes || [], data.tareas || []); }).catch(err => { console.error(err); toast('Error de red al cargar la tabla: ' + err, 'error'); });
     }
 
-    // attach filtros
+    // Adjuntar listeners a los selects de filtro para recargar la tabla al cambiar
     const filtros = document.querySelectorAll('#grado, #seccion, #materia, #periodo'); filtros.forEach(f => f.addEventListener('change', updateTable));
     const estSelect = document.getElementById('estudiante');
     if (estSelect) {
+        // Cuando un acudiente cambia de estudiante, recargamos las opciones de filtro (por ejemplo las materias)
         estSelect.addEventListener('change', function() {
             try { console.debug('estudiante changed to', estSelect.value); } catch(e){}
-            // When parent selects a different student, reload filter options (materias/grados)
+            // Recargar opciones de filtro y luego reconstruir la tabla con los nuevos filtros
             loadFilterOptions().then(() => {
-                // ensure sensible defaults then reload table
                 ensureDefaultFilters();
                 updateTable();
             });
         });
     }
-    // load filter options (async) then pick defaults and load the table
+    // Cargar opciones de filtro la primera vez, luego inicializar la tabla
     loadFilterOptions().then((res) => {
-        // If profesor and filters empty, tell user to set materias/grados in profile instead of requesting notas
+        // Si el usuario es profesor y no hay grados/materias, avisar para que configure su perfil
         if (window.rol === 'profesor') {
             const hasGrados = res && res.hasGrados;
             const hasMaterias = res && res.hasMaterias;
@@ -455,9 +490,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         ensureDefaultFilters();
+        // pequeño timeout para permitir que otros scripts terminen de inicializar el DOM si es necesario
         setTimeout(updateTable, 100);
     }).catch(() => {
-        // if loading filters fails, still attempt to load the table with whatever is present
+        // Si falla cargar filtros, igualmente intentamos cargar la tabla con lo que haya
         ensureDefaultFilters();
         setTimeout(updateTable, 100);
     });

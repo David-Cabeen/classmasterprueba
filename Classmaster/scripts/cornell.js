@@ -30,9 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
     }
-    let notes = JSON.parse(localStorage.getItem('cornell-notes')) || [];
+    let notes = [];
     let isEditing = false;
     let editingId = null;
+
+    // small helper to avoid injecting raw HTML
+    function escapeHtml(text) {
+        if (!text && text !== 0) return '';
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
 
     // Mostrar sección de crear nota
     function showCreateNote() {
@@ -74,40 +85,31 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const now = new Date().toLocaleDateString();
-
-        if (isEditing && editingId !== null) {
-            // Editar nota existente
-            const idx = notes.findIndex(n => n.id === editingId);
-            if (idx !== -1) {
-                notes[idx] = {
-                    ...notes[idx],
-                    title,
-                    cues,
-                    notes: notesContent,
-                    summary,
-                    modified: now
-                };
-                toast('Nota actualizada correctamente ✅', 'success');
-            }
+        const data = new FormData();
+        data.append('title', title);
+        data.append('cues', cues);
+        data.append('notes', notesContent);
+        data.append('summary', summary);
+        if (!isEditing) {
+            data.append('action', 'create');
         } else {
-            // Crear nueva nota
-            notes.push({
-                id: Date.now(),
-                title,
-                cues,
-                notes: notesContent,
-                summary,
-                created: now,
-                modified: now
-            });
-            toast('Nota guardada correctamente ✅', 'success');
+            data.append('action', 'update');
+            data.append('id', editingId);
         }
 
-        localStorage.setItem('cornell-notes', JSON.stringify(notes));
-        updateNotesCount();
-        showAllNotes();
-    }
+        fetch('../php/cornell.php', { method: 'POST', body: data })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                toast('Nota guardada correctamente', 'success');
+                // Refresh list from server to keep canonical
+                updateNotesList();
+                showAllNotes();
+            } else {
+                toast('Error al guardar la nota: ' + (result.error || 'error desconocido'), 'error');
+            }
+        })
+    };
 
     // Cancelar creación/edición
     function cancelNote() {
@@ -118,177 +120,164 @@ document.addEventListener('DOMContentLoaded', () => {
             cancelarTxt: 'No',
             onConfirm: showAllNotes
         });
-    }
+    };
 
     // Actualizar lista de notas
     function updateNotesList() {
-        const container = document.getElementById('notes-container');
-        if (notes.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state text-center">
-                    <h3 class="text-lg font-semibold text-accent mb-2">No tienes notas guardadas</h3>
-                    <p class="text-white/60">Haz clic en \"Nueva Nota\" para crear tu primera nota usando el método Cornell</p>
-                </div>
-            `;
-            return;
-        }
-        container.innerHTML = notes.map(note => `
-            <div class="note-card bg-white/10 rounded-xl p-4 mb-4 ring-soft border border-white/10 animate-fadeInUp">
-                <div class="note-card-header">
-                    <div>
-                        <div class="note-title">${note.title}</div>
-                        <div class="note-date">
-                            Creada: ${note.created}
-                            ${note.modified !== note.created ? ` • Modificada: ${note.modified}` : ''}
-                        </div>
-                    </div>
-                    <div class="note-actions">
-                        <button class="btn btn-small btn-secondary" onclick="editNote(${note.id})">
-                            ✏️ Editar
-                        </button>
-                        <button class="btn btn-danger btn-small" onclick="deleteNote(${note.id})">
-                            🗑️ Eliminar
-                        </button>
-                    </div>
-                </div>
-                <div class="cornell-preview">
-                    ${note.cues ? `
-                        <div class="preview-cues preview-section">
-                            <h4>🔑 Palabras Clave</h4>
-                            <div class="preview-content">${note.cues.replace(/\n/g, "<br>")}</div>
-                        </div>
-                    ` : ''}
-                    ${note.notes ? `
-                        <div class="preview-notes preview-section">
-                            <h4>📝 Notas</h4>
-                            <div class="preview-content">${note.notes.replace(/\n/g, "<br>")}</div>
-                        </div>
-                    ` : ''}
-                    ${note.summary ? `
-                        <div class="preview-summary preview-section">
-                            <h4>📋 Resumen</h4>
-                            <div class="preview-content">${note.summary.replace(/\n/g, "<br>")}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `).join('');
-    }
+        fetch('../php/cornell.php', { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                toast('Error al cargar las notas', 'error');
+                return;
+            }
 
-    // Editar nota
-    function editNote(id) {
-        const note = notes.find(n => n.id === id);
-        if (!note) return;
-        isEditing = true;
-        editingId = id;
-        document.getElementById('note-title').value = note.title;
-        document.getElementById('cues-area').value = note.cues;
-        document.getElementById('notes-area').value = note.notes;
-        document.getElementById('summary-area').value = note.summary;
-        showCreateNote();
+            notes = data.notes.map(n => ({
+                id: n.id,
+                title: n.titulo,
+                cues: n.claves,
+                notes: n.principal,
+                summary: n.resumen,
+                created: n.creada,
+                modified: n.modificada
+            }));
+
+            const container = document.getElementById('notes-container');
+            if (!container) return;
+
+            if (notes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state text-center">
+                        <h3 class="text-lg font-semibold text-accent mb-2">No tienes notas guardadas</h3>
+                        <p class="text-white/60">Haz clic en \"Nueva Nota\" para crear tu primera nota usando el método Cornell</p>
+                    </div>
+                `;
+                updateNotesCount();
+                return;
+            }
+
+            container.innerHTML = notes.map(note => {
+                const created = note.created ? new Date(note.created).toLocaleDateString() : '';
+                const modified = note.modified ? new Date(note.modified).toLocaleDateString() : created;
+                return `
+                    <div class="note-card bg-white/10 rounded-xl p-4 mb-4 ring-soft border border-white/10 animate-fadeInUp">
+                        <div class="note-card-header">
+                            <div>
+                                <div class="note-title">${escapeHtml(note.title)}</div>
+                                <div class="note-date">
+                                    Creada: ${created}
+                                    ${modified !== created ? ` • Modificada: ${modified}` : ''}
+                                </div>
+                            </div>
+                            <div class="note-actions">
+                                <button class="btn btn-small btn-secondary" onclick="editNote(${note.id})">
+                                    ✏️ Editar
+                                </button>
+                                <button class="btn btn-danger btn-small" onclick="deleteNote(${note.id})">
+                                    🗑️ Eliminar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="cornell-preview">
+                            ${note.cues ? `
+                                <div class="preview-cues preview-section">
+                                    <h4>🔑 Palabras Clave</h4>
+                                    <div class="preview-content">${note.cues.replace(/\n/g, "<br>")}</div>
+                                </div>
+                            ` : ''}
+                            ${note.notes ? `
+                                <div class="preview-notes preview-section">
+                                    <h4>📝 Notas</h4>
+                                    <div class="preview-content">${note.notes.replace(/\n/g, "<br>")}</div>
+                                </div>
+                            ` : ''}
+                            ${note.summary ? `
+                                <div class="preview-summary preview-section">
+                                    <h4>📋 Resumen</h4>
+                                    <div class="preview-content">${note.summary.replace(/\n/g, "<br>")}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateNotesCount();
+        })
+        .catch(err => {
+            console.error('Error fetching notes:', err);
+            toast('Error al cargar las notas', 'error');
+        });
     }
 
     // Eliminar nota
-    function deleteNote(id) {
-        if (confirm('¿Estás seguro de que quieres eliminar esta nota? Esta acción no se puede deshacer.')) {
-            notes = notes.filter(n => n.id !== id);
-            localStorage.setItem('cornell-notes', JSON.stringify(notes));
-            updateNotesList();
-            updateNotesCount();
-            showMessage('Nota eliminada correctamente ✅', 'success');
-        }
-    }
+    window.deleteNote = function(id) {
+        confirmModal({
+            titulo: 'Eliminar nota',
+            descripcion: '¿Estás seguro de que quieres eliminar esta nota? Esta acción no se puede deshacer.',
+            confirmarTxt: 'Sí, eliminar',
+            cancelarTxt: 'No',
+            onConfirm: () => {
+            fetch('../php/cornell.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ action: 'delete', id })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                updateNotesList();
+                updateNotesCount();
+                toast('Nota eliminada correctamente', 'success');
+                } else {
+                toast('Error al eliminar la nota: ' + (data.error || 'error desconocido'), 'error');
+                }
+            }).catch(err => {
+                console.error('Error deleting note:', err);
+                toast('Error al eliminar la nota', 'error');
+            });
+            }
+        });
+        return;
+    };
 
-    // Limpiar todas las notas
-    function clearAllNotes() {
-        if (notes.length === 0) {
-            showMessage('No hay notas para eliminar', 'info');
+    // expose editNote globally for inline onclick handlers
+    window.editNote = function(id) {
+        // fetch the single note from server (or reuse cached notes array)
+        const found = notes.find(n => Number(n.id) === Number(id));
+        if (found) {
+            isEditing = true; editingId = id;
+            document.getElementById('note-title').value = found.title || '';
+            document.getElementById('cues-area').value = found.cues || '';
+            document.getElementById('notes-area').value = found.notes || '';
+            document.getElementById('summary-area').value = found.summary || '';
+            showCreateNote();
             return;
         }
-        if (confirm('¿Estás seguro de que quieres eliminar TODAS las notas? Esta acción no se puede deshacer.')) {
-            notes = [];
-            localStorage.setItem('cornell-notes', JSON.stringify(notes));
-            updateNotesList();
-            updateNotesCount();
-            showMessage('Todas las notas han sido eliminadas ✅', 'success');
-        }
-    }
-
-    // Actualizar contador de notas
-    function updateNotesCount() {
-        const count = notes.length;
-        document.getElementById('notes-count').textContent =
-            count === 0 ? '0 notas guardadas' :
-            count === 1 ? '1 nota guardada' :
-            `${count} notas guardadas`;
-    }
-
-    // Mostrar mensaje
-    function showMessage(message, type = 'info') {
-        const colors = {
-            success: 'linear-gradient(135deg, #48bb78, #38a169)',
-            error: 'linear-gradient(135deg, #f56565, #e53e3e)',
-            info: 'linear-gradient(135deg, #4299e1, #3182ce)'
-        };
-        const messageDiv = document.createElement('div');
-        messageDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${colors[type]};
-            color: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 1000;
-            font-weight: 500;
-            animation: slideInRight 0.5s ease-out;
-            max-width: 300px;
-        `;
-        messageDiv.textContent = message;
-        document.body.appendChild(messageDiv);
-        setTimeout(() => {
-            messageDiv.style.animation = 'slideOutRight 0.5s ease-out forwards';
-            setTimeout(() => messageDiv.remove(), 500);
-        }, 3000);
-    }
-
-    // Inicializar la aplicación
-    updateNotesCount();
-    showAllNotes();
-
-    // Guardar automáticamente cada 30 segundos si hay contenido
-    setInterval(() => {
-        if (document.getElementById('create-note-section').style.display !== 'none') {
-            const title = document.getElementById('note-title').value.trim();
-            const cues = document.getElementById('cues-area').value.trim();
-            const notesContent = document.getElementById('notes-area').value.trim();
-            const summary = document.getElementById('summary-area').value.trim();
-            if (title || cues || notesContent || summary) {
-                localStorage.setItem('cornell-draft', JSON.stringify({
-                    title, cues, notes: notesContent, summary, timestamp: Date.now()
-                }));
-            }
-        }
-    }, 30000);
-
-    // Recuperar borrador al cargar
-    window.addEventListener('load', () => {
-        const draft = localStorage.getItem('cornell-draft');
-        if (draft) {
-            const draftData = JSON.parse(draft);
-            const timeDiff = Date.now() - draftData.timestamp;
-            // Si el borrador es de menos de 1 hora
-            if (timeDiff < 3600000) {
-                if (confirm('Se encontró un borrador guardado. ¿Quieres recuperarlo?')) {
-                    document.getElementById('note-title').value = draftData.title || '';
-                    document.getElementById('cues-area').value = draftData.cues || '';
-                    document.getElementById('notes-area').value = draftData.notes || '';
-                    document.getElementById('summary-area').value = draftData.summary || '';
+        // fallback: reload list then populate
+        fetch('../php/cornell.php').then(r => r.json()).then(data => {
+            if (data.success) {
+                notes = data.notes.map(n => ({ id: n.id, title: n.titulo, cues: n.claves, notes: n.principal, summary: n.resumen, created: n.creada, modified: n.modificada }));
+                const note = notes.find(n => Number(n.id) === Number(id));
+                if (note) {
+                    isEditing = true; editingId = id;
+                    document.getElementById('note-title').value = note.title || '';
+                    document.getElementById('cues-area').value = note.cues || '';
+                    document.getElementById('notes-area').value = note.notes || '';
+                    document.getElementById('summary-area').value = note.summary || '';
                     showCreateNote();
                 }
             }
-            localStorage.removeItem('cornell-draft');
-        }
-    });
+        });
+    };
+
+    // Inicializar la aplicación
+    function updateNotesCount() {
+        // optional: display count somewhere; fallback no-op
+        const countEl = document.getElementById('notes-count');
+        if (!countEl) return;
+        countEl.textContent = notes.length;
+    }
+    updateNotesList();
+    showAllNotes();
+
+    // no autosave/draft logic for now (DB-backed). If you want drafts, we can implement server-side drafts.
 });

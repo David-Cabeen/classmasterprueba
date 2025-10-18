@@ -39,8 +39,16 @@ if (!isset($_SESSION['user_id'])) {
                     <div id="cornellTabButtons" class="flex justify-center gap-2 mb-8">
                         <button class="tab active px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10">➕ Nueva Nota</button>
                         <button class="tab px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10">📚 Ver Todas las Notas</button>
-                        <button class="tab px-4 py-2 rounded-xl font-semibold bg-white/5 text-accent ring-soft border border-white/10 transition hover:bg-white/10">🗑️ Limpiar Todo</button>
-                        <span id="notes-count" class="ml-auto text-white/60 font-medium">0 notas guardadas</span>
+                        <?php
+                            require_once '../php/connection.php';
+                            $stmt = $conn->prepare("SELECT COUNT(*) FROM cornell WHERE user_id = ?");
+                            $stmt->bind_param("i", $_SESSION['user_id']);
+                            $stmt->execute();
+                            $stmt->bind_result($notesCount);
+                            $stmt->fetch();
+                            $stmt->close();
+                        ?>
+                        <span id="notes-count" class="ml-auto text-white/60 font-medium"><?php echo $notesCount; ?> notas guardadas </span>
                     </div>
                     <!-- Sección Crear -->
                     <div id="create-note-section" class="tab-content animate-fadeInUp" style="display: none;">
@@ -65,8 +73,8 @@ if (!isset($_SESSION['user_id'])) {
                                 </div>
                             </div>
                             <div id="cornellFormButtons" class="flex gap-3 mt-6">
-                                <button class="btn btn-secondary">💾 Guardar Nota</button>
-                                <button class="btn btn-danger">❌ Cancelar</button>
+                                <button class="btn hover:text-green-500 btn-secondary">💾 Guardar Nota</button>
+                                <button class="btn hover:text-red-500 btn-danger">❌ Cancelar</button>
                             </div>
                         </div>
                     </div>
@@ -85,12 +93,6 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
             </section>
         </main>
-    </div>
-</body>
-</html>
-                </div>
-            </div>
-        </div>
     </div>
 </body>
 </html>

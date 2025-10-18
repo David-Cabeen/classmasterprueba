@@ -60,6 +60,7 @@
     </div>
     <script>
         window.rol = "<?php echo $_SESSION['rol']; ?>";
+        window.profesor_id = "<?php echo isset($_SESSION['profesor_id']) ? $_SESSION['profesor_id'] : ''; ?>";
     </script>
 </body>
 </html>
