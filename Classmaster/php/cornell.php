@@ -26,9 +26,11 @@
                 $row = $res->fetch_assoc();
                 $stmt2->close();
                 echo json_encode(['success' => true, 'note' => $row]);
+                exit;
             } else {
                 echo json_encode(['success' => false, 'error' => 'Error al guardar la nota: ' . $stmt->error]);
                 $stmt->close();
+                exit;
             }
         } else if ($action == 'update') {
             $id = intval($_POST['id'] ?? 0);
@@ -37,8 +39,12 @@
             $notes = isset($_POST['notes']) ? trim($_POST['notes']) : '';
             $summary = isset($_POST['summary']) ? trim($_POST['summary']) : '';
 
-            $stmt = $conn->prepare("UPDATE cornell SET titulo = ?, claves = ?, principal = ?, resumen = ?, modificada = NOW() WHERE id = ? AND user_id = ?");
-            $stmt->bind_param('sssiii', $title, $cues, $notes, $summary, $id, $_SESSION['user_id']);
+            // Note: some DB exports may not have a 'modificada' column. Avoid referencing it directly
+            // to prevent SQL errors. Update the four text fields; the DB schema can be migrated later
+            // to add a 'modificada' timestamp if desired.
+            $stmt = $conn->prepare("UPDATE cornell SET titulo = ?, claves = ?, principal = ?, resumen = ? WHERE id = ? AND user_id = ?");
+            // four strings then two integers
+            $stmt->bind_param('ssssii', $title, $cues, $notes, $summary, $id, $_SESSION['user_id']);
             if($stmt->execute()){
                 $stmt->close();
                 $stmt2 = $conn->prepare("SELECT id, titulo, claves, principal, resumen, creada FROM cornell WHERE id = ? AND user_id = ?");
@@ -48,9 +54,11 @@
                 $row = $res->fetch_assoc();
                 $stmt2->close();
                 echo json_encode(['success' => true, 'note' => $row]);
+                exit;
             } else {
                 echo json_encode(['success' => false, 'error' => 'Error al actualizar la nota: ' . $stmt->error]);
                 $stmt->close();
+                exit;
             }
         } else if ($action == 'delete'){
             // DELETE action
@@ -59,10 +67,13 @@
             $stmt->bind_param("ii", $id, $_SESSION['user_id']);
             if($stmt->execute()){
                 echo json_encode(['success' => true, 'message' => 'Nota eliminada correctamente']);
+                $stmt->close();
+                exit;
             } else {
                 echo json_encode(['success' => false, 'error' => 'Error al eliminar la nota: ' . $stmt->error]);
+                $stmt->close();
+                exit;
             }
-            $stmt->close();
         }
     } else if($method == 'GET'){
         // Obtener todas las notas del usuario
@@ -76,4 +87,9 @@
         }
         echo json_encode(['success' => true, 'notes' => $notes]);
         $stmt->close();
+        exit;
     }
+    // If we reach here without returning, respond with a JSON error to avoid empty responses.
+    echo json_encode(['success' => false, 'error' => 'Acción o método no soportado.']);
+    $conn->close();
+    exit;

@@ -27,7 +27,6 @@
                 <div class="flex items-center gap-3 mb-2">
                     <div class="size-3 rounded-full bg-white/80 shadow-[0_0_24px_4px_rgba(255,255,255,0.25)]"></div>
                     <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-accent flex items-center gap-2">
-                        <ion-icon name="help-circle-outline"></ion-icon>
                         Ayudas y Recursos
                     </h1>
                 </div>

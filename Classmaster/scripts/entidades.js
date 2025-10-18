@@ -480,7 +480,6 @@ function renderAdmins(admins) {
             document.getElementById('newAdminNombre').value = '';
             document.getElementById('newAdminApellido').value = '';
             document.getElementById('newAdminEmail').value = '';
-            alert(`Administrador creado.\nID: ${id}\nContraseña: ${password}`);
             loadEntities();
         } else {
             alert(json.error);
