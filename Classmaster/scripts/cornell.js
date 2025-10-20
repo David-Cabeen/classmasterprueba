@@ -1,7 +1,10 @@
 import { toast, confirmModal } from './components.js';
 
+// Script para la página de Cornell notes.
+// Comentarios estilo `notas.js`: bloques explicativos antes de secciones y comentarios cortos a la derecha
+// cuando una línea es potencialmente confusa.
 document.addEventListener('DOMContentLoaded', () => {
-    // Event delegation for tab buttons
+    // Delegación de eventos para botones de pestañas (Nueva Nota / Ver Todas)
     const tabButtons = document.getElementById('cornellTabButtons');
     if (tabButtons) {
         tabButtons.addEventListener('click', (e) => {
@@ -16,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event delegation for form buttons
+    // Delegación para botones del formulario (Guardar / Cancelar)
     const formButtons = document.getElementById('cornellFormButtons');
     if (formButtons) {
         formButtons.addEventListener('click', (e) => {
@@ -30,13 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
     }
+    // Estado local: lista de notas en memoria y flags de edición
     let notes = [];
     let isEditing = false;
     let editingId = null;
 
-    // small helper to avoid injecting raw HTML
+    // Helper para escapar HTML y evitar inyección cuando inyectamos contenido en innerHTML
     function escapeHtml(text) {
-        if (!text && text !== 0) return '';
+        if (!text && text !== 0) return ''; // permite 0 como valor legítimo
         return String(text)
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -45,14 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
 
-    // Mostrar sección de crear nota
+    // Mostrar la sección de creación/edición y ocultar la lista
     function showCreateNote() {
         document.getElementById('create-note-section').style.display = 'block';
         document.getElementById('notes-list-section').style.display = 'none';
-        if (!isEditing) clearForm();
+        if (!isEditing) clearForm(); // limpiar el formulario si no estamos editando
     }
 
-    // Mostrar todas las notas
+    // Mostrar la lista con todas las notas y resetear estado de edición
     function showAllNotes() {
         document.getElementById('create-note-section').style.display = 'none';
         document.getElementById('notes-list-section').style.display = 'block';
@@ -61,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         editingId = null;
     }
 
-    // Limpiar formulario
+    // Limpiar campos del formulario
     function clearForm() {
         document.getElementById('note-title').value = '';
         document.getElementById('cues-area').value = '';
@@ -69,7 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('summary-area').value = '';
     }
 
-    // Guardar nota (crear o editar)
+    // Guardar nota (creación o actualización)
+    // Valida datos, arma FormData y llama al endpoint PHP
     function saveNote() {
         const title = document.getElementById('note-title').value.trim();
         const cues = document.getElementById('cues-area').value.trim();
@@ -97,12 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
             data.append('id', editingId);
         }
 
+        // Envío asíncrono al servidor; actualizamos la lista cuando termina
         fetch('../php/cornell.php', { method: 'POST', body: data })
         .then(response => response.json())
         .then(result => {
             if (result.success) {
                 toast('Nota guardada correctamente', 'success');
-                // Refresh list from server to keep canonical
+                // Refrescar lista desde servidor para mantener canon
                 updateNotesList();
                 showAllNotes();
             } else {
@@ -111,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     };
 
-    // Cancelar creación/edición
+    // Confirmar cancelar edición / creación
     function cancelNote() {
         confirmModal({
             titulo: 'Cancelar',
@@ -122,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Actualizar lista de notas
+    // Obtener notas del servidor y renderizar la lista
     function updateNotesList() {
         fetch('../php/cornell.php', { method: 'GET' })
         .then(response => response.json())
@@ -132,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Normalizar propiedades recibidas del servidor al modelo local
             notes = data.notes.map(n => ({
                 id: n.id,
                 title: n.titulo,
@@ -156,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Render sencillo con plantillas; escapamos título para evitar HTML inyectado
             container.innerHTML = notes.map(note => {
                 const created = note.created ? new Date(note.created).toLocaleDateString() : '';
                 const modified = note.modified ? new Date(note.modified).toLocaleDateString() : created;
@@ -210,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Eliminar nota
+    // Eliminar nota con confirmación modal
     window.deleteNote = function(id) {
         confirmModal({
             titulo: 'Eliminar nota',
@@ -239,9 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     };
 
-    // expose editNote globally for inline onclick handlers
+    // Exponer editNote globalmente para los onclick inline del HTML generado
     window.editNote = function(id) {
-        // fetch the single note from server (or reuse cached notes array)
+        // Intentar usar cache local primero
         const found = notes.find(n => Number(n.id) === Number(id));
         if (found) {
             isEditing = true; editingId = id;
@@ -252,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showCreateNote();
             return;
         }
-        // fallback: reload list then populate
+        // Fallback: solicitar al servidor y rellenar formulario
         fetch('../php/cornell.php').then(r => r.json()).then(data => {
             if (data.success) {
                 notes = data.notes.map(n => ({ id: n.id, title: n.titulo, cues: n.claves, notes: n.principal, summary: n.resumen, created: n.creada, modified: n.modificada }));
@@ -269,9 +277,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Inicializar la aplicación
+    // Inicializar contadores/estado y cargar lista inicial
     function updateNotesCount() {
-        // optional: display count somewhere; fallback no-op
+        // Mostrar número de notas si existe el elemento
         const countEl = document.getElementById('notes-count');
         if (!countEl) return;
         countEl.textContent = notes.length;
@@ -279,5 +287,5 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNotesList();
     showAllNotes();
 
-    // no autosave/draft logic for now (DB-backed). If you want drafts, we can implement server-side drafts.
+    // Nota: no hay lógica de auto-guardado por ahora. Si quieres drafts, lo implementamos en servidor.
 });
