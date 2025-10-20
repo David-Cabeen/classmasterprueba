@@ -15,7 +15,7 @@
     };
 
     // Verifica que ambos campos estén presentes
-    if (!$id || !$password) {
+    if (!$id || !$password) { 
         echo json_encode(['success' => false, 'error' => 'Ambos campos son requeridos.']);
         exit;
     }

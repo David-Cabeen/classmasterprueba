@@ -57,6 +57,38 @@
             }
             $stmt->close();
         }
+        // Para cada curso al que se asoció el estudiante recién creado,
+        // crear las filas de `notas` para TODAS las tareas existentes en ese curso
+        // si no existen ya. Valor por defecto: 3.20
+        if (!empty($curso_ids)) {
+            // Preparar statements reutilizables
+            $selectTareasStmt = $conn->prepare("SELECT id FROM tareas WHERE curso_id = ?");
+            $checkNotaStmt = $conn->prepare("SELECT id FROM notas WHERE tarea_id = ? AND estudiante_id = ?");
+            $insertNotaStmt = $conn->prepare("INSERT INTO notas (tarea_id, estudiante_id, valor) VALUES (?, ?, ?)");
+            foreach ($curso_ids as $curso_id) {
+                $selectTareasStmt->bind_param("i", $curso_id);
+                $selectTareasStmt->execute();
+                $resT = $selectTareasStmt->get_result();
+                while ($t = $resT->fetch_assoc()) {
+                    $tarea_id = (int)$t['id'];
+                    // Verificar si ya existe la nota para evitar duplicados
+                    $checkNotaStmt->bind_param("ii", $tarea_id, $user_id);
+                    $checkNotaStmt->execute();
+                    $resCheck = $checkNotaStmt->get_result();
+                    if ($resCheck && $resCheck->num_rows === 0) {
+                        $valor = 3.20;
+                        $insertNotaStmt->bind_param("iid", $tarea_id, $user_id, $valor);
+                        $insertNotaStmt->execute();
+                    }
+                    if ($resCheck) $resCheck->free();
+                }
+                if ($resT) $resT->free();
+            }
+            // Cerrar statements auxiliares
+            if ($selectTareasStmt) $selectTareasStmt->close();
+            if ($checkNotaStmt) $checkNotaStmt->close();
+            if ($insertNotaStmt) $insertNotaStmt->close();
+        }
         response(true, '', ['id' => $user_id]);
     }
     if ($action === 'create' && $type === 'acudiente') {

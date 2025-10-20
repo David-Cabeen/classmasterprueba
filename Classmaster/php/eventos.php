@@ -85,11 +85,14 @@ if ($method === 'GET') {
         if ($year && $month) {
             $sql = "SELECT ec.id, ec.curso_id, c.nombre as curso_nombre, ec.titulo, ec.descripcion, ec.prioridad, ec.fecha, ec.creado_por_profesor_id FROM eventos_curso ec JOIN cursos c ON ec.curso_id = c.id WHERE YEAR(ec.fecha) = ? AND MONTH(ec.fecha) = ? AND ec.creado_por_profesor_id = ? ORDER BY ec.fecha ASC";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param('iis', $year, $month, $_SESSION['user_id']);
+            // `creado_por_profesor_id` es un campo varchar que guarda el id del profesor (ej. 'P050371')
+            $profesor_id = isset($_SESSION['profesor_id']) ? $_SESSION['profesor_id'] : $_SESSION['user_id'];
+            $stmt->bind_param('iis', $year, $month, $profesor_id);
         } else {
             $sql = "SELECT ec.id, ec.curso_id, c.nombre as curso_nombre, ec.titulo, ec.descripcion, ec.prioridad, ec.fecha, ec.creado_por_profesor_id FROM eventos_curso ec JOIN cursos c ON ec.curso_id = c.id WHERE ec.creado_por_profesor_id = ? ORDER BY ec.fecha ASC";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param('s', $_SESSION['user_id']);
+            $profesor_id = isset($_SESSION['profesor_id']) ? $_SESSION['profesor_id'] : $_SESSION['user_id'];
+            $stmt->bind_param('s', $profesor_id);
         }
         $stmt->execute();
         $result = $stmt->get_result();
@@ -159,6 +162,7 @@ if ($method === 'POST') {
 
     // Si no es un evento personal, permitir que el profesor elimine eventos de curso que él mismo creó
         if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor' && isset($_SESSION['profesor_id'])) {
+            // El campo creado_por_profesor_id es varchar (id del profesor), por eso bind_param usa 's' para el segundo parametro
             $stmt = $conn->prepare("DELETE FROM eventos_curso WHERE id = ? AND creado_por_profesor_id = ?");
             $stmt->bind_param('is', $id, $_SESSION['profesor_id']);
             $stmt->execute();
