@@ -1,9 +1,11 @@
 <?php
-  session_start();
-  if (!isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
-      exit();
-  }
+    // Página: Temporizador Pomodoro
+    // Herramienta simple para gestionar sesiones de estudio mediante la técnica Pomodoro
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: ../index.php');
+            exit();
+    }
 ?>
 
 <!DOCTYPE html>

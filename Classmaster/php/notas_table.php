@@ -1,4 +1,6 @@
 <?php
+    // Endpoint: devuelve tareas y estudiantes con sus notas para un curso
+    // Parámetros GET: grado, seccion, materia, periodo, estudiante_id (opcional)
     session_start();
     // prevent PHP notices from being sent to output and corrupting JSON
     ini_set('display_errors', '0');

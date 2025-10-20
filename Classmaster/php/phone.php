@@ -1,4 +1,7 @@
 <?php
+    // Endpoint: actualizar/consultar teléfono del acudiente
+    // POST: actualiza el teléfono del usuario logueado
+    // GET: obtiene el teléfono y devuelve hasPhone
     session_start();
     header('Content-Type: application/json');
     require_once 'connection.php';

@@ -1,4 +1,6 @@
 <?php 
+    // Endpoint: comprueba si el usuario logueado tiene un acudiente vinculado
+    // Retorna JSON: { hasPadre: true|false }
     session_start();
     header('Content-Type: application/json');
     require_once 'connection.php';

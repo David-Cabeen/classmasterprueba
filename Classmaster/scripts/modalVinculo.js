@@ -1,9 +1,15 @@
+// scripts/modalVinculo.js
+// Modal para vincular acudientes a estudiantes.
+// Funcionalidades:
+// - Muestra un modal para ingresar el correo del acudiente.
+// - Llama a php/padre_estudiante.php para crear la vinculación.
+// - Expone funciones globales para uso desde HTML.
 import { toast } from './components.js';
 
 let overlay = null;
 
 export function openModalVinculo(){
-    // create overlay and modal
+    // Crear overlay y modal para vincular acudiente
     overlay = document.createElement("div");
     overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-40";
     overlay.innerHTML = `
@@ -57,7 +63,7 @@ export function vincularAcudiente(){
         if (data.success) {
             toast("Acudiente vinculado exitosamente.", "success");
             close();
-            // optional: reload perfil to show new acudiente
+            // Opcional: recargar la página de perfil para mostrar el nuevo acudiente (suavizado con timeout)
             setTimeout(() => { try { window.location.reload(); } catch(e){} }, 600);
         } else {
             toast(data.error || 'Error al vincular', "error");
@@ -68,7 +74,7 @@ export function vincularAcudiente(){
     });
 }
 
-// expose for inline calls
+// Exponer funciones globalmente para llamadas inline o dinámicas desde HTML
 window.openModalVinculo = openModalVinculo;
 window.closeModalVinculo = close;
 window.vincularAcudiente = vincularAcudiente;

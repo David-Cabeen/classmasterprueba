@@ -1,3 +1,7 @@
+// scripts/password.js
+// Gestión de recuperación de contraseñas desde la landing o formulario de recuperación.
+// - Envía petición al endpoint php/pass_recovery.php
+// - Muestra notificaciones de éxito/fracaso
 import { toast } from './components.js';
 
 const emailInput = document.getElementById("email");

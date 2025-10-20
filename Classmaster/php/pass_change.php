@@ -1,4 +1,7 @@
 <?php
+    // Endpoint: cambiar contraseña del usuario logueado
+    // - Verifica la contraseña actual
+    // - Hashea y actualiza la nueva contraseña
     session_start();
     require_once '../php/connection.php';
 

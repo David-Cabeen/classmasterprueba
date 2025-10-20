@@ -1,4 +1,7 @@
 <?php
+// Endpoint: crea una nueva tarea para un curso/periodo
+// - Valida porcentajes y evita que la suma de porcentajes exceda 100%
+// - Inserta la tarea y crea notas por defecto para los estudiantes del curso
 session_start();
 ini_set('display_errors', '0');
 error_reporting(0);

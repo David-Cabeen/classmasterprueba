@@ -1,9 +1,11 @@
 <?php
-  session_start();
-  if (!isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
-      exit();
-  }
+    // Página: Perfil de usuario
+    // Muestra información personal del usuario (nombre, rol, email, grado, acudiente, etc.)
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: ../index.php');
+            exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +73,10 @@
                                         case 'profesor': $db = 'profesores'; break;
                                         case 'administrador': $db = 'administradores'; break;
                                     };
-                                    $bind = ($_SESSION['rol'] === 'administrador') ? 's' : 'i';
+                                    // Algunos IDs (administradores y profesores) se almacenan como strings en la BBDD,
+                                    // por lo que debemos usar 's' al hacer bind_param para evitar coerciones incorrectas
+                                    // que pueden provocar filas desalineadas (ej. mostrar el email de otro profesor).
+                                    $bind = (isset($_SESSION['rol']) && ($_SESSION['rol'] === 'administrador' || $_SESSION['rol'] === 'profesor')) ? 's' : 'i';
                                     require_once '../php/connection.php';
 
                                     $user_id = $_SESSION['user_id'];

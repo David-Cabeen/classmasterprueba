@@ -1,4 +1,8 @@
 // Mensajes que cambian automáticamente
+// scripts/landing.js
+// Animaciones y textos para la landing page.
+// - Ciclo de mensajes informativos
+// - Control simple de visibilidad
 const messages = [
     "Nuestra visión es transformar la educación con herramientas digitales intuitivas y efectivas.",
     "Nuestra misión es empoderar a los estudiantes mediante plataformas accesibles y dinámicas.",

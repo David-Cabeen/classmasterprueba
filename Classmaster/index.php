@@ -1,4 +1,6 @@
 <?php 
+// Página de inicio / autenticación pública
+// Muestra formularios de inicio de sesión y registro para acudientes
 session_start();
 if (isset($_SESSION['user_id'])) {
     header('Location: ./pages/home.php');

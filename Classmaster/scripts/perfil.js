@@ -1,3 +1,10 @@
+// scripts/perfil.js
+// Módulo de la página de perfil de usuario.
+// Funcionalidades principales:
+// - Permite al usuario actualizar su número de teléfono.
+// - Permite cambiar la contraseña (valida y envía al backend).
+// - Interactúa con los endpoints PHP: update_phone.php y pass_change.php.
+// - Muestra notificaciones y confirmaciones usando helpers comunes.
 import { toast } from "./components.js";
 
 document.addEventListener("DOMContentLoaded", () => {

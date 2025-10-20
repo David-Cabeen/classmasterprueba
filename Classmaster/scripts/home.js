@@ -1,10 +1,19 @@
+// Módulo de página principal (Home)
+// Funcionalidades:
+// - Frases motivacionales aleatorias
+// - Gestión de notificaciones
+// - Interfaz para padres y vínculos
+// - Sistema de bienvenida personalizada
+
 import { confirmModal, toast } from "./components.js";
 import { openModalVinculo } from './modalVinculo.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+	// Control del overlay para modales
 	let overlay = null;
 
-	// Frases motivacionales (escala de grises en diseño, no en texto)
+	// Base de datos de frases motivacionales 
+	// Cada frase incluye texto y autor
 	const FRASES = [
 		{ texto: "La disciplina es el puente entre metas y logros.", autor: "Jim Rohn" },
 		{ texto: "Haz hoy lo que otros no, para vivir mañana como otros no pueden.", autor: "Anónimo" },

@@ -1,4 +1,7 @@
 <?php
+    // Endpoint: editar/eliminar tareas (solo profesores)
+    // - Valida porcentajes y actualiza la tarea
+    // - Permite eliminar tareas mediante action=eliminar
     session_start();
     ini_set('display_errors', '0');
     error_reporting(0);

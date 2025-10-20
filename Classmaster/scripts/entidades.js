@@ -1,6 +1,7 @@
 import { confirmModal, toast } from './components.js';
 
-// Elementos del DOM
+// Variables y elementos principales para la gestión de entidades
+// Controla la administración de estudiantes, profesores, padres y administradores
 const loading = document.getElementById('loading');
 const contentGrid = document.getElementById('contentGrid');
 const errorMessage = document.getElementById('errorMessage');
@@ -14,7 +15,8 @@ const acudientesCount = document.getElementById('acudientesCount');
 const teachersCount = document.getElementById('teachersCount');
 const adminsCount = document.getElementById('adminsCount');
 
-// Materias master list (used for create and edit selects)
+// Lista maestra de materias (usada para los selects de crear/editar)
+// Incluye nombres en español y algunos términos en inglés que pueden venir de datos externos
 const MATERIAS_OPTIONS = [
     'Matemáticas', 'Física', 'Química', 'Inglés', 'Español', 'Educación Física', 'Sociales',
     'Filosofía', 'Religión', 'Ética', 'Ciencias Políticas', 'Artística', 'Science', 'Programación', 'Informática', 'Robótica'
@@ -31,7 +33,8 @@ function formatDate(dateString) {
         minute: '2-digit'
     });
 }
-// Función para cargar los datos (restores missing function)
+// Carga todos los registros de entidades desde el backend y actualiza las tablas
+// (usuarios, acudientes, profesores y administradores). Maneja errores y estados de carga.
 async function loadEntities() {
     try {
         loading.style.display = 'flex';
@@ -98,7 +101,7 @@ function renderUsers(users) {
         `;
         usersTable.appendChild(row);
     });
-    // Add new user row
+    // Agregar fila para nuevo usuario
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
         <td style="font-weight:600">+</td>
@@ -111,7 +114,7 @@ function renderUsers(users) {
         <td><button style='white-space: nowrap;' id="createUserBtn">Crear usuario</button></td>
     `;
     usersTable.appendChild(newRow);
-    // Add event listener for create
+    // Agrega el listener para la acción de crear un nuevo usuario
     document.getElementById('createUserBtn').onclick = async function() {
         const nombre = document.getElementById('newUserNombre').value.charAt(0).toUpperCase() + document.getElementById('newUserNombre').value.slice(1).toLowerCase().trim();
         const apellido = document.getElementById('newUserApellido').value.charAt(0).toUpperCase() + document.getElementById('newUserApellido').value.slice(1).toLowerCase().trim();
@@ -216,7 +219,7 @@ function renderTeachers(teachers) {
         'Informática',
         'Robótica'
     ];
-    // Remove any existing floating dropdowns left from previous renders
+    // Eliminar cualquier dropdown flotante dejado por renders previos
     const existingMaterias = document.getElementById('materiasDropdown');
     if (existingMaterias) existingMaterias.remove();
     const existingGrados = document.getElementById('gradosDropdown');
@@ -274,6 +277,8 @@ function renderTeachers(teachers) {
     let checkboxes = dropdown.querySelectorAll('.materia-checkbox');
     let open = false;
 
+    // Posiciona un dropdown (dd) inmediatamente debajo del botón (btn),
+    // teniendo en cuenta el scroll y el tamaño del viewport
     function positionFor(btn, dd) {
         const rect = btn.getBoundingClientRect();
         dd.style.position = 'absolute';
@@ -309,14 +314,14 @@ function renderTeachers(teachers) {
     document.addEventListener('click', onDocClick);
     window.addEventListener('resize', () => { if (open) positionFor(dropdownBtn, dropdown); });
     window.addEventListener('scroll', () => { if (open) positionFor(dropdownBtn, dropdown); }, true);
-    // Update label on selection for materias
+    // Actualiza la etiqueta del dropdown de materias según las casillas marcadas
     function updateLabel() {
         const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
         label.textContent = selected.length ? selected.join(', ') : 'Seleccionar materias';
     }
     checkboxes.forEach(cb => cb.addEventListener('change', updateLabel));
 
-    // Grados dropdown
+    // Dropdown para selección de Grados (1..11)
     const gradosBtn = document.getElementById('gradosDropdownBtn');
     const gradosDd = document.getElementById('gradosDropdown');
     const gradosLabel = document.getElementById('gradosDropdownLabel');
@@ -353,7 +358,7 @@ function renderTeachers(teachers) {
         gradosLabel.textContent = selected.length ? selected.join(', ') : 'Grados';
     }
     gradoCheckboxes.forEach(cb => cb.addEventListener('change', updateGradosLabel));
-    // On create, collect checked materias
+    // Al crear un profesor: recopila las materias y grados marcados y valida los campos antes de enviar
 
     document.getElementById('createTeacherBtn').onclick = async function() {
         const nombre = document.getElementById('newTeacherNombre').value.charAt(0).toUpperCase() + document.getElementById('newTeacherNombre').value.slice(1).toLowerCase().trim();
@@ -431,7 +436,7 @@ function renderAdmins(admins) {
             adminsTable.appendChild(row);
         });
     }
-    // Add new admin row
+    // Agregar fila para crear un nuevo administrador
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
         <td style="font-weight:600">+</td>
@@ -446,14 +451,14 @@ function renderAdmins(admins) {
         const nombre = document.getElementById('newAdminNombre').value.charAt(0).toUpperCase() + document.getElementById('newAdminNombre').value.slice(1).toLowerCase().trim();
         const apellido = document.getElementById('newAdminApellido').value.charAt(0).toUpperCase() + document.getElementById('newAdminApellido').value.slice(1).toLowerCase().trim();
         const email = document.getElementById('newAdminEmail').value.trim();
-        // Generate random ID (11 chars, uppercase letters and numbers)
+    // Generar ID aleatorio (11 caracteres: letras mayúsculas y números)
         function randomId() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; 
             let id = '';
             for (let i = 0; i < 11; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
             return id;
         }
-        // Generate random password (11 chars, mixed case letters and numbers)
+    // Generar contraseña aleatoria (11 caracteres: letras mayúsculas/minúsculas y números)
         function randomPassword() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let pw = '';
@@ -487,7 +492,7 @@ function renderAdmins(admins) {
     };
 }
 
-// Generic delegation for edit/save/delete buttons
+// Delegación genérica para botones de editar/guardar/eliminar
 document.addEventListener('click', async (e) => {
     const editBtn = e.target.closest('.btn-edit');
     const saveBtn = e.target.closest('.btn-save');
@@ -500,12 +505,12 @@ document.addEventListener('click', async (e) => {
             const raw = td.textContent === 'N/A' ? '' : td.textContent.trim();
             td.innerHTML = '';
             if (type === 'teacher' && field === 'materias') {
-                // render materia checkboxes inline for editing
+                // Renderizar checkboxes de materias inline para edición
                 const selected = raw ? raw.split(',').map(s => s.trim()) : [];
                 const container = document.createElement('div');
                 container.className = 'edit-materias';
-                container.style.display = 'none'; // hidden until toggled
-                // create toggle button
+                container.style.display = 'none'; // oculto hasta que se abra el selector
+                // crear botón toggle para mostrar/ocultar el selector de materias
                 const toggle = document.createElement('button');
                 toggle.type = 'button';
                 toggle.className = 'edit-select-toggle';
@@ -543,7 +548,7 @@ document.addEventListener('click', async (e) => {
                 });
                 td.appendChild(container);
             } else if (type === 'teacher' && field === 'grados') {
-                // render grados checkboxes 1..11
+                // Renderizar checkboxes de grados (1..11)
                 const selected = raw ? raw.split(',').map(s => s.trim()) : [];
                 const container = document.createElement('div');
                 container.className = 'edit-grados flex flex-wrap gap-2';
@@ -604,7 +609,7 @@ document.addEventListener('click', async (e) => {
         tr.querySelectorAll('.editable').forEach(td => {
             const field = td.dataset.field;
             let value = '';
-            // handle multi-select fields for teachers
+            // Manejar campos multi-selección para profesores (materias/grados)
             if (field === 'materias') {
                 const checked = Array.from(td.querySelectorAll('.edit-materia-checkbox:checked')).map(cb => cb.value);
                 if (checked.length) value = checked.join(',');

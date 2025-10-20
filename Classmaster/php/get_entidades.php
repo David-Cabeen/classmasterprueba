@@ -1,7 +1,20 @@
 <?php
-    require_once 'connection.php';
+/**
+ * API de obtención de entidades del sistema
+ * 
+ * Este script recupera todos los registros de:
+ * - Usuarios (estudiantes)
+ * - Acudientes (padres)
+ * - Profesores
+ * - Administradores
+ * 
+ * Retorna los datos en formato JSON para su uso en la interfaz administrativa
+ */
 
-    // Obtener usuarios (estudiantes)
+require_once 'connection.php';
+
+// Consulta de usuarios (estudiantes)
+// Excluye datos sensibles como contraseñas
     $sql_users = "SELECT id, nombre, apellido, email, grado, seccion, fecha_registro FROM users ORDER BY id";
     $result_users = $conn->query($sql_users);
     $users = [];

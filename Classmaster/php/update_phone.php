@@ -1,4 +1,7 @@
 <?php
+    // Endpoint: actualiza el teléfono de un acudiente (usuaro logueado)
+    // Entrada: POST { telefono }
+    // Salida: JSON success/error
     session_start();
     header('Content-Type: application/json');
     require_once 'connection.php';

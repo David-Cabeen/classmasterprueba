@@ -1,4 +1,7 @@
+echo json_encode(['success' => true, 'cursos' => $cursos]);
 <?php
+// Endpoint: búsqueda de cursos por término (autocomplete)
+// GET: ?term=texto  -> devuelve hasta 10 coincidencias {id, nombre}
 session_start();
 require_once 'connection.php';
 header('Content-Type: application/json');

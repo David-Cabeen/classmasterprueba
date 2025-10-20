@@ -1,4 +1,6 @@
 <?php
+    // API: gestión de Notas tipo Cornell para el usuario logueado
+    // Soporta: GET (listar), POST action=create|update|delete
     session_start();
     header('Content-Type: application/json');
     require_once 'connection.php';

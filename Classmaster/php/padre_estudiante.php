@@ -1,5 +1,5 @@
 <?php 
-
+    // API: listar estudiantes vinculados a un acudiente y vincular un acudiente por email
     session_start();
     header('Content-Type: application/json');
     require_once 'connection.php';

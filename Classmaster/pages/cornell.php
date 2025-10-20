@@ -1,4 +1,6 @@
 <?php
+// Página: Cornell Notes
+// Herramienta para crear y gestionar notas tipo Cornell por usuario
 session_start();
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../index.html");

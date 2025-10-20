@@ -13,7 +13,7 @@
     --color-boton-borrar-hover: #b91c1c;
   }
   
-  /* Estilos Generales */
+  /* Estilos generales */
   body {
     background-color: var(--color-fondo);
     font-family: "Outfit", sans-serif;
@@ -51,7 +51,7 @@
     font-size: 1.2em;  /* Un tamaño de fuente adecuado */
   }
   
-  /* Tabla */
+  /* Estilos de la tabla */
   .table-container {
     overflow-x: auto;/*si el contenedor se extiende mas alla del ancho se desplaza automaticamente*/
     margin-bottom: 3%;
@@ -89,7 +89,7 @@
     font-size: 1.1em;
   }
   
-  /* Botones */
+  /* Estilos de botones */
   button {
     padding: 3% 6%;  /* 3% vertical, 6% horizontal */
     border: none;

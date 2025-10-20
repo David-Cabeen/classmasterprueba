@@ -1,9 +1,11 @@
 <?php
-  session_start();
-  if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'administrador') {
-      header('Location: ../index.php');
-      exit();
-  }
+    // Página: Entidades (panel administrativo)
+    // Permite al administrador ver/crear/editar/Eliminar usuarios, acudientes, profesores y administradores
+    session_start();
+    if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'administrador') {
+            header('Location: ../index.php');
+            exit();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">

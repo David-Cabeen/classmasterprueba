@@ -1,4 +1,6 @@
 <?php
+    // API para gestionar flashcards (crear, listar, eliminar)
+    // JSON in/out
     require_once '../php/connection.php';
     session_start();
     header('Content-Type: application/json');

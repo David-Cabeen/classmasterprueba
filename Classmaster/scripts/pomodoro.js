@@ -1,3 +1,8 @@
+// scripts/pomodoro.js
+// Temporizador Pomodoro: controla fases de trabajo y descanso.
+// - Inicia/pausa/reinicia el temporizador
+// - Control de ciclos y pausas largas
+// - Actualiza UI del círculo de progreso
 const timeDisplay = document.getElementById('time'),
 pauseButton = document.getElementById('pause'),
 startButton = document.getElementById('start'),

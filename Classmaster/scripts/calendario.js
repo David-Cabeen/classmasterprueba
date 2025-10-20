@@ -1,33 +1,52 @@
 import { toast } from './components.js';
 
 window.addEventListener('DOMContentLoaded', function () {
+    // Módulo de calendario académico
+    // Gestiona eventos personales y de curso, con funcionalidades específicas
+    // para estudiantes, profesores y padres
+    // Referencias a elementos del DOM
     const closeButton = document.getElementById('close'),
-    distance = document.getElementById('distance'),
-    events = document.getElementById('events'),
-    calendar = document.getElementById('calendar'),
-    daysContainer = document.getElementById('days'),
-    prevButton = document.getElementById('prev'),
-    nextButton = document.getElementById('next'),
-    eventAdder = document.getElementById('event-adder'),
-    eventList = document.getElementById('event-list');
+    // Elementos de la interfaz del calendario
+    distance = document.getElementById('distance'),         // Muestra la distancia temporal desde hoy
+    events = document.getElementById('events'),            // Panel lateral de eventos
+    calendar = document.getElementById('calendar'),        // Contenedor principal del calendario
+    daysContainer = document.getElementById('days'),       // Grid de días del mes
+    prevButton = document.getElementById('prev'),          // Botón mes anterior
+    nextButton = document.getElementById('next'),          // Botón mes siguiente
+    eventAdder = document.getElementById('event-adder'),   // Botón para agregar eventos
+    eventList = document.getElementById('event-list');     // Lista de eventos del día
     let selectedDay = document.getElementById('day-number');
+
+    // Arreglo con nombres de meses en español
     const months = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
-    let currentDate = new Date();
-    let today = new Date();
-    let selectedCursoId = null;
-    let viewingEstudianteId = null; // for parent viewing a child
 
-    // Renderizar el calendario
+    // Variables de estado
+    let currentDate = new Date();                  // Fecha actual mostrada en el calendario
+    let today = new Date();                        // Fecha actual real
+    let selectedCursoId = null;                    // ID del curso seleccionado (para profesores)
+    let viewingEstudianteId = null;               // ID del estudiante siendo visualizado por un padre
+
+    // Función principal para renderizar el calendario
+    // Genera el grid de días incluyendo:
+    // - Días del mes anterior para completar la primera semana
+    // - Días del mes actual con marcador de "hoy"
+    // - Días del siguiente mes para completar la última semana
+    // - Ajuste automático del tamaño según el número de filas
     function renderCalendar(date) {
+        // Cálculo de fechas importantes para el mes
         const year = date.getFullYear();
         const month = date.getMonth();
-        const firstDay = new Date(year, month, 1).getDay();
-        const lastDay = new Date(year, month + 1, 0).getDate();
+        const firstDay = new Date(year, month, 1).getDay();      // Primer día del mes (0-6)
+        const lastDay = new Date(year, month + 1, 0).getDate();  // Último día del mes
+        
+        // Actualizar encabezado del calendario
         const monthYear = document.getElementById('month-year');
         monthYear.textContent = `${months[month]} ${year}`;
+        
+        // Limpiar el contenedor antes de renderizar
         daysContainer.innerHTML = '';
 
         // Días del mes anterior
@@ -85,13 +104,21 @@ window.addEventListener('DOMContentLoaded', function () {
     renderCalendar(currentDate);
     checkForEvents();
 
-    // Fetch events from DB and mark days
+    // Consulta y marca eventos en el calendario
+    // Tareas principales:
+    // - Obtener eventos personales y de curso desde el servidor
+    // - Marcar días con indicadores de color según prioridad
+    // - Manejar vista especial para padres que visualizan calendarios de estudiantes
+    // - Actualizar los marcadores visuales en la UI
     async function checkForEvents() {
+        // Obtener mes y año actual para la consulta
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth() + 1;
-        let eventos = [];
-        let eventosCurso = [];
+        let eventos = [];           // Eventos personales
+        let eventosCurso = [];      // Eventos de curso (para profesores/estudiantes)
+        
         try {
+            // Preparar parámetros de consulta
             const params = new URLSearchParams({ year, month });
             if (viewingEstudianteId) params.set('estudiante_id', viewingEstudianteId);
             const res = await fetch(`../php/eventos.php?${params.toString()}`);
@@ -101,7 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 eventosCurso = data.eventos_curso;
             }
     } catch (e) { eventos = []; eventosCurso = []; }
-    // Debug: log summary (remove in production if desired)
+    // Depuración: resumen de la consulta (quitar en producción si no es necesario)
     try { console.debug('checkForEvents', { year: currentDate.getFullYear(), month: currentDate.getMonth()+1, viewingEstudianteId, eventosCount: eventos.length, eventosCursoCount: eventosCurso.length }); } catch(e){}
         for (let i = 0; i < daysContainer.childElementCount; i++) {
             const dayDiv = daysContainer.children[i];
@@ -113,7 +140,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 dayDiv.classList.remove('has-event');
                 continue;
             }
-            // Find events for this day (personal and curso)
+            // Buscar eventos para este día (personales y de curso)
             const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(dayNumber).padStart(2,'0')}`;
             const dayEvents = eventos.filter(ev => ev.fecha === dateStr);
             const dayCursoEvents = eventosCurso.filter(ev => ev.fecha === dateStr);
@@ -172,7 +199,14 @@ window.addEventListener('DOMContentLoaded', function () {
         closeEventsPanel();
     });
 
+    // Modal para crear/editar eventos
+    // Genera un modal interactivo con:
+    // - Campos para título y descripción del evento
+    // - Selector de prioridad con animaciones
+    // - Búsqueda de cursos (solo para profesores)
+    // - Manejo de cerrado con ESC y click fuera
     function eventModal({ onConfirm = () => { } } = {}) {
+        // Crear overlay semi-transparente con efecto de blur
         const overlay = document.createElement("div");
         overlay.className = "fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-50";
         let searchbarHtml = '';
@@ -310,7 +344,14 @@ window.addEventListener('DOMContentLoaded', function () {
         });
 };
 
+        // Función para crear un nuevo evento
+        // Maneja:
+        // - Recopilación de datos del formulario
+        // - Validación de permisos
+        // - Comunicación con el servidor
+        // - Actualización de la interfaz post-creación
         const createEvent = async () => {
+            // Obtener referencias a los campos del formulario
             const eventInput = document.getElementById('event-input');
             let priorityInput = document.getElementsByName('priority');
             const eventDescription = document.getElementById('event-description');
@@ -328,7 +369,7 @@ window.addEventListener('DOMContentLoaded', function () {
             const titulo = eventInput.value.trim();
             const descripcion = eventDescription.value.trim();
             if (!titulo) return;
-            // AJAX create
+            // Crear vía AJAX (envío de formulario al backend)
             let action = 'create';
             if (window.rol === 'profesor') action = 'create_profesor'; 
             const formData = new FormData();
@@ -407,20 +448,20 @@ window.addEventListener('DOMContentLoaded', function () {
             eventList.appendChild(noMsg);
             return;
         }
-        // Render personal events
+    // Renderizar eventos personales
         eventos.forEach(ev => {
             let div = document.createElement('div');
             div.classList.add(ev.prioridad);
             let title = document.createElement('h3');
             title.innerHTML = ev.titulo;
-            // Delete button
+            // Botón de eliminar
             let deleteButton = document.createElement('ion-icon');
             deleteButton.setAttribute('name', 'trash-outline');
             deleteButton.style.cursor = 'pointer';
-            // Parents viewing a child's calendar cannot delete events
+            // Los padres que ven el calendario de su hijo no pueden eliminar eventos
             if (!(window.rol === 'acudiente' && viewingEstudianteId)) {
                 deleteButton.onclick = async function() {
-                // AJAX delete
+                // Eliminación vía AJAX (petición al backend)
                 const formData = new FormData();
                 formData.append('action', 'delete');
                 formData.append('id', ev.id);
@@ -431,7 +472,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 checkForEvents();
                 };
             } else {
-                // visually hide delete button for parent view
+                // ocultar visualmente el botón de eliminar cuando es vista de padre
                 deleteButton.style.display = 'none';
             }
             div.appendChild(deleteButton);
@@ -444,7 +485,7 @@ window.addEventListener('DOMContentLoaded', function () {
             eventList.appendChild(div);
         });
 
-        // Render course events
+    // Renderizar eventos de curso
         eventosCurso.forEach(ev => {
             let div = document.createElement('div');
             div.classList.add(ev.prioridad);
@@ -452,7 +493,7 @@ window.addEventListener('DOMContentLoaded', function () {
             let title = document.createElement('h3');
             let courseName = ev.curso_nombre ? ev.curso_nombre : 'Curso';
             title.innerHTML = `${ev.titulo} <span style="font-size:0.8em;color:#6cf;">[${courseName}]</span>`;
-            // If current user is the professor who created this course event, show delete icon
+            // Si el usuario actual es el profesor que creó este evento de curso, mostrar icono de eliminar
             if (window.rol === 'profesor') {
                 const delIcon = document.createElement('ion-icon');
                 delIcon.setAttribute('name', 'trash-outline');
@@ -480,14 +521,27 @@ window.addEventListener('DOMContentLoaded', function () {
     // Abrir ventana de añadir evento
     eventAdder.addEventListener('click', () => eventModal({ onConfirm: createEvent }));
 
-    // If parent, load their children into selector
+    // Funcionalidad específica para padres/acudientes
+    // Permite a los padres:
+    // - Ver y cambiar entre calendarios de sus hijos
+    // - Visualizar eventos pero sin poder modificarlos
+    // - Mantener la sincronización de la interfaz al cambiar de estudiante
+    // Función para cargar y gestionar la lista de estudiantes para padres
+    // Realiza:
+    // - Carga de estudiantes asociados al padre
+    // - Configuración del selector de estudiantes
+    // - Manejo de cambios entre calendarios de estudiantes
+    // - Sincronización de la UI al cambiar de estudiante
     async function loadChildrenForParent() {
+        // Inicializar selector de estudiantes
         const select = document.getElementById('student-select');
-        if (!select) return;
+        if (!select) return;  // No continuar si no es vista de padre
+        
         try {
+            // Obtener lista de estudiantes vinculados al padre
             const res = await fetch('../php/padre_estudiante.php');
             const data = await res.json();
-            // API returns array of estudiantes
+            // La API devuelve un arreglo de estudiantes
             if (Array.isArray(data)) {
                 data.forEach((st, idx) => {
                     const opt = document.createElement('option');
@@ -504,14 +558,18 @@ window.addEventListener('DOMContentLoaded', function () {
                 });
             }
         } catch (e) {}
+        // Manejar cambios en la selección de estudiante
         select.addEventListener('change', function() {
+            // Actualizar ID del estudiante seleccionado
             viewingEstudianteId = select.value || null;
-            // Hide add button when viewing a child
+            
+            // Gestionar visibilidad del botón de agregar eventos
+            // Los padres no pueden agregar eventos en calendarios de estudiantes
             const adder = document.getElementById('event-adder');
             if (viewingEstudianteId) {
-                adder.style.display = 'none';
+                adder.style.display = 'none';  // Ocultar botón al ver calendario de estudiante
             } else {
-                adder.style.display = '';
+                adder.style.display = '';      // Mostrar botón en calendario propio
             }
             const cur = document.getElementById('student-current');
             if (cur) {
@@ -539,7 +597,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 }, 320);
             }
         });
-        // If auto-selected, load events now
+
         if (viewingEstudianteId) {
             const adder = document.getElementById('event-adder');
             if (adder) adder.style.display = 'none';
@@ -553,13 +611,15 @@ window.addEventListener('DOMContentLoaded', function () {
         loadChildrenForParent();
     }
 
-    // Calcular distancia desde hoy usando Date objects
+    // Utilidad para calcular la distancia temporal desde hoy
     function checkDistanceFromToday(selectedDayStr) {
+        // Extraer componentes de la fecha seleccionada
         const [day, monthName, year] = selectedDayStr.split(' / ');
         const month = months.indexOf(monthName);
+        
+        // Crear objetos Date para comparación
         const selectedDate = new Date(parseInt(year), month, parseInt(day));
         const now = new Date();
-        // Zero out time for both
         selectedDate.setHours(0,0,0,0);
         now.setHours(0,0,0,0);
         const diff = Math.round((selectedDate - now) / (1000*60*60*24));

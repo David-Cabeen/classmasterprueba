@@ -1,15 +1,27 @@
 <?php
+/**
+ * Controlador de eventos del calendario
+ * 
+ * Maneja las operaciones CRUD para eventos:
+ * - GET: Obtiene eventos personales y de curso para un mes específico
+ * - POST: Crea o actualiza eventos (personales o de curso)
+ * - DELETE: Elimina eventos existentes
+ * 
+ * Incluye validación de permisos según el rol del usuario
+ */
+
 session_start();
 require_once 'connection.php';
 header('Content-Type: application/json');
 
+// Determinar el tipo de operación solicitada
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     $year = isset($_GET['year']) ? intval($_GET['year']) : null;
     $month = isset($_GET['month']) ? intval($_GET['month']) : null;
     $for_estudiante = isset($_GET['estudiante_id']) ? intval($_GET['estudiante_id']) : null;
-    // Get personal events
+    // Obtener eventos personales
     if ($year && $month) {
         $sql = "SELECT id, titulo, descripcion, prioridad, fecha, id_usuario FROM eventos WHERE YEAR(fecha) = ? AND MONTH(fecha) = ? AND id_usuario = ? ORDER BY fecha ASC";
         $stmt = $conn->prepare($sql);
@@ -29,7 +41,7 @@ if ($method === 'GET') {
     }
     $stmt->close();
 
-    // Get curso_ids for the user (or for the requested estudiante if provided)
+    // Obtener curso_ids para el usuario (o para el estudiante solicitado si se proporciona)
     $curso_ids = [];
     $target_estudiante = $for_estudiante ? $for_estudiante : $_SESSION['user_id'];
     $stmt = $conn->prepare("SELECT curso_id FROM curso_estudiante WHERE estudiante_id = ?");
@@ -41,7 +53,7 @@ if ($method === 'GET') {
     }
     $stmt->close();
 
-    // Get eventos_curso for those cursos
+    // Obtener eventos de curso para esos cursos
     $eventos_curso = [];
     $eventos_curso_ids = [];
     if (!empty($curso_ids)) {
@@ -68,7 +80,7 @@ if ($method === 'GET') {
         $stmt->close();
     }
 
-    // If user is a profesor, also get events created by them (even if not in their courses as student)
+    // Si el usuario es profesor, también obtener eventos creados por él (incluso si no están en sus cursos como estudiante)
     if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
         if ($year && $month) {
             $sql = "SELECT ec.id, ec.curso_id, c.nombre as curso_nombre, ec.titulo, ec.descripcion, ec.prioridad, ec.fecha, ec.creado_por_profesor_id FROM eventos_curso ec JOIN cursos c ON ec.curso_id = c.id WHERE YEAR(ec.fecha) = ? AND MONTH(ec.fecha) = ? AND ec.creado_por_profesor_id = ? ORDER BY ec.fecha ASC";
@@ -119,7 +131,7 @@ if ($method === 'POST') {
             echo json_encode(['success' => false, 'error' => 'ID inválido']);
             exit;
         }
-        // First, try to delete personal event but only if current user is the owner
+    // Primero, intentar eliminar el evento personal pero solo si el usuario actual es el propietario
         $stmt = $conn->prepare("SELECT id_usuario FROM eventos WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -139,13 +151,13 @@ if ($method === 'POST') {
                     exit;
                 }
             } else {
-                // Not the owner: deny (this prevents parents deleting child events)
+                // No es el propietario: denegar (esto evita que acudientes eliminen eventos de los hijos)
                 echo json_encode(['success' => false, 'error' => 'No tienes permiso para eliminar este evento.']);
                 exit;
             }
         }
 
-        // If not a personal event, allow profesor to delete course events they created
+    // Si no es un evento personal, permitir que el profesor elimine eventos de curso que él mismo creó
         if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor' && isset($_SESSION['profesor_id'])) {
             $stmt = $conn->prepare("DELETE FROM eventos_curso WHERE id = ? AND creado_por_profesor_id = ?");
             $stmt->bind_param('is', $id, $_SESSION['profesor_id']);
@@ -185,7 +197,7 @@ if ($method === 'POST') {
             echo json_encode(['success' => false, 'error' => 'ID inválido']);
             exit;
         }
-        // Only allow deletion if user is the profesor who created it
+    // Solo permitir la eliminación si el usuario es el profesor que lo creó
         if ($_SESSION['rol'] === 'profesor') {
             $stmt = $conn->prepare("DELETE FROM eventos_curso WHERE id = ? AND creado_por_profesor_id = ?");
             $stmt->bind_param('is', $id, $_SESSION['user_id']);

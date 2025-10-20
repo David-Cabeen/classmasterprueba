@@ -1,4 +1,5 @@
 <?php
+    // Endpoint de autenticación: valida credenciales y establece sesión
     session_start();
     require_once 'connection.php';
 

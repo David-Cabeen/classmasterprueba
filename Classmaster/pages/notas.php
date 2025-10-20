@@ -1,9 +1,11 @@
 <?php
-  session_start();
-  if (!isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
-      exit();
-  }
+    // Página: Gestión de Notas
+    // Interfaz para que profesores administren tareas y notas; estudiantes ven sus calificaciones
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: ../index.php');
+            exit();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="es">

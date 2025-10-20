@@ -1,5 +1,9 @@
 <?php
-    // Helper to return JSON responses consistently
+    // Función auxiliar para generar respuestas JSON estandarizadas
+    // Parámetros:
+    // - success: boolean indicando éxito/fallo de la operación
+    // - error: mensaje de error (opcional)
+    // - data: datos adicionales a retornar (opcional)
     function response($success, $error = '', $data = []) {
         header('Content-Type: application/json');
         echo json_encode(['success' => $success, 'error' => $error, 'data' => $data]);
@@ -14,6 +18,11 @@
     $action = $_POST['action'] ?? '';
     $type = $_POST['type'] ?? '';
 
+    // Creación de nuevo estudiante
+    // - Valida campos requeridos
+    // - Hashea la contraseña
+    // - Crea el registro del estudiante
+    // - Vincula automáticamente con los cursos correspondientes
     if ($action === 'create' && $type === 'user') {
         $nombre = $_POST['nombre'] ?? '';
         $apellido = $_POST['apellido'] ?? '';
@@ -30,7 +39,7 @@
         }
         $user_id = $conn->insert_id;
         $stmt->close();
-        // Link the new student to every course with the same grado and seccion
+    // Vincular el nuevo estudiante a cada curso con el mismo grado y sección
         $stmt = $conn->prepare("SELECT id FROM cursos WHERE grado = ? AND seccion = ?");
         $stmt->bind_param("ss", $grado, $seccion);
         $stmt->execute();
@@ -122,11 +131,9 @@
         $params = [];
         $types = '';
         foreach ($fields as $k => $v) {
-            // If updating password, hash it
             if ($k === 'password' && $v !== '') {
                 $v = password_hash($v, PASSWORD_DEFAULT);
             }
-            // Skip empty password field to avoid overwriting with empty string
             if ($k === 'password' && $v === '') continue;
             $set[] = "$k = ?";
             $params[] = $v;
@@ -174,7 +181,6 @@
         }
         $stmt = $conn->prepare("DELETE FROM $table WHERE id = ?");
         if ($stmt === false) response(false, 'Error al preparar DELETE: ' . $conn->error);
-        // bind as int or string depending on PK
         if ($bindType === 'i') {
             $stmt->bind_param('i', $id);
         } else {

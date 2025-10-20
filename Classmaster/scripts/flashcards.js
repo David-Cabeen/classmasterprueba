@@ -1,9 +1,12 @@
 import { toast, confirmModal } from './components.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    let flashcards = [];
-    let currentCardIndex = 0;
+    // Estado global de la aplicación de flashcards
+    // Almacena la colección de tarjetas y controla el índice de la actual
+    let flashcards = [];              // Colección de tarjetas
+    let currentCardIndex = 0;         // Índice de la tarjeta actualmente mostrada
+    
+    // Obtener referencia al contenedor de botones de pestañas
     const tabButtons = document.getElementById('tabButtons');
 
     tabButtons.addEventListener('click', (e) => {
@@ -13,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Cambiar entre pestañas
+    // Gestiona el cambio entre pestañas (Crear, Estudiar, Gestionar)
+    // Actualiza la interfaz y ejecuta acciones específicas por pestaña
     function switchTab(tabName, tabElement) {
         document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -26,7 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Crear nueva flashcard
+    // Maneja la creación de nuevas flashcards
+    // Procesa el formulario, envía los datos al servidor y actualiza el array local
     document.getElementById('flashcard-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         const question = document.getElementById('question').value.trim();
@@ -38,9 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: `question=${encodeURIComponent(question)}&answer=${encodeURIComponent(answer)}&action=create`
             });
             const data = await response.json();
-            if (data.success) {
-                // Add new card to local array
-                flashcards.unshift({ id: data.id, question, answer, creada: new Date().toISOString().slice(0, 10) });
+        if (data.success) {
+            // Añadir la nueva tarjeta al array local (al inicio)
+            flashcards.unshift({ id: data.id, question, answer, creada: new Date().toISOString().slice(0, 10) });
                 updateFlashcardList();
                 toast("Flashcard creada exitosamente.", "success");
             } else {
@@ -51,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Actualizar área de estudio
+    // Actualiza la interfaz del área de estudio
+    // Muestra la flashcard actual, gestiona estado vacío y configura controles de navegación
     function updateStudyArea() {
         const studyArea = document.getElementById('study-area');
         const counter = document.getElementById('study-counter');
@@ -82,13 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
         <ion-icon id="nextCardBtn" class='hover:text-blue-500 cursor-pointer' name="chevron-forward-outline"></ion-icon>
         `;
         counter.textContent = `Flashcard ${currentCardIndex + 1} de ${flashcards.length}`;
-        // Add event listeners for navigation and flipping
+        // Agrega listeners para navegación y volteo
         document.getElementById('current-flashcard').addEventListener('click', flipCard);
         document.getElementById('prevCardBtn').addEventListener('click', previousCard);
         document.getElementById('nextCardBtn').addEventListener('click', nextCard);
     }
 
-    // Voltear flashcard
+    // Maneja la animación de volteo de la flashcard actual
+    // Alterna entre pregunta y respuesta
     function flipCard() {
         const flashcard = document.getElementById('current-flashcard');
         if (flashcard) {
@@ -96,7 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Navegación entre flashcards
+    // Funciones de navegación entre flashcards
+    // Avanza o retrocede según el control invocado
     function nextCard() {
         if (flashcards.length > 0) {
             currentCardIndex = (currentCardIndex + 1) % flashcards.length;
@@ -111,7 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Actualizar lista de flashcards
+    // Actualiza la vista de lista de todas las flashcards
+    // Muestra cada tarjeta con detalles y botones de acción
     function updateFlashcardList() {
         const listContent = document.getElementById('flashcard-list-content');
         if (flashcards.length === 0) {
@@ -133,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="delete-btn text-red-500 hover:text-red-700 font-bold ml-4" data-id="${card.id}">Eliminar</button>
             </div>
         `).join('');
-        // Add delete listeners
+        // Agregar listeners de eliminación
         listContent.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 deleteFlashcard(this.getAttribute('data-id'));
@@ -141,7 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Eliminar flashcard
+    // Maneja la eliminación de una flashcard específica
+    // Muestra confirmación, borra en el servidor y actualiza la interfaz
     async function deleteFlashcard(id) {
         confirmModal({'titulo':'Confirmar Eliminación','descripcion':'¿Estás seguro de que quieres eliminar esta flashcard?',
             onConfirm: async function() {
@@ -166,7 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Navegación con teclado
+    // Configura la navegación mediante teclado
+    // Flechas izquierda/derecha para navegar; espacio para voltear
     document.addEventListener('keydown', function(e) {
         if (document.getElementById('study').classList.contains('active')) {
             if (e.key === 'ArrowLeft') {
@@ -180,7 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Inicializar la aplicación: cargar flashcards y renderizar
+    // Inicializa la aplicación de flashcards
+    // Carga las tarjetas desde el servidor, las mapea y actualiza la UI
     async function init() {
         const response = await fetch('../php/flashcards.php', {
             method: 'GET',

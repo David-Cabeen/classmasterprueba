@@ -1,9 +1,11 @@
 <?php
-  session_start();
-  if (!isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
-      exit();
-  }
+    // Página: Calendario académico
+    // Muestra eventos personales y de curso; permite crear/editar eventos según permisos
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: ../index.php');
+            exit();
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">

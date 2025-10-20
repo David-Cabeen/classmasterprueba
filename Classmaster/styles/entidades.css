@@ -28,7 +28,7 @@ body {
     scroll-behavior: smooth;
 }
 
-/* Header */
+/* Cabecera (Header) */
 
 .header {
     background: rgba(255,255,255,0.04);
@@ -80,7 +80,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* Main Container */
+/* Contenedor principal (Main Container) */
 
 .main-container {
     max-width: 1400px;
@@ -104,7 +104,7 @@ body {
     opacity: 0.9;
 }
 
-/* Loading */
+/* Indicador de carga (Loading) */
 .loading {
     display: flex;
     flex-direction: column;
@@ -125,13 +125,13 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Content Grid */
+/* Cuadrícula de contenido (Content Grid) */
 .content-grid {
     display: grid;
     gap: 2rem;
 }
 
-/* Entity Sections */
+/* Secciones de entidades (Entity Sections) */
 
 .entity-section {
     background: rgba(255,255,255,0.04);
@@ -177,7 +177,7 @@ body {
     text-align: center;
 }
 
-/* Table Container */
+/* Contenedor de tablas (Table Container) */
 
 .table-container {
     overflow-x: auto;

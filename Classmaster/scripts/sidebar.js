@@ -1,3 +1,8 @@
+// scripts/sidebar.js
+// Control del sidebar lateral de la aplicación:
+// - Abrir/cerrar animado
+// - Manejo de texto y accesibilidad
+// - Acción de cierre de sesión
 import { toast } from "./components.js";
 
 const sidebar = document.getElementById("sidebar");
