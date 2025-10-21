@@ -3,7 +3,7 @@
 // Herramienta para crear y gestionar notas tipo Cornell por usuario
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../index.html");
+    header("Location: ../index.php");
     exit();
 }
 ?>
@@ -16,6 +16,7 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="../styles/flashcards.css">
     <link rel="stylesheet" href="../styles/sidebar.css" />
     <link rel="stylesheet" href="../styles/cornell.css">
+        <link rel="icon" type="image/png" href="../assets/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="../scripts/cornell.js" defer></script>
     <script type="module" src="../scripts/components.js" defer></script>

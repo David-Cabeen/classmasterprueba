@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	if (window.rol == 'acudiente'){
 		const number = Math.random();
-		if (number < 0.20) {
+		if (number < 0.25) {
 			fetch('../php/phone.php', { method: 'GET', credentials: 'same-origin' })
 			.then(res => res.json())
 			.then(data => {
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			await fetch("../php/logout.php", { method: "GET", credentials: "same-origin" });
 			setTimeout(() => {
 				window.location.href = '../index.php';
-			}, 900);
+			}, 1000);
 		}
 	});
 	});

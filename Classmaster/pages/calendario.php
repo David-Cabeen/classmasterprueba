@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
     <title>Classmaster | Calendario</title>
     <script type="module" src="../scripts/calendario.js"></script>
     <link rel="stylesheet" href="../styles/calendario.css">
@@ -62,7 +63,6 @@
     </div>
     <script>
         window.rol = "<?php echo $_SESSION['rol']; ?>";
-        window.profesor_id = "<?php echo isset($_SESSION['profesor_id']) ? $_SESSION['profesor_id'] : ''; ?>";
     </script>
 </body>
 </html>

@@ -12,6 +12,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
     <link rel="icon" type="image/x-icon" href="../assets/logo.svg">
     <title>Classmaster | Calificaciones</title>
     <link rel="stylesheet" href="../styles/sidebar.css" />
@@ -59,9 +60,6 @@
                 } ?>
                 <label for="materia" class="text-white/80 font-medium">Materia:</label>
                 <select name="materia" id="materia" class="bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30"></select>
-                <?php if(isset($_SESSION['rol']) && $_SESSION['rol'] === 'profesor') {
-                    echo '<input type="search" id="search" placeholder="Buscar estudiante..." class="ml-auto bg-[#181824] text-white rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-white/30 w-56" />';
-                } ?>
             </section>
             <div class="container rounded-xl overflow-x-auto animate-fadeInUp">
                 <table class="min-w-full text-left text-white/90 notas-table">

@@ -12,6 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
     <title>Classmaster | Flashcards</title>
     <link rel="stylesheet" href="../styles/flashcards.css">
     <link rel="stylesheet" href="../styles/sidebar.css" />

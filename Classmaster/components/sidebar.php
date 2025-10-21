@@ -41,7 +41,7 @@
                     <span class="sidebar-text hidden">Ayudas</span>
                 </a>
             <?php
-                // profesor or acudiente: limited menu
+                // Profesor or acudiente: Menu reducido
                 } elseif ($rol === 'profesor' || $rol === 'acudiente') {
             ?>
                 <a href="home.php" class="sidebar-link flex items-center gap-3 p-2 rounded-lg transition hover:bg-white/10">
@@ -137,7 +137,7 @@
                 fetch("../php/logout.php", { method: "GET", credentials: "same-origin" });
                 setTimeout(() => {
                     window.location.href = '../index.php';
-                }, 900);
+                }, 1000);
             },
             });
         });

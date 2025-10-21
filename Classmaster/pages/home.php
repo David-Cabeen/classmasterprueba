@@ -14,6 +14,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../assets/logo.png">
 	<title>Classmaster | Hogar</title>
 	<link rel="stylesheet" href="../styles/home.css" />
 	<link rel="stylesheet" href="../styles/sidebar.css" />
@@ -114,7 +115,7 @@
 							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Calificaciones</span>
 						</div>
 						<h3 class="mt-4 text-xl font-semibold">Calificaciones</h3>
-						<p class="text-sm text-white/60 mt-1">Revisa tus calificaciones.</p>
+						<p class="text-sm text-white/60 mt-1">Revisa calificaciones de tus acudidos.</p>
 						</a>
 
 						<a href="#"
@@ -125,7 +126,7 @@
 							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Calendario</span>
 						</div>
 						<h3 class="mt-4 text-xl font-semibold">Calendario</h3>
-						<p class="text-sm text-white/60 mt-1">Planifica tu semana.</p>
+						<p class="text-sm text-white/60 mt-1">Revisa la semana de tus acudidos.</p>
 						</a>
 					</div>
                   ';
@@ -180,7 +181,7 @@
 							<span class="text-xs uppercase tracking-widest text-white/50 group-hover:text-white/70 transition">Notas de Cornell</span>
 						</div>
 						<h3 class="mt-4 text-xl font-semibold">Notas de Cornell</h3>
-						<p class="text-sm text-white/60 mt-1">Toma de apuntes eficazmente.</p>
+						<p class="text-sm text-white/60 mt-1">Toma apuntes eficazmente.</p>
 						</a>
 						<a href="#"
 						data-href="ayudas.php"
