@@ -13,6 +13,7 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro e inicio</title>
+    <link rel="icon" type="image/png" href="./assets/logo.png">
     <link rel="stylesheet" href="./styles/inicio.css">
     <script type="module" src="./scripts/inicio.js" defer></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" defer></script>
